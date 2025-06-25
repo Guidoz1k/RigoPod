@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "gpio.h": "c",
+        "serial.h": "c",
+        "esp_log.h": "c",
+        "esp_err.h": "c",
+        "stdio.h": "c",
+        "uart.h": "c",
+        "stdbool.h": "c",
+        "stdint.h": "c"
+    }
+}
