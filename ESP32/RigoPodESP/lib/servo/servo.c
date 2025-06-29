@@ -6,6 +6,8 @@
 #define PWM_MID     6144    // (1.5ms / 4ms) * 2^14
 #define PMW_MAX     10240   // (2.5ms / 4ms) * 2^14
 
+static const char *TAG = "SERVOS";   // esp_err variable
+
 void servo_setup(){
     ledc_timer_config_t ledc_timer_1 = {
         .speed_mode       = LEDC_LOW_SPEED_MODE,
@@ -40,12 +42,13 @@ void servo_setup(){
         .hpoint         = 0
     };
 
-    ledc_timer_config(&ledc_timer_1);
-    ledc_channel_config(&ledc_channel_1);
-    ledc_timer_config(&ledc_timer_2);
-    ledc_channel_config(&ledc_channel_2);
+    ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer_1));
+    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel_1));
+    ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer_2));
+    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel_2));
     servo_pos(0, SERVO_PITCH);
     servo_pos(0, SERVO_ROLL);
+    ESP_LOGI(TAG, "Servos Initialized");
 }
 
 /* Sets the servo in a designated angle

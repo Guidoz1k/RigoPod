@@ -1,60 +1,13 @@
-/* old library using rmt.h
-// Function to convert RGB values to RMT items
-void rgb_to_rmt_items(const rgb_t *rgb, rmt_item32_t *items) {
-    uint32_t bits[3] = {rgb->green, rgb->red, rgb->blue}; // WS2812 requires GRB order
-    for (int color = 0; color < 3; ++color) {
-        uint32_t mask = 1 << 7;
-        for (int bit = 0; bit < 8; ++bit) {
-            if (bits[color] & mask) {
-                items[color * 8 + bit].duration0 = T1H;
-                items[color * 8 + bit].level0 = 1;
-                items[color * 8 + bit].duration1 = T1L;
-                items[color * 8 + bit].level1 = 0;
-            } else {
-                items[color * 8 + bit].duration0 = T0H;
-                items[color * 8 + bit].level0 = 1;
-                items[color * 8 + bit].duration1 = T0L;
-                items[color * 8 + bit].level1 = 0;
-            }
-            mask >>= 1;
-        }
-    }
-}
+/* it used to be bit banging, which is horrible
+// from https://github.com/espressif/ESP8266_RTOS_SDK/issues/914
 
-void led_color(uint8_t r, uint8_t g, uint8_t b){
-    rgb_t rgb = {r, g, b};
-    rmt_item32_t items[24];
-    rgb_to_rmt_items(&rgb, items);
-    rmt_write_items(RMT_CHANNEL, items, 24, true);
-    rmt_wait_tx_done(RMT_CHANNEL, portMAX_DELAY);
-}
-
-void led_setup(void){
-    // RMT INIT
-    rmt_config_t config = RMT_DEFAULT_CONFIG_TX(LED_GPIO_PIN, RMT_CHANNEL);
-    config.clk_div = RMT_CLK_DIV;  // set counter clock to 40MHz / 2 = 20MHz
-    rmt_config(&config);
-    rmt_driver_install(config.channel, 0, 0);
-    led_color(0, 0, 0);
-}
-// help from https://github.com/espressif/ESP8266_RTOS_SDK/issues/914
-*/
-#include "led.h"
-
-#include <stdio.h>
 #include <driver/gpio.h>
 #include <driver/dedic_gpio.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#include <esp_err.h>
-#include <esp_log.h>
 
 #include "delay.h"
 
-// Define the GPIO pin connected to the LED
-#define LED_GPIO_PIN 48
-
-static const char *TAG = "WS2812B"; // esp_err variable
 static dedic_gpio_bundle_handle_t gpio_bundle = NULL; // hardware handle
 
 static inline void led_gpio_fast_set(void){
@@ -119,7 +72,7 @@ static inline void IRAM_ATTR ws2812b_byte(uint8_t byte){
 }
 
 // Mandatory setup initialization function
-void led_setup(void){
+void led_setup_(void){
     dedic_gpio_bundle_config_t bundle_config = {
         .gpio_array = (int[]) {48},
         .array_size = 1,
@@ -141,4 +94,67 @@ void IRAM_ATTR led_color(uint8_t r, uint8_t g, uint8_t b){
     ws2812b_byte(r);
     ws2812b_byte(b);
     taskENABLE_INTERRUPTS();
+}
+*/
+
+#include "led.h"
+
+// Define the GPIO pin connected to the LED
+#define LED_GPIO_PIN        48
+#define RMT_RESOLUTION_HZ   40000000
+
+// WS2812B timings for a 40MHz clock source (25ns period), we are going to have:
+#define TOH 16  // t0H = 400ns - 16
+#define TOL 34  // t0L = 850ns - 34
+#define T1H 32  // t1H = 800ns - 32
+#define T1L 22  // t1L = 450ns - 18
+
+static const char *TAG = "WS2812B"; // esp_err variable
+rmt_encoder_handle_t bytes_encoder = NULL;
+rmt_channel_handle_t tx_chan = NULL;
+
+void led_color(uint8_t r, uint8_t g, uint8_t b){
+    uint8_t payload[3] = {g, r, b};
+    rmt_transmit_config_t tx_config = {
+        .loop_count = 0,    // no transfer loop
+    };
+
+    ESP_ERROR_CHECK(rmt_transmit(tx_chan, bytes_encoder, payload, 3, &tx_config));
+    ESP_ERROR_CHECK(rmt_tx_wait_all_done(tx_chan, 100));
+}
+
+void led_setup(void){
+    rmt_tx_channel_config_t tx_chan_config = {
+        .clk_src = RMT_CLK_SRC_DEFAULT,   // select source clock
+        .gpio_num = LED_GPIO_PIN,         // GPIO number
+        .mem_block_symbols = 64,          // memory block size, 64 * 4 = 256 Bytes
+        .resolution_hz = 40 * 1000 * 1000,// 40 MHz tick resolution, i.e., 1 tick = 25ns
+        .trans_queue_depth = 4,           // set the number of transactions that can pend in the background
+        .flags.invert_out = false,        // do not invert output signal
+        .flags.with_dma = false,          // do not need DMA backend,
+    };
+    static const rmt_symbol_word_t ws2812_zero = {
+        .level0 = 1,
+        .duration0 = TOH,
+        .level1 = 0,
+        .duration1 = TOL,
+    };
+    static const rmt_symbol_word_t ws2812_one = {
+        .level0 = 1,
+        .duration0 = T1H,
+        .level1 = 0,
+        .duration1 = T1L,
+    };
+    const rmt_bytes_encoder_config_t encoder_config = {
+        .bit0 = ws2812_zero,
+        .bit1 = ws2812_one,
+        .flags.msb_first = true,
+    };
+
+    ESP_ERROR_CHECK(rmt_new_tx_channel(&tx_chan_config, &tx_chan));
+    ESP_ERROR_CHECK(rmt_new_bytes_encoder(&encoder_config, &bytes_encoder));
+    ESP_ERROR_CHECK(rmt_enable(tx_chan));
+    ESP_LOGI(TAG, "RMT DRIVER ENABLED");
+
+    led_color(0, 0, 0);
 }

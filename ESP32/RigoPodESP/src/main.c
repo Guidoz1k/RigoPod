@@ -17,8 +17,50 @@ void task_core0(void){
     int16_t request = 0;
 
     uint8_t buffer2[8] = {0};
-
     uint32_t time_now = 0;
+
+    const uint8_t maximum = 100;
+    uint8_t red = 0, green = maximum / 3, blue = 2 * maximum / 3;
+    bool red_status = true, green_status = true, blue_status = true;
+
+    while(1){ // this code tests the buil-in led
+        delay_milli(10);
+
+        if(red_status == true)
+            if(red < maximum)
+                red++;
+            else
+                red_status = false;
+        else
+            if(red > 0)
+                red--;
+            else
+                red_status = true;
+
+        if(green_status == true)
+            if(green < maximum)
+                green++;
+            else
+                green_status = false;
+        else
+            if(green > 0)
+                green--;
+            else
+                green_status = true;
+
+        if(blue_status == true)
+            if(blue < maximum)
+                blue++;
+            else
+                blue_status = false;
+        else
+            if(blue > 0)
+                blue--;
+            else
+                blue_status = true;
+
+        led_color(red, green, blue);
+    }
 
     while(1){ // this code tests the lidar
         serial_new_line();
@@ -190,7 +232,7 @@ void app_main(){
     led_setup();
     serial_setup();
     random_setup();
-    xts1_setup();
+    //xts1_setup();
     servo_setup();
     //timer_core0_setup(); CORE 0 TIMER INTERRUPT DISABLED
 

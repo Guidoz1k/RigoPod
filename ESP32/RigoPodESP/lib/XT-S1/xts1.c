@@ -102,7 +102,7 @@ void xts1_setup(){
         vTaskDelay(1);
     modbus_flush();
 
-    ESP_LOGI(TAG, "XT-S1 Serial  initialized");
+    ESP_LOGI(TAG, "XT-S1 Modbus Serial  initialized");
 }
 
 /*
