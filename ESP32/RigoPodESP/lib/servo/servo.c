@@ -1,10 +1,5 @@
 #include "servo.h"
 
-#include <stdio.h>
-#include <driver/uart.h>
-#include <esp_err.h>
-#include <esp_log.h>
-
 #define PWM_FREQ    250     // period of 4ms
 #define PWM_RES     14      // 14 bits
 #define PWM_MIN     2048    // (0.5ms / 4ms) * 2^14
@@ -20,7 +15,7 @@ void servo_setup(){
         .clk_cfg          = LEDC_AUTO_CLK
     };
     ledc_channel_config_t ledc_channel_1 = {
-        .gpio_num       = PWM_RES,
+        .gpio_num       = PIN_PITCH,
         .speed_mode     = LEDC_LOW_SPEED_MODE,
         .channel        = LEDC_CHANNEL_0,
         .intr_type      = LEDC_INTR_DISABLE,
@@ -36,7 +31,7 @@ void servo_setup(){
         .clk_cfg          = LEDC_AUTO_CLK
     };
     ledc_channel_config_t ledc_channel_2 = {
-        .gpio_num       = PWM_RES,
+        .gpio_num       = PIN_ROLL,
         .speed_mode     = LEDC_LOW_SPEED_MODE,
         .channel        = LEDC_CHANNEL_1,
         .intr_type      = LEDC_INTR_DISABLE,

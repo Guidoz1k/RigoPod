@@ -1,10 +1,5 @@
 #include "xts1.h"
 
-#include <stdio.h>
-#include <driver/uart.h>
-#include <esp_err.h>
-#include <esp_log.h>
-
 #define MAXWAIT 50  // 10 milliseconds to read buffer
 
 static const char *TAG = "UART2";   // esp_err variable

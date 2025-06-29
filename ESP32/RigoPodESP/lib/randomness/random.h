@@ -1,6 +1,9 @@
 #ifndef __RANDOM_H
 #define __RANDOM_H
 
+#include <stdio.h>
+#include <esp_random.h>
+#include <bootloader_random.h>
 #include <stdbool.h>
 #include <stdint.h>
 

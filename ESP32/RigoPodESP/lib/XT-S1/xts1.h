@@ -1,6 +1,10 @@
 #ifndef __XTS1_H
 #define __XTS1_H
 
+#include <stdio.h>
+#include <driver/uart.h>
+#include <esp_err.h>
+#include <esp_log.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <esp_log.h>

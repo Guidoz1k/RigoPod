@@ -1,6 +1,9 @@
 #ifndef __DELAY_H
 #define __DELAY_H
 
+#include <stdio.h>
+#include <freertos/FreeRTOS.h>
+#include <esp_timer.h>
 #include <stdbool.h>
 #include <stdint.h>
 

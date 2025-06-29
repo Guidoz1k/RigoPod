@@ -1,13 +1,5 @@
 #include "random.h"
 
-// ========== IDF LIBRARIES ==========
-
-#include <stdio.h>
-#include <esp_random.h>
-#include <bootloader_random.h>
-
-// ============ EXTERNAL FUNCTIONS ============
-
 void random_setup(void){
     bootloader_random_enable();
 }
