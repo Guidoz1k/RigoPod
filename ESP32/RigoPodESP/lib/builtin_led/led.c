@@ -41,8 +41,6 @@ void led_setup(void){
 */
 #include "led.h"
 
-// ========== IDF LIBRARIES ==========
-
 #include <stdio.h>
 #include <driver/gpio.h>
 #include <driver/dedic_gpio.h>
@@ -51,22 +49,13 @@ void led_setup(void){
 #include <esp_err.h>
 #include <esp_log.h>
 
-// ========== INTERNAL LIBRARIES ==========
-
 #include "delay.h"
-
-// ========== DEFINITIONS ==========
 
 // Define the GPIO pin connected to the LED
 #define LED_GPIO_PIN 48
 
-// ========== GLOBAL VARIABLES ==========
-
 static const char *TAG = "WS2812B"; // esp_err variable
-
 static dedic_gpio_bundle_handle_t gpio_bundle = NULL; // hardware handle
-
-// ============ INTERNAL FUNCTIONS ============
 
 static inline void led_gpio_fast_set(void){
     dedic_gpio_bundle_write(gpio_bundle, 1, 1);
@@ -128,8 +117,6 @@ static inline void IRAM_ATTR ws2812b_byte(uint8_t byte){
     }
     delay_micro(50);
 }
-
-// ============ EXTERNAL FUNCTIONS ============
 
 // Mandatory setup initialization function
 void led_setup(void){

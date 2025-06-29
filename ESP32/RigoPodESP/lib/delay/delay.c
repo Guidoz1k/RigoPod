@@ -37,13 +37,9 @@ the overhead fluctuates from approximately 0.75µs to 1.4µs
 */
 #include "delay.h"
 
-// ========== IDF LIBRARIES ==========
-
 #include <stdio.h>
 #include <freertos/FreeRTOS.h>
 #include <esp_timer.h>
-
-// ============ EXTERNAL FUNCTIONS ============
 
 // yield the process just to slap the watchdog
 void delay_tick(void){

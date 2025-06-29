@@ -8,13 +8,33 @@
 #define MIN 2048
 #define STEP 5
 
+uint32_t time_counter = 0;
+
 // core 0 asynchronous task
 void task_core0(void){
-
     uint8_t buffer[2] = {0, 0};
     int16_t request = 0;
 
-    while(1){
+    uint8_t buffer2[8] = {0};
+
+    uint32_t time_now = 0;
+
+    while(1){ // this code tests the lidar
+        serial_new_line();
+        modbus_read_register(0x0017, 0x0001, INPUT_REG);
+        time_now = time_counter;
+        serial_write_string("msg sent", true);
+        while(modbus_check_buffer() != 7)
+            delay_tick();
+        serial_write_string("elapsed time: ", false);
+        serial_write_word(time_counter - time_now, 5, true);
+        modbus_read_buffer(buffer2, 8);
+        serial_write_string("distance: ", false);
+        serial_write_word((buffer2[3] << 8) + buffer2[4], 5, true);
+        delay_milli(1000);
+    }
+
+    while(1){ // this codes reads serial and controls servos
         while(serial_read_size() < 2)
             delay_milli(10);
         delay_milli(100);
@@ -24,11 +44,10 @@ void task_core0(void){
         }
         else{
             request = (buffer[0] << 8) + buffer[1];
-            servo_pos(request);
+            servo_pos(request, SERVO_PITCH);
         }
         serial_flush();
     }
-
 }
 
 // core 1 timer interrupt subroutine
@@ -36,7 +55,7 @@ bool IRAM_ATTR timer_core1(gptimer_handle_t timer, const gptimer_alarm_event_dat
     // makes it easy to measure interruption time
     gpio_set_level(SYNCPIN1, 1);
 
-    //time_counter++;
+    time_counter++;
 
     // makes it easy to measure interruption time
     gpio_set_level(SYNCPIN1, 0);
@@ -65,7 +84,7 @@ void timer_core1_setup(void){
         .on_alarm = timer_core1, // setting the  callback for alarm event for BASE and DRONE systems
     };
     gptimer_alarm_config_t alarm_config = {
-        .alarm_count = PERIOD1,             // 2 millisecond
+        .alarm_count = PERIOD1,             // 1 millisecond
         .reload_count = 0,                  // no initial reload
         .flags.auto_reload_on_alarm = true, // automatically reload counter on alarm
     };

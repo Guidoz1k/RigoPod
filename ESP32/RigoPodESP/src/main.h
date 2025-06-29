@@ -23,7 +23,7 @@
 
 #define PERIOD0     10      // interrupt period in µs
 #define SYNCPIN0    47      // interruption 0 work pin
-#define PERIOD1     20      // interrupt period in µs
+#define PERIOD1     1000    // interrupt period in µs
 #define SYNCPIN1    21      // interruption 1 work pin
 
 #endif /* __MAIN_H */
