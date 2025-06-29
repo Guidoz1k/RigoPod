@@ -20,8 +20,8 @@ void task_core0(void){
     uint32_t time_now = 0;
 
     const uint8_t maximum = 100;
-    uint8_t red = 0, green = maximum / 3, blue = 2 * maximum / 3;
-    bool red_status = true, green_status = true, blue_status = true;
+    uint8_t red = 0, green = 2 * maximum / 3, blue = 2 * maximum / 3;
+    bool red_status = true, green_status = true, blue_status = false;
 
     while(1){ // this code tests the buil-in led
         delay_milli(10);
@@ -59,6 +59,12 @@ void task_core0(void){
             else
                 blue_status = true;
 
+        serial_write_string(" red: ", false);
+        serial_write_byte(red, DEC, false);
+        serial_write_string(" green: ", false);
+        serial_write_byte(green, DEC, false);
+        serial_write_string(" blue: ", false);
+        serial_write_byte(blue, DEC, true);
         led_color(red, green, blue);
     }
 
