@@ -1,9 +1,11 @@
 #include "xts1.h"
 
-#define MAXWAIT 50  // 10 milliseconds to read buffer
+// ========== GLOBAL VARIABLES ==========
 
 static const char *TAG = "UART2";   // esp_err variable
 static uint8_t read_timeout = pdMS_TO_TICKS(10);    // UART reading timeout
+
+// ============ INTERNAL FUNCTIONS ============
 
 uint16_t crc16(const uint8_t *data, size_t length) {
     uint16_t crc = 0xFFFF; // Initial CRC value as per Modbus standard [1]
@@ -21,6 +23,8 @@ uint16_t crc16(const uint8_t *data, size_t length) {
     }
     return crc;
 }
+
+// ============ EXTERNAL FUNCTIONS ============
 
 void modbus_flush(void){
     uart_flush(UART_NUM_2);
@@ -105,8 +109,3 @@ void xts1_setup(){
     ESP_LOGI(TAG, "XT-S1 Modbus Serial  initialized");
 }
 
-/*
-uint16_t xts1_distance(void){
-    return 1;
-}
-*/

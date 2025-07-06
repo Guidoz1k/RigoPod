@@ -1,6 +1,10 @@
 #ifndef __SERIAL_H
 #define __SERIAL_H
 
+#include <stdio.h>
+#include <driver/uart.h>
+#include <esp_err.h>
+#include <esp_log.h>
 #include <stdbool.h>
 #include <stdint.h>
 

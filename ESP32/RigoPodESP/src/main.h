@@ -21,8 +21,9 @@
 
 // ========== DEFINITIONS ==========
 
-#define PERIOD0     10      // interrupt period in µs
-#define SYNCPIN0    47      // interruption 0 work pin
+// core 0 interrupt disabled
+//#define PERIOD0     10      // interrupt period in µs
+//#define SYNCPIN0    47      // interruption 0 work pin
 #define PERIOD1     1000    // interrupt period in µs
 #define SYNCPIN1    21      // interruption 1 work pin
 

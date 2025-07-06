@@ -1,15 +1,16 @@
 #include "serial.h"
 
-#include <stdio.h>
-#include <driver/uart.h>
-#include <esp_err.h>
-#include <esp_log.h>
+// ========== DEFINITIONS ==========
 
 #define MAXSIZE 32
 #define MAXWAIT 50  // 10 milliseconds to read buffer
 
+// ========== GLOBAL VARIABLES ==========
+
 static const char *TAG = "UART0";   // esp_err variable
 static uint8_t read_timeout = pdMS_TO_TICKS(10);    // UART reading timeout
+
+// ============ EXTERNAL FUNCTIONS ============
 
 void serial_setup(){
     uart_config_t configs = {

@@ -99,7 +99,8 @@ void IRAM_ATTR led_color(uint8_t r, uint8_t g, uint8_t b){
 
 #include "led.h"
 
-// Define the GPIO pin connected to the LED
+// ========== DEFINITIONS ==========
+
 #define LED_GPIO_PIN        48
 #define RMT_RESOLUTION_HZ   40000000
 
@@ -109,9 +110,13 @@ void IRAM_ATTR led_color(uint8_t r, uint8_t g, uint8_t b){
 #define T1H 32  // t1H = 800ns - 32
 #define T1L 22  // t1L = 450ns - 18
 
+// ========== GLOBAL VARIABLES ==========
+
 static const char *TAG = "WS2812B"; // esp_err variable
 rmt_encoder_handle_t bytes_encoder = NULL;
 rmt_channel_handle_t tx_chan = NULL;
+
+// ============ EXTERNAL FUNCTIONS ============
 
 void led_color(uint8_t r, uint8_t g, uint8_t b){
     uint8_t payload[3] = {g, r, b};
@@ -128,26 +133,20 @@ void led_setup(void){
         .clk_src = RMT_CLK_SRC_DEFAULT,   // select source clock
         .gpio_num = LED_GPIO_PIN,         // GPIO number
         .mem_block_symbols = 64,          // memory block size, 64 * 4 = 256 Bytes
-        .resolution_hz = 40 * 1000 * 1000,// 40 MHz tick resolution, i.e., 1 tick = 25ns
+        .resolution_hz = RMT_RESOLUTION_HZ,// 40 MHz tick resolution, i.e., 1 tick = 25ns
         .trans_queue_depth = 4,           // set the number of transactions that can pend in the background
         .flags.invert_out = false,        // do not invert output signal
         .flags.with_dma = false,          // do not need DMA backend,
     };
-    static const rmt_symbol_word_t ws2812_zero = {
-        .level0 = 1,
-        .duration0 = TOH,
-        .level1 = 0,
-        .duration1 = TOL,
-    };
-    static const rmt_symbol_word_t ws2812_one = {
-        .level0 = 1,
-        .duration0 = T1H,
-        .level1 = 0,
-        .duration1 = T1L,
-    };
     const rmt_bytes_encoder_config_t encoder_config = {
-        .bit0 = ws2812_zero,
-        .bit1 = ws2812_one,
+        .bit0.level0 = 1,
+        .bit0.duration0 = TOH,
+        .bit0.level1 = 0,
+        .bit0.duration1 = TOL,
+        .bit1.level0 = 1,
+        .bit1.duration0 = T1H,
+        .bit1.level1 = 0,
+        .bit1.duration1 = T1L,
         .flags.msb_first = true,
     };
 

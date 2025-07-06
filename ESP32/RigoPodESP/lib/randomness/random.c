@@ -1,5 +1,7 @@
 #include "random.h"
 
+// ============ EXTERNAL FUNCTIONS ============
+
 void random_setup(void){
     bootloader_random_enable();
 }

@@ -1,12 +1,18 @@
 #include "servo.h"
 
+// ========== DEFINITIONS ==========
+
 #define PWM_FREQ    250     // period of 4ms
 #define PWM_RES     14      // 14 bits
 #define PWM_MIN     2048    // (0.5ms / 4ms) * 2^14
 #define PWM_MID     6144    // (1.5ms / 4ms) * 2^14
 #define PMW_MAX     10240   // (2.5ms / 4ms) * 2^14
 
+// ========== GLOBAL VARIABLES ==========
+
 static const char *TAG = "SERVOS";   // esp_err variable
+
+// ============ EXTERNAL FUNCTIONS ============
 
 void servo_setup(){
     ledc_timer_config_t ledc_timer_1 = {

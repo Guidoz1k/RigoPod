@@ -1,24 +1,17 @@
-/* ABOUT
-
-*/
-
-// purely for visual relief
 #include "main.h"
 
-#define MAX 10240
-#define MIN 2048
-#define STEP 5
+// ========== GLOBAL VARIABLES ==========
 
-uint32_t time_counter = 0;
+uint32_t time_counter = 0;  // global timer
+enum demo_run_t{            // demo program to run
+    DEMO_LED = 1,
+    DEMO_SERVO = 2,
+    DEMO_LIDAR = 3,
+} demo_run = DEMO_LED;
 
-// core 0 asynchronous task
-void task_core0(void){
-    uint8_t buffer[2] = {0, 0};
-    int16_t request = 0;
+// ============ ABSTRACTED FUNCTIONS ============
 
-    uint8_t buffer2[8] = {0};
-    uint32_t time_now = 0;
-
+void led_demo(void){
     const uint8_t maximum = 100;
     uint8_t red = 0, green = 2 * maximum / 3, blue = 2 * maximum / 3;
     bool red_status = true, green_status = true, blue_status = false;
@@ -67,6 +60,11 @@ void task_core0(void){
         serial_write_byte(blue, DEC, true);
         led_color(red, green, blue);
     }
+}
+
+void lidar_demo(void){
+    uint8_t buffer[8] = {0};
+    uint32_t time_now = 0;
 
     while(1){ // this code tests the lidar
         serial_new_line();
@@ -77,11 +75,16 @@ void task_core0(void){
             delay_tick();
         serial_write_string("elapsed time: ", false);
         serial_write_word(time_counter - time_now, 5, true);
-        modbus_read_buffer(buffer2, 8);
+        modbus_read_buffer(buffer, 8);
         serial_write_string("distance: ", false);
-        serial_write_word((buffer2[3] << 8) + buffer2[4], 5, true);
-        delay_milli(1000);
+        serial_write_word((buffer[3] << 8) + buffer[4], 5, true);
+        delay_milli(100);
     }
+}
+
+void servo_demo(void){
+    uint8_t buffer[2] = {0, 0};
+    int16_t request = 0;
 
     while(1){ // this codes reads serial and controls servos
         while(serial_read_size() < 2)
@@ -96,6 +99,25 @@ void task_core0(void){
             servo_pos(request, SERVO_PITCH);
         }
         serial_flush();
+    }
+}
+
+// ============ SETUP FUNCTIONS ============
+
+// core 0 asynchronous task
+void task_core0(void){
+    switch(demo_run){
+    case DEMO_LED:
+        led_demo();
+        break;
+    case DEMO_SERVO:
+        servo_demo();
+        break;
+    case DEMO_LIDAR:
+        lidar_demo();
+        break;
+    default:
+        break;
     }
 }
 
@@ -155,12 +177,6 @@ void timer_core1_setup(void){
 bool IRAM_ATTR timer_core0(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx){
     // makes it easy to measure interruption time
     gpio_set_level(SYNCPIN0, 1);
-
-    #ifdef ENV_BASE
-        // BASE SYSTEM CODE
-    #elif ENV_DRONE
-        // DRONE SYSTEM CODE
-    #endif
 
     // makes it easy to measure interruption time
     gpio_set_level(SYNCPIN0, 0);

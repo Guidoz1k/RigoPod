@@ -13,6 +13,8 @@
         "string_view": "c",
         "span": "c",
         "task.h": "c",
-        "dedic_gpio.h": "c"
+        "dedic_gpio.h": "c",
+        "xts1.h": "c",
+        "servo.h": "c"
     }
 }
