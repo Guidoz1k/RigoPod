@@ -16,7 +16,7 @@ typedef enum {
 
 void serial_setup();
 
-uint8_t serial_write_word(uint32_t number, uint8_t size, bool newline);
+void serial_write_word(int16_t number, bool newline);
 
 void serial_write_byte(uint8_t number, base_t base, bool newline);
 
@@ -26,7 +26,7 @@ void serial_new_line(void);
 
 void serial_write_string(const char *pointer, bool newline);
 
-uint8_t serial_read_chars(uint8_t *buffer, uint8_t size);
+uint8_t serial_read_chars(char *buffer, uint8_t size);
 
 char serial_read_singlechar(void);
 

@@ -30,38 +30,38 @@ void serial_setup(){
     ESP_LOGI(TAG, "Serial  initialized");
 }
 
-uint8_t serial_write_word(uint32_t number, uint8_t size, bool newline){
-    uint8_t buffer[10] = {MAXSIZE};
-    uint8_t chars = 10;
+void serial_write_word(int16_t number, bool newline){
+    uint8_t buffer[5] = {48};
     uint8_t i;
+    bool number_detect = false;
 
-    // convert the number to individual chars
-    for(i = 0; i < 10; i++){
-        buffer[9 - i] = number % 10 + 48;
+    if(number < 0){
+        uart_write_bytes(UART_NUM_0, "-", 1);
+        number *= -1;
+    }
+    else{
+        uart_write_bytes(UART_NUM_0, "+", 1);
+    }
+
+    for(i = 0; i < 5; i++){
+        buffer[4 - i] = (number % 10) + 48;
         number /= 10;
     }
-
-    // find how many characters are needed for given number, change '0' for ' ', accounting for a number == 0
     i = 0;
-    while((buffer[i] == '0') && (i < 9)){
-        buffer[i] = ' ';
+    while( (i < (5 - 1)) && (number_detect == false)){
+        if(buffer[i] == '0'){
+            buffer[i] = ' ';
+        }
+        else{
+            number_detect = true;
+        }
         i++;
-        chars--;
     }
 
-    if(size >= chars){
-        // fit number in size requested
-        for(i = 0; i < size; i++)
-            buffer[i] = buffer[i + (10 - size)];
-        uart_write_bytes(UART_NUM_0, buffer, size);
-    }
-    else
-        serial_write_string("-=ERROR!=-", 0);
+    uart_write_bytes(UART_NUM_0, buffer, 5);
 
-    // finalizes the process
     if(newline == true)
         serial_new_line();
-    return chars;
 }
 
 void serial_write_byte(uint8_t number, base_t base, bool newline){
@@ -144,8 +144,7 @@ void serial_write_string(const char *pointer, bool newline){
     uart_write_bytes(UART_NUM_0, buffer, counter + 1);
 }
 
-uint8_t serial_read_chars(uint8_t *buffer, uint8_t size){
-    
+uint8_t serial_read_chars(char *buffer, uint8_t size){
     uint8_t chars_read = 0;
 
     if(size <= MAXSIZE)

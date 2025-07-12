@@ -7,7 +7,7 @@ enum demo_run_t{            // demo program to run
     DEMO_LED = 1,
     DEMO_SERVO = 2,
     DEMO_LIDAR = 3,
-} demo_run = DEMO_LED;
+} demo_run = DEMO_SERVO;
 
 // ============ ABSTRACTED FUNCTIONS ============
 
@@ -74,35 +74,85 @@ void lidar_demo(void){
         while(modbus_check_buffer() != 7)
             delay_tick();
         serial_write_string("elapsed time: ", false);
-        serial_write_word(time_counter - time_now, 5, true);
+        serial_write_word(time_counter - time_now, true);
         modbus_read_buffer(buffer, 8);
         serial_write_string("distance: ", false);
-        serial_write_word((buffer[3] << 8) + buffer[4], 5, true);
+        serial_write_word((buffer[3] << 8) + buffer[4], true);
         delay_milli(100);
     }
 }
 
+/* Processes the manual control of the servo for tests and calibration AAAAAAAAAAAAAAAAAAAAAA description
+
+*/
 void servo_demo(void){
-    uint8_t buffer[2] = {0, 0};
-    int16_t request = 0;
+    char buffer[8] = {0};
+    servo_t servo = SERVO_PITCH;
+    int16_t value = 0;
 
     while(1){ // this codes reads serial and controls servos
-        while(serial_read_size() < 2)
+        while(serial_read_size() < 8)
             delay_milli(10);
         delay_milli(100);
 
-        if(serial_read_chars(buffer, 2) != 2){
-            serial_write_string("ERR", true);
+        serial_write_string("\n COMMAND: ", false);
+        if(serial_read_chars(buffer, 8) != 8){
+            serial_write_string(" ERROR!", true);
         }
         else{
-            request = (buffer[0] << 8) + buffer[1];
-            servo_pos(request, SERVO_PITCH);
+            if( (buffer[1] == 'P') || (buffer[1] == 'R') ){
+                if(buffer[1] == 'P'){
+                    servo = SERVO_PITCH;
+                }
+                else{
+                    servo = SERVO_ROLL;
+                }
+                switch(buffer[0]){
+                case 'S':
+                    value = servo_string_to_number(&buffer[2]);
+                    if(value != 0x7FFF){
+                        serial_write_string("SET ", false);
+                        serial_write_char(buffer[1], false, false);
+                        serial_write_string(" to ", false);
+                        serial_write_word(value, false);
+                        servo_pos(value, servo);
+                    }
+                    else{
+                        serial_write_string(" INVALID POSITION", true);
+                    }
+                    break;
+                case 'X':
+                    value = servo_string_to_number(&buffer[2]);
+                    if(value != 0x7FFF){
+                        servo_cal(0, value, servo);
+                    }
+                    else{
+                        serial_write_string(" INVALID CALIBRATION", true);
+                    }                    
+                    break;
+                case 'N':
+                    value = servo_string_to_number(&buffer[2]);
+                    if(value != 0x7FFF){
+                        servo_cal(value, 0, servo);
+                    }
+                    else{
+                        serial_write_string(" INVALID CALIBRATION", true);
+                    } 
+                    break;
+                default:
+                    serial_write_string(" INVALID COMMAND", true);
+                    break;
+                }
+            }
+            else{
+                serial_write_string(" INVALID SERVO", true);
+            }
         }
         serial_flush();
     }
 }
 
-// ============ SETUP FUNCTIONS ============
+// ============ CORE FUNCTIONS ============
 
 // core 0 asynchronous task
 void task_core0(void){
