@@ -128,12 +128,11 @@ int16_t servo_string_to_number(char *pointer){
     if( ((pointer[0] == '+') || (pointer[0] == '-')) &&
         ((pointer[1] >= '0') && (pointer[1] <= '9')) &&
         ((pointer[2] >= '0') && (pointer[2] <= '9')) &&
-        ((pointer[3] == '.') || (pointer[3] == ',')) &&
-        ((pointer[4] >= '0') && (pointer[4] <= '9')) &&
-        ((pointer[5] >= '0') && (pointer[5] <= '9'))
+        ((pointer[3] >= '0') && (pointer[3] <= '9')) &&
+        ((pointer[4] >= '0') && (pointer[4] <= '9'))
         ){
-        result = pointer[5] - 48;
-        result += (pointer[4] - 48) * 10;
+        result = pointer[4] - 48;
+        result += (pointer[3] - 48) * 10;
         result += (pointer[2] - 48) * 100;
         result += (pointer[1] - 48) * 1000;
         if(pointer[0] == '-'){
@@ -144,7 +143,7 @@ int16_t servo_string_to_number(char *pointer){
     return result;
 }
 
-uint16_t return_cal(calib_t parameter){
+uint16_t servo_return_cal(calib_t parameter){
     uint16_t value = 0;
 
     switch(parameter){

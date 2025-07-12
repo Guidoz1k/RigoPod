@@ -16,6 +16,7 @@
         "dedic_gpio.h": "c",
         "xts1.h": "c",
         "servo.h": "c",
-        "ledc.h": "c"
+        "ledc.h": "c",
+        "main.h": "c"
     }
 }

@@ -3,13 +3,15 @@
 // ========== GLOBAL VARIABLES ==========
 
 uint32_t time_counter = 0;  // global timer
+
 enum demo_run_t{            // demo program to run
     DEMO_LED = 1,
     DEMO_SERVO = 2,
     DEMO_LIDAR = 3,
-} demo_run = DEMO_SERVO;
+    NO_DEMO = 4, // runs program normally executing main_program
+} demo_run = DEMO_LED;
 
-// ============ ABSTRACTED FUNCTIONS ============
+// ========== MAIN PROGRAM AND DEMOS ==========
 
 void led_demo(void){
     const uint8_t maximum = 100;
@@ -62,28 +64,20 @@ void led_demo(void){
     }
 }
 
-void lidar_demo(void){
-    uint8_t buffer[8] = {0};
-    uint32_t time_now = 0;
-
-    while(1){ // this code tests the lidar
-        serial_new_line();
-        modbus_read_register(0x0017, 0x0001, INPUT_REG);
-        time_now = time_counter;
-        serial_write_string("msg sent", true);
-        while(modbus_check_buffer() != 7)
-            delay_tick();
-        serial_write_string("elapsed time: ", false);
-        serial_write_word(time_counter - time_now, true);
-        modbus_read_buffer(buffer, 8);
-        serial_write_string("distance: ", false);
-        serial_write_word((buffer[3] << 8) + buffer[4], true);
-        delay_milli(100);
-    }
-}
-
-/* Processes the manual control of the servo for tests and calibration AAAAAAAAAAAAAAAAAAAAAA description
-
+/* Processes the manual control of the servo for tests and calibration
+    All numerical entries will be comprised of '+' or '-' followed by a 4 digits number, ranging from 0 to 9000
+    first char: command letter
+        S = set servo position, followed by numerical entry
+        X = calibrate the maximum PWM value of chosen servo, followed by numerical entry
+        N = calibrate the minimum PWM value of chosen servo, followed by numerical entry
+        R = read any calibration parameter of chosen servo, followed by:
+            N = minimum PWM value
+            X = maximum PWM value
+            A = angle set
+    second char: servo
+        P = pitch servo
+        R = roll servo
+    following chars: command dependent
 */
 void servo_demo(void){
     char buffer[8] = {0};
@@ -91,12 +85,12 @@ void servo_demo(void){
     int16_t value = 0;
 
     while(1){ // this codes reads serial and controls servos
-        while(serial_read_size() < 8)
+        while(serial_read_size() < 7)
             delay_milli(10);
         delay_milli(100);
 
         serial_write_string("\n COMMAND: ", false);
-        if(serial_read_chars(buffer, 8) != 8){
+        if(serial_read_chars(buffer, 7) != 7){
             serial_write_string(" ERROR!", true);
         }
         else{
@@ -124,6 +118,10 @@ void servo_demo(void){
                 case 'X':
                     value = servo_string_to_number(&buffer[2]);
                     if(value != 0x7FFF){
+                        serial_write_string("CALIBRATED MAX of ", false);
+                        serial_write_char(buffer[1], false, false);
+                        serial_write_string(" to ", false);
+                        serial_write_word(value, false);
                         servo_cal(0, value, servo);
                     }
                     else{
@@ -133,11 +131,55 @@ void servo_demo(void){
                 case 'N':
                     value = servo_string_to_number(&buffer[2]);
                     if(value != 0x7FFF){
+                        serial_write_string("CALIBRATED MIN of ", false);
+                        serial_write_char(buffer[1], false, false);
+                        serial_write_string(" to ", false);
+                        serial_write_word(value, false);
                         servo_cal(value, 0, servo);
                     }
                     else{
                         serial_write_string(" INVALID CALIBRATION", true);
                     } 
+                    break;
+                case 'R':
+                    switch(buffer[2]){
+                    case 'X':
+                        serial_write_string("RANGE MAX of ", false);
+                        serial_write_char(buffer[1], false, false);
+                        serial_write_string(" to ", false);
+                        if(buffer[1] == 'P'){
+                            serial_write_word(servo_return_cal(PITCH_MAX), false);
+                        }
+                        else{
+                            serial_write_word(servo_return_cal(ROLL_MAX), false);
+                        }
+                        break;
+                    case 'N':
+                        serial_write_string("RANGE MIN of ", false);
+                        serial_write_char(buffer[1], false, false);
+                        serial_write_string(" to ", false);
+                        if(buffer[1] == 'P'){
+                            serial_write_word(servo_return_cal(PITCH_MIN), false);
+                        }
+                        else{
+                            serial_write_word(servo_return_cal(ROLL_MIN), false);
+                        }
+                        break;
+                    case 'A':
+                        serial_write_string("RANGE ANGLE of ", false);
+                        serial_write_char(buffer[1], false, false);
+                        serial_write_string(" to ", false);
+                        if(buffer[1] == 'P'){
+                            serial_write_word(servo_return_cal(PITCH_ANG), false);
+                        }
+                        else{
+                            serial_write_word(servo_return_cal(ROLL_ANG), false);
+                        }
+                        break;
+                    default:
+                        serial_write_string(" INVALID REGISTER", true);
+                        break;
+                    }
                     break;
                 default:
                     serial_write_string(" INVALID COMMAND", true);
@@ -149,6 +191,32 @@ void servo_demo(void){
             }
         }
         serial_flush();
+    }
+}
+
+void lidar_demo(void){
+    uint8_t buffer[8] = {0};
+    uint32_t time_now = 0;
+
+    while(1){ // this code tests the lidar
+        serial_new_line();
+        modbus_read_register(0x0017, 0x0001, INPUT_REG);
+        time_now = time_counter;
+        serial_write_string("msg sent", true);
+        while(modbus_check_buffer() != 7)
+            delay_tick();
+        serial_write_string("elapsed time: ", false);
+        serial_write_word(time_counter - time_now, true);
+        modbus_read_buffer(buffer, 8);
+        serial_write_string("distance: ", false);
+        serial_write_word((buffer[3] << 8) + buffer[4], true);
+        delay_milli(100);
+    }
+}
+
+void main_program(void){
+    while(1){
+        delay_tick();
     }
 }
 
@@ -165,6 +233,9 @@ void task_core0(void){
         break;
     case DEMO_LIDAR:
         lidar_demo();
+        break;
+    case NO_DEMO:
+        main_program();
         break;
     default:
         break;
