@@ -150,6 +150,21 @@ void lidar_demo(void){
     #define DATASET 50
     
     // uint8_t registers[21] = {0, 1, 2, 3, 4, 5, 6, 7, 64, 65, 66 ,86, 87, 22, 23, 24, 25, 26, 59, 60, 61};
+    char *distance_diag[13] = {
+        "ERROR -13: overexposure",
+        "ERROR -12: no object detected",
+        "ERROR -11: abnormal TOF image",
+        "ERROR -10: abnormal temperature image",
+        "ERROR -9: abnormal grey scale image",
+        "ERROR -8: reserve",
+        "ERROR -7: signal too weak",
+        "ERROR -6: signal too strong",
+        "ERROR -5: reserve",
+        "ERROR -4: sample data below min value",
+        "ERROR -3: sample data beyond max value",
+        "ERROR -2: pixel saturation",
+        "ERROR -1: SPI communication error",
+    };
     uint8_t i;
     int16_t measurements[DATASET] = {0}, minimum, maximum;
     float variance, standard_deviation, mean;
@@ -163,8 +178,13 @@ void lidar_demo(void){
         standard_deviation = 0;
         printf("starting measurements.\n");
         for(i = 0; i < DATASET; i++){
-            // acquire data
-            measurements[i] = xts1_measure_distance();
+            // acquire data and check for error messages
+            measurements[i] = 0;
+            while(measurements[i] < 1){
+                measurements[i] = xts1_measure_distance();
+                if(measurements[i] < 0)
+                    printf("  --> %s\n", distance_diag[measurements[i] + 13]);
+            }
             // check for minimum
             if(measurements[i] < minimum)
                 minimum = measurements[i];
