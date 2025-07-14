@@ -9,6 +9,7 @@
 #include <freertos/task.h>
 #include <driver/gpio.h>
 #include <driver/gptimer.h>
+#include <math.h>
 
 // ========== INTERNAL LIBRARIES ==========
 

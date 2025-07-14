@@ -17,6 +17,12 @@
         "xts1.h": "c",
         "servo.h": "c",
         "ledc.h": "c",
-        "main.h": "c"
+        "main.h": "c",
+        "iterator": "c",
+        "esp_intr_alloc.h": "c",
+        "freertos.h": "c",
+        "math.h": "c",
+        "random": "c",
+        "bootloader_random.h": "c"
     }
 }

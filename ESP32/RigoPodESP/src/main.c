@@ -1,3 +1,6 @@
+/* TickRate increased to 1000Hz
+    CONFIG_FREERTOS_HZ=1000 line from CONFIG_FREERTOS_HZ=100 in the platformio sdkconfig
+*/
 #include "main.h"
 
 // ========== GLOBAL VARIABLES ==========
@@ -9,7 +12,7 @@ enum demo_run_t{            // demo program to run
     DEMO_SERVO = 2,
     DEMO_LIDAR = 3,
     NO_DEMO = 4, // runs program normally executing main_program
-} demo_run = DEMO_LED;
+} demo_run = DEMO_SERVO;
 
 // ========== MAIN PROGRAM AND DEMOS ==========
 
@@ -54,12 +57,7 @@ void led_demo(void){
             else
                 blue_status = true;
 
-        serial_write_string(" red: ", false);
-        serial_write_byte(red, DEC, false);
-        serial_write_string(" green: ", false);
-        serial_write_byte(green, DEC, false);
-        serial_write_string(" blue: ", false);
-        serial_write_byte(blue, DEC, true);
+        printf(" red: %d green %d blue: %d \n", red, green, blue);
         led_color(red, green, blue);
     }
 }
@@ -83,6 +81,8 @@ void servo_demo(void){
     char buffer[8] = {0};
     servo_t servo = SERVO_PITCH;
     int16_t value = 0;
+
+    serial_setup(); // to use readings
 
     while(1){ // this codes reads serial and controls servos
         while(serial_read_size() < 7)
@@ -195,22 +195,63 @@ void servo_demo(void){
 }
 
 void lidar_demo(void){
-    uint8_t buffer[8] = {0};
-    uint32_t time_now = 0;
+    #define DATASET 50
+    
+    // uint8_t registers[21] = {0, 1, 2, 3, 4, 5, 6, 7, 64, 65, 66 ,86, 87, 22, 23, 24, 25, 26, 59, 60, 61};
+    uint8_t i;
+    int16_t measurements[DATASET] = {0}, minimum, maximum;
+    float variance, standard_deviation, mean;
 
-    while(1){ // this code tests the lidar
-        serial_new_line();
-        modbus_read_register(0x0017, 0x0001, INPUT_REG);
-        time_now = time_counter;
-        serial_write_string("msg sent", true);
-        while(modbus_check_buffer() != 7)
-            delay_tick();
-        serial_write_string("elapsed time: ", false);
-        serial_write_word(time_counter - time_now, true);
-        modbus_read_buffer(buffer, 8);
-        serial_write_string("distance: ", false);
-        serial_write_word((buffer[3] << 8) + buffer[4], true);
-        delay_milli(100);
+    printf("\n");
+    while(1){
+        minimum = 30000;
+        maximum = 0;
+        mean = 0;
+        variance = 0;
+        standard_deviation = 0;
+        printf("starting measurements.\n");
+        for(i = 0; i < DATASET; i++){
+            // acquire data
+            measurements[i] = xts1_measure_distance();
+            // check for minimum
+            if(measurements[i] < minimum){
+                minimum = measurements[i];
+            }
+            // check for maximum
+            if(measurements[i] > maximum){
+                maximum = measurements[i];
+            }
+            // calculating mean dynamically
+            /*
+            if(i == 0){
+                mean = measurements[i];
+            }
+            else{
+                mean *= i;
+                mean += measurements[i];
+                mean /= i + 1;
+            }
+            */
+            delay_milli(20);
+        }
+        // calculating mean
+        for(i = 0; i < DATASET; i++){
+            mean += measurements[i];
+        }
+        mean /= DATASET;
+        // calculating variance
+        for(i = 0; i < DATASET; i++){
+            variance +=  pow(measurements[i] - mean, 2);
+        }
+        variance /= DATASET;
+        // calculating standard deviation
+        standard_deviation = sqrt(variance);
+
+        printf(" minimum = %5d \n", minimum);
+        printf(" maximum = %5d \n", maximum);
+        printf(" mean = %f \n", mean);
+        printf(" variance = %f \n", variance);
+        printf(" standard deviation = %f \n\n", standard_deviation);
     }
 }
 
@@ -373,9 +414,9 @@ void core1Task(void* parameter){
 void app_main(){
     delay_milli(1000);
     led_setup();
-    serial_setup();
+    //serial_setup(); // need to use IDF's printf() | functions that need serial read should call this later.
     random_setup();
-    //xts1_setup();
+    xts1_setup();
     servo_setup();
     //timer_core0_setup(); CORE 0 TIMER INTERRUPT DISABLED
 

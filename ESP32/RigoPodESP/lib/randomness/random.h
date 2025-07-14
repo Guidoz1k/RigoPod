@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <esp_random.h>
 #include <bootloader_random.h>
+#include <esp_err.h>
+#include <esp_log.h>
 #include <stdbool.h>
 #include <stdint.h>
 

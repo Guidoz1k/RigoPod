@@ -153,7 +153,7 @@ void led_setup(void){
     ESP_ERROR_CHECK(rmt_new_tx_channel(&tx_chan_config, &tx_chan));
     ESP_ERROR_CHECK(rmt_new_bytes_encoder(&encoder_config, &bytes_encoder));
     ESP_ERROR_CHECK(rmt_enable(tx_chan));
-    ESP_LOGI(TAG, "RMT DRIVER ENABLED");
+    ESP_LOGI(TAG, "RMT Driver enabled");
 
     led_color(0, 0, 0);
 }

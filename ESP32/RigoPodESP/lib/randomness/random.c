@@ -1,9 +1,14 @@
 #include "random.h"
 
+// ========== GLOBAL VARIABLES ==========
+
+static const char *TAG = "RANDOM";   // esp_err variable
+
 // ============ EXTERNAL FUNCTIONS ============
 
 void random_setup(void){
     bootloader_random_enable();
+    ESP_LOGI(TAG, "Randomness Initialized");
 }
 
 uint32_t random_32(void){

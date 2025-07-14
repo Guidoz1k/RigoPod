@@ -9,21 +9,14 @@
 #include <stdint.h>
 #include <esp_log.h>
 
-typedef enum{
-    INPUT_REG = 0,
-    HOLDING_REG = 1,
-} register_t;
-
 void xts1_setup();
 
-void modbus_flush();
+esp_err_t xts1_write_register(uint16_t address_index, uint16_t value);
 
-uint8_t modbus_check_buffer(void);
+esp_err_t xts1_read_register(uint16_t address_index, uint16_t *value);
 
-void modbus_read_register(uint16_t start_address, uint8_t ammout, register_t type);
+esp_err_t xts1_sys_error(uint32_t *value);
 
-void modbus_write_register(uint16_t start_address, uint16_t value);
-
-void modbus_read_buffer(uint8_t *buffer, uint8_t size);
+uint16_t xts1_measure_distance(void);
 
 #endif /* __XTS1_H */
