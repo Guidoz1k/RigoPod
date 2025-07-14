@@ -39,9 +39,8 @@ void serial_write_word(int16_t number, bool newline){
         uart_write_bytes(UART_NUM_0, "-", 1);
         number *= -1;
     }
-    else{
+    else
         uart_write_bytes(UART_NUM_0, "+", 1);
-    }
 
     for(i = 0; i < 5; i++){
         buffer[4 - i] = (number % 10) + 48;
@@ -49,12 +48,10 @@ void serial_write_word(int16_t number, bool newline){
     }
     i = 0;
     while( (i < (5 - 1)) && (number_detect == false)){
-        if(buffer[i] == '0'){
+        if(buffer[i] == '0')
             buffer[i] = ' ';
-        }
-        else{
+        else
             number_detect = true;
-        }
         i++;
     }
 
@@ -133,9 +130,8 @@ void serial_write_string(const char *pointer, bool newline){
 	uint8_t counter = 0;
     char buffer[MAXSIZE + 1] = {0};
 
-	while((counter < MAXSIZE) && (*pointer != '\0')){
+	while((counter < MAXSIZE) && (*pointer != '\0'))
         buffer[counter++] = *(pointer++);
-	}
     if(newline == true)
         buffer[counter] = '\n';
     else

@@ -23,6 +23,8 @@
         "freertos.h": "c",
         "math.h": "c",
         "random": "c",
-        "bootloader_random.h": "c"
+        "bootloader_random.h": "c",
+        "demos.h": "c",
+        "gptimer.h": "c"
     }
 }

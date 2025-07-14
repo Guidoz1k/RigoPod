@@ -14,7 +14,7 @@
 // ========== INTERNAL LIBRARIES ==========
 
 #include "delay.h"
-#include "serial.h"
+// #include "serial.h" --> migrated to printf() and scanf(), cannot alloc UART or stdio functions wont work
 #include "led.h"
 #include "random.h"
 #include "xts1.h"

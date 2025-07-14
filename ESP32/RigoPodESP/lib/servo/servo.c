@@ -135,9 +135,8 @@ int16_t servo_string_to_number(char *pointer){
         result += (pointer[3] - 48) * 10;
         result += (pointer[2] - 48) * 100;
         result += (pointer[1] - 48) * 1000;
-        if(pointer[0] == '-'){
+        if(pointer[0] == '-')
             result *= -1;
-        }
     }
 
     return result;

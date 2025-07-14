@@ -17,12 +17,10 @@ uint16_t crc16(const uint8_t *data, size_t length) {
     for(size_t i = 0; i < length; ++i){
         crc ^= (uint16_t)data[i]; // XOR with current byte [1]
         for(size_t j = 0; j < 8; ++j){
-            if(crc & 0x0001){ // If LSB (Least Significant Bit) is 1 [1]
+            if(crc & 0x0001) // If LSB (Least Significant Bit) is 1 [1]
                 crc = (crc >> 1) ^ 0xA001; // Shift right and XOR with polynomial 0xA001 [1]
-            }
-            else{
+            else
                 crc >>= 1; // Shift right [1]
-            }
         }
     }
     return crc;
@@ -118,13 +116,11 @@ esp_err_t xts1_write_register(uint16_t address_index, uint16_t value){
             vTaskDelay(1);
         }
         modbus_flush();
-        if(wait == TIMEOUT){
+        if(wait == TIMEOUT)
             operation = ESP_ERR_TIMEOUT;
-        }
     }
-    else{
+    else
         operation = ESP_ERR_INVALID_ARG;
-    }
 
     return operation;
 }
@@ -147,9 +143,8 @@ esp_err_t xts1_read_register(uint16_t address_index, uint16_t *value){
         (address_index == 66) ||
         (address_index == 86) ||
         (address_index == 87)
-        ){
+        )
         modbus_read_register_command(address_index, 1, 0x03);
-    }
     else{
         if( (address_index == 22) ||
             (address_index == 23) ||
@@ -172,9 +167,8 @@ esp_err_t xts1_read_register(uint16_t address_index, uint16_t *value){
             wait++;
             vTaskDelay(1);
         }
-        if(wait == TIMEOUT){
+        if(wait == TIMEOUT)
             operation = ESP_ERR_TIMEOUT;
-        }
         else{
             modbus_read_buffer(buffer, 7);
             *value = (buffer[3] << 8) + buffer[4];
@@ -194,9 +188,8 @@ esp_err_t xts1_sys_error(uint32_t *value){
         wait++;
         vTaskDelay(1);
     }
-    if(wait == TIMEOUT){
+    if(wait == TIMEOUT)
         operation = ESP_ERR_TIMEOUT;
-    }
     else{
         modbus_read_buffer(buffer, 9);
         *value = (buffer[3] << 24) + (buffer[4] << 16) + (buffer[5] << 8) + buffer[6];
