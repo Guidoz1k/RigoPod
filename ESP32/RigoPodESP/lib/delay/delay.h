@@ -7,10 +7,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-void delay_tick(void);
+void delay_tick();
 
-void delay_milli(uint16_t period);
+void delay_milli( uint16_t period );
 
-void delay_micro(uint32_t microseconds);
+void delay_micro( uint32_t microseconds );
 
 #endif /* __DELAY_H */

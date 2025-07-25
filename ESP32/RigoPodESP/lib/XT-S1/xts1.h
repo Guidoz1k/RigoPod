@@ -17,6 +17,6 @@ esp_err_t xts1_read_register(uint16_t address_index, uint16_t *value);
 
 esp_err_t xts1_sys_error(uint32_t *value);
 
-uint16_t xts1_measure_distance(void);
+uint16_t xts1_measure_distance();
 
 #endif /* __XTS1_H */

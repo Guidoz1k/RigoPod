@@ -25,6 +25,7 @@
         "random": "c",
         "bootloader_random.h": "c",
         "demos.h": "c",
-        "gptimer.h": "c"
+        "gptimer.h": "c",
+        "delay.h": "c"
     }
 }

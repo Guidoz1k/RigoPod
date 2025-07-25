@@ -15,10 +15,10 @@
 #include "xts1.h"
 #include "servo.h"
 
-void led_demo(void);
+void led_demo();
 
-void servo_demo(void);
+void servo_demo();
 
-void lidar_demo(void);
+void lidar_demo();
 
 #endif /* __DEMOS_H */

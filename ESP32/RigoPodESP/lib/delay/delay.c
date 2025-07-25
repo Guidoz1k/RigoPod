@@ -40,17 +40,17 @@ the overhead fluctuates from approximately 0.75µs to 1.4µs
 // ============ EXTERNAL FUNCTIONS ============
 
 // yield the process just to slap the watchdog
-void delay_tick(void){
-    vTaskDelay(1);
+void delay_tick(){
+    vTaskDelay( 1 );
 }
 
 // Masking of FreeRTOS delay function
-void delay_milli(uint16_t period){
-    vTaskDelay(pdMS_TO_TICKS(period));
+void delay_milli( uint16_t period ){
+    vTaskDelay( pdMS_TO_TICKS( period ) );
 }
 
 // Pooling delay using esp timer count
-void delay_micro(uint32_t microseconds){
+void delay_micro( uint32_t microseconds ){
     uint64_t start_time = esp_timer_get_time();
-    while( esp_timer_get_time() < (start_time + microseconds - 1) );
+    while( esp_timer_get_time() < ( start_time + microseconds - 1 ) );
 }

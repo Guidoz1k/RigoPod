@@ -118,17 +118,17 @@ rmt_channel_handle_t tx_chan = NULL;
 
 // ============ EXTERNAL FUNCTIONS ============
 
-void led_color(uint8_t r, uint8_t g, uint8_t b){
-    uint8_t payload[3] = {g, r, b};
+void led_color( uint8_t r, uint8_t g, uint8_t b ){
+    uint8_t payload[ 3 ] = { g, r, b };
     rmt_transmit_config_t tx_config = {
         .loop_count = 0,    // no transfer loop
     };
 
-    ESP_ERROR_CHECK(rmt_transmit(tx_chan, bytes_encoder, payload, 3, &tx_config));
-    ESP_ERROR_CHECK(rmt_tx_wait_all_done(tx_chan, 100));
+    ESP_ERROR_CHECK( rmt_transmit( tx_chan, bytes_encoder, payload, 3, &tx_config ));
+    ESP_ERROR_CHECK( rmt_tx_wait_all_done( tx_chan, 100 ));
 }
 
-void led_setup(void){
+void led_setup(){
     rmt_tx_channel_config_t tx_chan_config = {
         .clk_src = RMT_CLK_SRC_DEFAULT,   // select source clock
         .gpio_num = LED_GPIO_PIN,         // GPIO number
@@ -150,10 +150,10 @@ void led_setup(void){
         .flags.msb_first = true,
     };
 
-    ESP_ERROR_CHECK(rmt_new_tx_channel(&tx_chan_config, &tx_chan));
-    ESP_ERROR_CHECK(rmt_new_bytes_encoder(&encoder_config, &bytes_encoder));
-    ESP_ERROR_CHECK(rmt_enable(tx_chan));
-    ESP_LOGI(TAG, "RMT Driver enabled");
+    ESP_ERROR_CHECK( rmt_new_tx_channel( &tx_chan_config, &tx_chan ) );
+    ESP_ERROR_CHECK( rmt_new_bytes_encoder( &encoder_config, &bytes_encoder ) );
+    ESP_ERROR_CHECK( rmt_enable( tx_chan ) );
+    ESP_LOGI( TAG, "RMT Driver enabled" );
 
-    led_color(0, 0, 0);
+    led_color( 0, 0, 0 );
 }

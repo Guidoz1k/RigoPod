@@ -28,12 +28,12 @@ typedef enum {
 
 void servo_setup();
 
-void servo_pos(int16_t angle, servo_t servo);
+void servo_pos( int16_t angle, servo_t servo );
 
-void servo_cal(int16_t angle_min, int16_t angle_max, servo_t servo);
+void servo_cal( int16_t angle_min, int16_t angle_max, servo_t servo );
 
-int16_t servo_string_to_number(char *pointer);
+int16_t servo_string_to_number( char *pointer );
 
-uint16_t servo_return_cal(calib_t parameter);
+uint16_t servo_return_cal( calib_t parameter );
 
 #endif /* __SERVO_H */

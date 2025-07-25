@@ -2,63 +2,47 @@
     CONFIG_FREERTOS_HZ=1000 line from CONFIG_FREERTOS_HZ=100 in the platformio sdkconfig
 */
 #include "main.h"
-
 #include "demos.h"
+
+// ========== DEFINITIONS ==========
+
+#define PROGRAM     led_demo();
 
 // ========== GLOBAL VARIABLES ==========
 
 uint32_t time_counter = 0;  // global timer
 
-enum demo_run_t{            // demo program to run
-    DEMO_LED = 1,
-    DEMO_SERVO = 2,
-    DEMO_LIDAR = 3,
-    NO_DEMO = 4, // runs program normally executing main_program
-} demo_run = DEMO_LED;
-
 // ========== MAIN PROGRAM ==========
 
-void main_program(void){  
+/*
+void main_program(){  
     while(1)
         delay_milli(100);
 }
+*/
 
 // ============ CORE FUNCTIONS ============
 
 // core 0 asynchronous task
-void task_core0(void){
-    switch(demo_run){
-    case DEMO_LED:
-        led_demo();
-        break;
-    case DEMO_SERVO:
-        servo_demo();
-        break;
-    case DEMO_LIDAR:
-        lidar_demo();
-        break;
-    case NO_DEMO:
-        main_program();
-        break;
-    default:
-        break;
-    }
+void task_core0(){
+    //main_program();
+    PROGRAM
 }
 
 // core 1 timer interrupt subroutine
-bool IRAM_ATTR timer_core1(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx){
+bool IRAM_ATTR timer_core1( gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx ){
     // makes it easy to measure interruption time
-    gpio_set_level(SYNCPIN1, 1);
+    gpio_set_level( SYNCPIN1, 1 );
 
     time_counter++;
 
     // makes it easy to measure interruption time
-    gpio_set_level(SYNCPIN1, 0);
+    gpio_set_level( SYNCPIN1, 0 );
     return true; // return true to yield for ISR callback to continue
 }
 
 // interrupt timer configuration for core 1 interrupt
-void timer_core1_setup(void){
+void timer_core1_setup(){
     // GPIO config variables
     gpio_config_t outputs = {
         .pin_bit_mask = (uint64_t)1 << SYNCPIN1,
@@ -85,15 +69,15 @@ void timer_core1_setup(void){
     };
 
     // GPIO config commands
-    gpio_config(&outputs);
-    gpio_set_level(SYNCPIN1, 0);
+    gpio_config( &outputs );
+    gpio_set_level( SYNCPIN1, 0 );
 
     // timer and alarm commands
-    gptimer_new_timer(&timer_config, &timer);
-    gptimer_register_event_callbacks(timer, &cbs, NULL);
-    gptimer_set_alarm_action(timer, &alarm_config);
-    gptimer_enable(timer);
-    gptimer_start(timer);
+    gptimer_new_timer( &timer_config, &timer );
+    gptimer_register_event_callbacks( timer, &cbs, NULL );
+    gptimer_set_alarm_action( timer, &alarm_config );
+    gptimer_enable( timer );
+    gptimer_start( timer );
 }
 
 /* CORE 0 TIMER INTERRUPT DISABLED
@@ -163,18 +147,18 @@ void task_core1(void){
 */
 
  // RUNS ON CORE 1
-void core1Task(void* parameter){
+void core1Task( void* parameter ){
     timer_core1_setup();
 
     //task_core1(); TASK 1 DISABLED. CORE 1 USED ONLY FOR INTERRUPT
 
     // core 1 task termination
-    vTaskDelete(NULL);
+    vTaskDelete( NULL );
 }
 
  // RUNS ON CORE 0
 void app_main(){
-    delay_milli(1000);
+    delay_milli( 1000 );
     led_setup();
     random_setup();
     xts1_setup();
@@ -182,11 +166,11 @@ void app_main(){
     //timer_core0_setup(); CORE 0 TIMER INTERRUPT DISABLED
 
     // core 1 task creation
-    xTaskCreatePinnedToCore(core1Task, "timer1Creator", 10000, NULL, 1, NULL, 1);
+    xTaskCreatePinnedToCore( core1Task, "timer1Creator", 10000, NULL, 1, NULL, 1 );
     
-    delay_milli(1000); // gives time to finish the logging
+    delay_milli( 1000 ); // gives time to finish the logging
     task_core0();
 
     // core 0 task termination
-    vTaskDelete(NULL);
+    vTaskDelete( NULL );
 }

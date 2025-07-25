@@ -9,12 +9,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-void random_setup(void);
+void random_setup();
 
-uint32_t random_32(void);
+uint32_t random_32();
 
-bool random_1(void);
+bool random_1();
 
-uint8_t random_n(uint32_t limit);
+uint8_t random_n( uint32_t limit );
 
 #endif /* __RANDOM_H */
