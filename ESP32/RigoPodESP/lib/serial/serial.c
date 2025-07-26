@@ -117,7 +117,6 @@ void serial_write_char( uint8_t character, bool numerical, bool newline ){
     uart_write_bytes( UART_NUM_0, buffer, 1 );
     if( newline == true )
         serial_new_line();
-
 }
 
 void serial_new_line(){

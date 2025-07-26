@@ -6,7 +6,7 @@
 
 // ========== DEFINITIONS ==========
 
-#define PROGRAM     led_demo();
+#define PROGRAM     calibration_process(); // from demos.h
 
 // ========== GLOBAL VARIABLES ==========
 
@@ -14,20 +14,12 @@ uint32_t time_counter = 0;  // global timer
 
 // ========== MAIN PROGRAM ==========
 
-/*
-void main_program(){  
-    while(1)
-        delay_milli(100);
-}
-*/
-
-// ============ CORE FUNCTIONS ============
-
 // core 0 asynchronous task
 void task_core0(){
-    //main_program();
     PROGRAM
 }
+
+// ============ CORE FUNCTIONS ============
 
 // core 1 timer interrupt subroutine
 bool IRAM_ATTR timer_core1( gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx ){

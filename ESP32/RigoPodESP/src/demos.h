@@ -21,4 +21,6 @@ void servo_demo();
 
 void lidar_demo();
 
+void calibration_process();
+
 #endif /* __DEMOS_H */
