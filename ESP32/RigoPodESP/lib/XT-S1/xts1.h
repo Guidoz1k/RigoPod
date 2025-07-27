@@ -7,15 +7,14 @@
 #include <esp_log.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <esp_log.h>
 
 void xts1_setup();
 
-esp_err_t xts1_write_register(uint16_t address_index, uint16_t value);
+esp_err_t xts1_write_register( uint16_t address_index, uint16_t value );
 
-esp_err_t xts1_read_register(uint16_t address_index, uint16_t *value);
+esp_err_t xts1_read_register( uint16_t address_index, uint16_t *value );
 
-esp_err_t xts1_sys_error(uint32_t *value);
+esp_err_t xts1_sys_error( uint32_t *value );
 
 uint16_t xts1_measure_distance();
 

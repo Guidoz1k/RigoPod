@@ -6,7 +6,7 @@
 
 // ========== DEFINITIONS ==========
 
-#define PROGRAM     calibration_process(); // from demos.h
+#define PROGRAM     led_demo();//calibration_process(); // from demos.h
 
 // ========== GLOBAL VARIABLES ==========
 

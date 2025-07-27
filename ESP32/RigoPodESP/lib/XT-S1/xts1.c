@@ -49,39 +49,39 @@ uint8_t modbus_check_buffer(){
         0x04 = functional code for "read input register"
 */
 void modbus_read_register_command( uint16_t address_index, uint8_t word_count, uint8_t command ){
-    uint8_t buffer[  8  ] = { 0 };
+    uint8_t buffer[ 8 ] = { 0 };
     uint16_t crc_calc = 0;
 
-    buffer[  0 ] = 0x01;   // device ID
-    buffer[  1 ] = command;   // functional code
+    buffer[ 0 ] = 0x01;   // device ID
+    buffer[ 1 ] = command;   // functional code
 
-    buffer[  2 ] = ( address_index >> 8 ) & 0xFF;
-    buffer[  3 ] = address_index & 0xFF;
-    buffer[  4 ] = ( word_count >> 8 ) & 0xFF;
-    buffer[  5 ] = word_count & 0xFF;
+    buffer[ 2 ] = ( address_index >> 8 ) & 0xFF;
+    buffer[ 3 ] = address_index & 0xFF;
+    buffer[ 4 ] = ( word_count >> 8 ) & 0xFF;
+    buffer[ 5 ] = word_count & 0xFF;
 
     crc_calc = crc16( buffer, 6 );
-    buffer[  6 ] = crc_calc & 0xFF;
-    buffer[  7 ] = ( crc_calc >> 8 ) & 0xFF;
+    buffer[ 6 ] = crc_calc & 0xFF;
+    buffer[ 7 ] = ( crc_calc >> 8 ) & 0xFF;
 
     uart_write_bytes( UART_NUM_2, buffer, 8 );
 }
 
 void modbus_write_register_command( uint16_t address_index, uint16_t value ){
-    uint8_t buffer[  16 ] = {0};
+    uint8_t buffer[ 16 ] = {0};
     uint16_t crc_calc = 0;
 
-    buffer[  0 ] = 0x01;   // device ID
-    buffer[  1 ] = 0x06;   // functional code for "write single register"
+    buffer[ 0 ] = 0x01;   // device ID
+    buffer[ 1 ] = 0x06;   // functional code for "write single register"
 
-    buffer[  2 ] = ( address_index >> 8 ) & 0xFF;
-    buffer[  3 ] = address_index & 0xFF;
-    buffer[  4 ] = ( value >> 8 ) & 0xFF;
-    buffer[  5 ] = value & 0xFF;
+    buffer[ 2 ] = ( address_index >> 8 ) & 0xFF;
+    buffer[ 3 ] = address_index & 0xFF;
+    buffer[ 4 ] = ( value >> 8 ) & 0xFF;
+    buffer[ 5 ] = value & 0xFF;
 
     crc_calc = crc16( buffer, 6 );
-    buffer[  6 ] = crc_calc & 0xFF;
-    buffer[  7 ] = ( crc_calc >> 8 ) & 0xFF;
+    buffer[ 6 ] = crc_calc & 0xFF;
+    buffer[ 7 ] = ( crc_calc >> 8 ) & 0xFF;
 
     uart_write_bytes( UART_NUM_2, buffer, 8 );
 }
@@ -128,7 +128,7 @@ esp_err_t xts1_write_register( uint16_t address_index, uint16_t value ){
 esp_err_t xts1_read_register( uint16_t address_index, uint16_t *value ){
     esp_err_t operation = ESP_OK;
     uint8_t wait = 0;
-    uint8_t buffer[  7 ] = {0};
+    uint8_t buffer[ 7 ] = {0};
 
     if( ( address_index == 0 ) ||
         ( address_index == 1 ) ||
@@ -171,17 +171,17 @@ esp_err_t xts1_read_register( uint16_t address_index, uint16_t *value ){
             operation = ESP_ERR_TIMEOUT;
         else{
             modbus_read_buffer( buffer, 7 );
-            *value = ( buffer[  3 ] << 8 ) + buffer[  4 ];
+            *value = ( buffer[ 3 ] << 8 ) + buffer[  4 ];
         }
     }
 
     return operation;
 }
 
-esp_err_t xts1_sys_error( uint32_t *value ){
+esp_err_t xts1_sys_error( uint32_t *value ){ 
     esp_err_t operation = ESP_OK;
     uint8_t wait = 0;
-    uint8_t buffer[  9 ] = {0};
+    uint8_t buffer[ 9 ] = {0};
 
     modbus_read_register_command( 16, 2, 0x04 );
     while( ( wait < TIMEOUT ) && ( modbus_check_buffer() != 9 ) ){
@@ -226,3 +226,4 @@ void xts1_setup(){
     ESP_ERROR_CHECK( xts1_write_register( 3, 1 ) );         // start active measurement
     ESP_LOGI( TAG, "XT-S1 Modbus Serial  initialized" );
 }
+     

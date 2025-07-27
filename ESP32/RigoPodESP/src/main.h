@@ -4,6 +4,8 @@
 // ========== IDF LIBRARIES ==========
 
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <esp_intr_alloc.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>

@@ -172,7 +172,7 @@ void lidar_demo(){
     float variance, standard_deviation, mean;
 
     printf( "\n" );
-    while( 1 ){
+    while( true ){
         minimum = 30000;
         maximum = 0;
         mean = 0;
