@@ -198,6 +198,21 @@ esp_err_t xts1_sys_error( uint32_t *value ){
     return operation;
 }
 
+/* Will return distance in mm or error code:
+    -13: overexposure
+    -12: no object detected
+    -11: abnormal TOF image
+    -10: abnormal temperature image
+    -9: abnormal grey scale image
+    -8: reserve
+    -7: signal too weak
+    -6: signal too strong
+    -5: reserve
+    -4: sample data below min value
+    -3: sample data beyond max value
+    -2: pixel saturation
+    -1: SPI communication error
+*/
 uint16_t xts1_measure_distance(){
     uint16_t value = 0;
 
