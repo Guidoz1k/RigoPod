@@ -1,0 +1,14 @@
+1 - intro
+2 - principios
+3 - 10 artigos relacionados
+4 - minha proposta
+5 - implementacao
+	historico
+6 - validacao
+7 - conclusao
+	trabalhos futuros
+
+
+extras
+	manual do dev
+	manual do usuario
