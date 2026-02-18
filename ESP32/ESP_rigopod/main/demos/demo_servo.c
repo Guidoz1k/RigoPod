@@ -1,220 +1,220 @@
-#include "main.h"
+#include "demos.h"
 
-/* Processes the manual control of the servo for tests and calibration
-    All numerical entries will be comprised of '+' or '-' followed by a 4 digits number, ranging from 0 to 9000
-    first char: command letter
-        S = set servo position, followed by numerical entry
-        X = calibrate the maximum PWM value of chosen servo, followed by numerical entry
-        N = calibrate the minimum PWM value of chosen servo, followed by numerical entry
-        R = read any calibration parameter of chosen servo, followed by:
-            N = minimum PWM value
-            X = maximum PWM value
-            A = angle set
-    second char: servo
-        P = pitch servo
-        R = roll servo
-    following chars: command dependent
-*/
+char buffer[ 8 ] = {0};
+servo_t servo = SERVO_PITCH;
+
+void clear_buffer(){
+    uint8_t i = 0;
+
+    for(i = 0; i < 8; i++){
+        buffer[ i ] = 0;
+    }
+    
+}
+
+void print_help(){
+    printf( " Welcome to the servo demo \n\n" );
+    printf( " First select your servo:\n" );
+    printf( "    P for pitch servo\n" );
+    printf( "    R for roll servo\n\n" );
+    printf( " Then select your function:\n\n" );
+    printf( " Setting angle [A]: [signal][4 chars number]\n" );
+    printf( "     signal = + or - depending of direction\n" );
+    printf( "     number = from +9000 to -9000, representing 90 degrees\n\n" );
+    printf( " Calibrating maximum PWM [X]: [5 chars number]\n" );
+    printf( "     number = 5 characters for PWM\n\n" );
+    printf( " Calibrating minimum PWM [N]: [5 chars number]\n" );
+    printf( "     number = 5 characters for PWM\n\n" );
+    printf( " Reading values [R]: [values]\n" );
+    printf( "     values = A for angle, X for max PWM, N for minimum PWM\n\n" );
+    printf( " You can also send the entire command like \"RA+9000\" for setting Roll Angle as 90deg\n" );
+    printf( " \n" );
+}
+
+void setting_angle(){
+    int16_t value = 0;
+
+    clear_buffer();
+    printf( "\n ANGLE: " );
+    while( scanf( "%c%c%c%c%c", &buffer[ 0 ], &buffer[ 1 ], &buffer[ 2 ], &buffer[ 3 ], &buffer[ 4 ] ) != 5 )
+        delay_milli( 10 );
+
+    if( ( ( buffer[0] == '+' ) || ( buffer[0] == '-' ) ) &&
+        ( ( buffer[1] >= '0' ) && ( buffer[1] <= '9' ) ) &&
+        ( ( buffer[2] >= '0' ) && ( buffer[2] <= '9' ) ) &&
+        ( ( buffer[3] >= '0' ) && ( buffer[3] <= '9' ) ) &&
+        ( ( buffer[4] >= '0' ) && ( buffer[4] <= '9' ) )
+        ){
+        value = buffer[ 4 ] - 48;
+        value += ( buffer[ 3 ] - 48 ) * 10;
+        value += ( buffer[ 2 ] - 48 ) * 100;
+        value += ( buffer[ 1 ] - 48 ) * 1000;
+        if( buffer[ 0 ] == '-' )
+            value *= -1;
+        
+        if( ( value >= -9000 ) && ( value <= 9000 ) ){
+            servo_set_angle( value, servo );
+            printf( " DONE " );
+        }
+        else
+            printf( "INVALID RANGE" );
+    }
+    else{
+        printf( "INVALID POSITION" );
+    }
+}
+
+void setting_max(){
+    int16_t value = 0;
+
+    clear_buffer();
+    printf( "\n PWM MAX: " );
+    while( scanf( "%c%c%c%c%c", &buffer[ 0 ], &buffer[ 1 ], &buffer[ 2 ], &buffer[ 3 ], &buffer[ 4 ] ) != 5 )
+        delay_milli( 10 );
+
+    if( ( ( buffer[0] >= '0' ) && ( buffer[0] <= '9' ) ) &&
+        ( ( buffer[1] >= '0' ) && ( buffer[1] <= '9' ) ) &&
+        ( ( buffer[2] >= '0' ) && ( buffer[2] <= '9' ) ) &&
+        ( ( buffer[3] >= '0' ) && ( buffer[3] <= '9' ) ) &&
+        ( ( buffer[4] >= '0' ) && ( buffer[4] <= '9' ) )
+        ){
+        value = buffer[ 4 ] - 48;
+        value += ( buffer[ 3 ] - 48 ) * 10;
+        value += ( buffer[ 2 ] - 48 ) * 100;
+        value += ( buffer[ 1 ] - 48 ) * 1000;
+        if( buffer[ 0 ] == '-' )
+            value *= -1;
+        
+        if( ( value >= 0 ) && ( value <= PMW_MAX ) ){
+            servo_set_pwm_max( value, servo );
+            printf( " DONE " );
+        }
+        else
+            printf( "INVALID RANGE" );
+    }
+    else{
+        printf( "INVALID CALIBRATION" );
+    }
+}
+
+void setting_min(){
+    int16_t value = 0;
+
+    clear_buffer();
+    printf( "\n PWM MIN: " );
+    while( scanf( "%c%c%c%c%c", &buffer[ 0 ], &buffer[ 1 ], &buffer[ 2 ], &buffer[ 3 ], &buffer[ 4 ] ) != 5 )
+        delay_milli( 10 );
+
+    if( ( ( buffer[0] >= '0' ) && ( buffer[0] <= '9' ) ) &&
+        ( ( buffer[1] >= '0' ) && ( buffer[1] <= '9' ) ) &&
+        ( ( buffer[2] >= '0' ) && ( buffer[2] <= '9' ) ) &&
+        ( ( buffer[3] >= '0' ) && ( buffer[3] <= '9' ) ) &&
+        ( ( buffer[4] >= '0' ) && ( buffer[4] <= '9' ) )
+        ){
+        value = buffer[ 4 ] - 48;
+        value += ( buffer[ 3 ] - 48 ) * 10;
+        value += ( buffer[ 2 ] - 48 ) * 100;
+        value += ( buffer[ 1 ] - 48 ) * 1000;
+        if( buffer[ 0 ] == '-' )
+            value *= -1;
+        
+        if( ( value >= 0 ) && ( value <= PMW_MAX ) ){
+            servo_set_pwm_min( value, servo );
+            printf( " DONE " );
+        }
+        else
+            printf( "INVALID RANGE" );
+    }
+    else{
+        printf( "INVALID CALIBRATION" );
+    }
+}
+
+void reading_values(){
+    clear_buffer();
+    printf( "\n READING: " );
+    while( scanf( "%c", buffer ) != 1 )
+        delay_milli( 10 );
+
+    switch( buffer[ 0 ] ){
+    case 'A':
+        printf( " Angle = %d ", servo_return_angle( servo ) );
+        break;
+    case 'X':
+        printf( " Maximum PWM = %d ", servo_return_pwm_max( servo )  );
+        break;
+    case 'N':
+        printf( " Minimum PWM = %d ", servo_return_pwm_min( servo )  );
+        break;
+    default:
+        printf( "INVALID COMMAND" );
+        break;
+    }
+}
+
+void setting_function(){
+    clear_buffer();
+    printf( "\n FUNCTION: " );
+    while( scanf( "%c", buffer ) != 1 )
+        delay_milli( 10 );
+
+    switch( buffer[ 0 ] ){
+    case 'A':
+        printf( " Angle config " );
+        setting_angle();
+        break;
+    case 'X':
+        printf( " Maximum PWM config " );
+        setting_max();
+        break;
+    case 'N':
+        printf( " Minimum PWM config " );
+        setting_min();
+        break;
+    case 'R':
+        printf( " Value reading " );
+        reading_values();
+        break;
+    default:
+        printf( "INVALID COMMAND" );
+        break;
+    }
+}
+
+void setting_servo(){
+    clear_buffer();
+    printf( "\n\n SERVO: " );
+    while( scanf( "%c", buffer ) != 1 )
+        delay_milli( 10 );
+
+    switch( buffer[ 0 ] ){
+        case 'P':
+            servo = SERVO_PITCH;
+            printf( " Pitch Servo selected" );
+            setting_function();
+            break;
+        case 'R':
+            servo = SERVO_ROLL;
+            printf( " Roll Servo selected" );
+            setting_function();
+            break;
+        default:
+            printf( "INVALID SERVO\n" );
+            break;
+    }
+}
 
 void servo_demo(){
-    char buffer[ 7 ] = {0};
-    servo_t servo = SERVO_PITCH;
-    int16_t value = 0;
+    print_help();
 
     while( true ){ // this codes reads serial and controls servos
         // scanf("%s", buffer) is harder to use
         // it continuously reads the buffer, returning -1, only returning 1 when it reads anything
         // if it reads a string smaller than desired size, it still returns 1, letting waste to remain in buffer
-        
-        while( scanf( "%c%c%c%c%c%c%c", &buffer[ 0 ], &buffer[ 1 ], &buffer[ 2 ], &buffer[ 3 ], &buffer[ 4 ], &buffer[ 5 ], &buffer[ 6 ] ) != 7 )
-            delay_milli( 100 );
 
-        printf( "\n COMMAND: " );
-        if( ( buffer[ 1 ] == 'P' ) || ( buffer[ 1 ] == 'R' ) ){
-            if( buffer[ 1 ] == 'P' )
-                servo = SERVO_PITCH;
-            else
-                servo = SERVO_ROLL;
-            switch( buffer[ 0 ] ){
-            case 'S':
-                value = servo_string_to_number( &buffer[ 2 ] );
-                if( value != 0x7FFF ){
-                    printf( "SET %c to %d", buffer[ 1 ], value );
-                    servo_pos( value, servo );
-                }
-                else
-                    printf( "INVALID POSITION" );
-                break;
-            case 'X':
-                value = servo_string_to_number( &buffer[ 2 ] );
-                if( value != 0x7FFF ){
-                    printf( "CALIBRATED MAX of %c to %d", buffer[ 1 ], value );
-                    servo_cal( 0, value, servo );
-                }
-                else
-                    printf( " INVALID CALIBRATION" );                   
-                break;
-            case 'N':
-                value = servo_string_to_number( &buffer[ 2 ] );
-                if( value != 0x7FFF ){
-                    printf( "CALIBRATED MIN of %c to %d", buffer[ 1 ], value );
-                    servo_cal( value, 0, servo );
-                }
-                else
-                    printf( " INVALID CALIBRATION" );
-                break;
-            case 'R':
-                switch( buffer[ 2 ] ){
-                case 'X':
-                    printf( "RANGE MAX of %c of ", buffer[ 1 ] );
-                    if( buffer[ 1 ] == 'P' )
-                        printf( "%d", servo_return_cal( PITCH_MAX ) );
-                    else
-                        printf( "%d", servo_return_cal( ROLL_MAX ) );
-                    break;
-                case 'N':
-                    printf( "RANGE MIN of %c of ", buffer[ 1 ] );
-                    if( buffer[ 1 ] == 'P' )
-                        printf( "%d", servo_return_cal( PITCH_MIN ) );
-                    else
-                        printf( "%d", servo_return_cal( ROLL_MIN ) );
-                    break;
-                case 'A':
-                    printf( "RANGE ANGLE of %c of ", buffer[ 1 ] );
-                    if( buffer[ 1 ] == 'P' )
-                        printf( "%d", servo_return_cal( PITCH_ANG ) );
-                    else
-                        printf( "%d", servo_return_cal( ROLL_ANG ) );
-                    break;
-                default:
-                    printf( "INVALID REGISTER" );
-                    break;
-                }
-                break;
-            default:
-                printf( "INVALID COMMAND" );
-                break;
-            }
-        }
-        else
-            printf( "INVALID SERVO" );
+        setting_servo();
+        delay_tick();
     }
 }
 
-
-// ========== CALIBRATION PROGRAM ==========
-
-void servo_control(char first_char, char second_char, char *buffer){
-    int16_t value = 0;
-    servo_t servo = SERVO_PITCH;
-
-    if( second_char == 'R' )
-        servo = SERVO_ROLL;
-    switch(first_char){
-    case 'S':
-        value = servo_string_to_number( buffer );
-        if( value != 0x7FFF ){
-            printf( "SET %c to %d", second_char, value );
-            servo_pos( value, servo );
-        }
-        else
-            printf( "INVALID POSITION" );
-        break;
-    case 'X':
-        value = servo_string_to_number( buffer );
-        if( value != 0x7FFF ){
-            printf( "CALIBRATED MAX of %c to %d", second_char, value );
-            servo_cal( 0, value, servo );
-        }
-        else
-            printf( " INVALID CALIBRATION" ); 
-        break;
-    case 'N':
-        value = servo_string_to_number( buffer );
-        if( value != 0x7FFF ){
-            printf( "CALIBRATED MIN of %c to %d", second_char, value );
-            servo_cal( value, 0, servo );
-        }
-        else
-            printf( " INVALID CALIBRATION" );
-        break;
-    case 'R':
-        switch( buffer[ 0 ] ){
-        case 'X':
-            printf( "RANGE MAX of %c is ", second_char );
-            if( second_char == 'P' )
-                printf( "%d", servo_return_cal( PITCH_MAX ) );
-            else
-                printf( "%d", servo_return_cal( ROLL_MAX ) );
-            break;
-        case 'N':
-            printf( "RANGE MIN of %c is ", second_char );
-            if( second_char == 'P' )
-                printf( "%d", servo_return_cal( PITCH_MIN ) );
-            else
-                printf( "%d", servo_return_cal( ROLL_MIN ) );
-            break;
-        case 'A':
-            printf( "RANGE ANGLE of %c is ", second_char );
-            if( second_char == 'P' )
-                printf( "%d", servo_return_cal( PITCH_ANG ) );
-            else
-                printf( "%d", servo_return_cal( ROLL_ANG ) );
-            break;
-        default:
-            printf( "INVALID REGISTER" );
-            break;
-        }
-        break;
-    default:
-        break;
-    }
-}
-
-void calibration_process(){
-    // servos variables
-    char char_command, char_servo, buf[ 5 ];
-    int16_t value = 0;
-
-    while( true ){
-        value = 0;
-        char_servo = 0;
-        char_command = 0;
-        printf( "\n COMMAND: " );
-        while( value < 1 ){
-            delay_milli( 100 );
-            value = scanf( "%c", &char_command);
-        }
-
-        if( char_command == 'L' )
-            char_command = 0;//lidar_statistics();
-        else{
-            scanf("%c", &char_servo);
-            if( ( char_servo == 'P' ) || ( char_servo == 'R' ) ){
-                if( char_command == 'R' ){
-                    if( scanf("%c", buf) != -1 )
-                        servo_control(char_command, char_servo, buf);
-                    else
-                        printf( "INVALID COMMAND" );
-                }
-                else{
-                    if( char_command == 'S' ||
-                        char_command == 'X' ||
-                        char_command == 'N'
-                        ){
-                        if( scanf("%c%c%c%c%c", buf, &buf[ 1 ], &buf[ 2 ], &buf[ 3 ], &buf[ 4 ]) != -1 )
-                            servo_control(char_command, char_servo, buf);
-                        else
-                            printf( "INVALID COMMAND" );
-                    }
-                    else
-                        printf( "INVALID COMMAND" );
-                }
-            }
-            else
-                printf( "INVALID SERVO" );
-        }
-        while( scanf("%c", buf) != -1); // fflush doesn't work
-    }
-}
 

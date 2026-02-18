@@ -4,7 +4,10 @@
 
 static const char TAG[] = "UART2";   // esp_err variable
 static uint8_t read_timeout = pdMS_TO_TICKS( READ_TIMEOUT_MS );    // UART reading timeout
-typedef struct {
+
+// ============ GLOBAL TYPES ============
+
+typedef struct _modbus_request_t_{
     uint8_t device_id;  // device ID (1)
     uint8_t function;   // function code (1)
     uint8_t address_hi; // register address (2)
@@ -217,12 +220,34 @@ esp_err_t xts1_sys_error( uint32_t *value ){
     -2: pixel saturation
     -1: SPI communication error
 */
-uint16_t xts1_measure_distance(){
-    uint16_t value = 0;
+measurement_output_t xts1_measure_distance(int16_t *distance){
+    int16_t value = 0;
+    /* measurement_output_t
+        NO_OUTPUT     = 0,
+        OPERATION_OK  = 1,
+        OVEREXPOSURE  = -13,
+        NO_OBJ_DETECT = -12,
+        ABNORMAL_TOF  = -11,
+        ABNORMAL_TEMP = -10,
+        ABNORMAL_GREY = -9,
+        RESERVED_OUT1 = -8,
+        SIGNAL_WEAK   = -7,
+        SIGNAL_STRONG = -6,
+        RESERVED_OUT2 = -5,
+        SAMPLE_BELOW  = -4,
+        SAMPLE_ABOVE  = -3,
+        PIXEL_SATURAT = -2,
+        SPI_COMM_ERR  = -1,
+    */
+    measurement_output_t output = OPERATION_OK;
 
-    ESP_ERROR_CHECK( xts1_read_register( XTS1_RREG_DIST_INF, &value ) );
+    ESP_ERROR_CHECK( xts1_read_register( XTS1_RREG_DIST_INF, (uint16_t *)( &value ) ) );
+    *distance = value;
+    if( value < 1 ){
+        output = value;
+    }
 
-    return value;
+    return output;
 }
 
 void xts1_setup(){

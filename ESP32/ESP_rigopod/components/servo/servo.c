@@ -3,21 +3,26 @@
 // ========== DEFINITIONS ==========
 
 #define PWM_FREQ    250     // period of 4ms
-#define PWM_RES     14      // 14 bits
-#define PWM_MIN     2048    // (0.5ms / 4ms) * 2^14
-//#define PWM_MID     6144    // (1.5ms / 4ms) * 2^14
-#define PMW_MAX     10240   // (2.5ms / 4ms) * 2^14
 
 // ========== GLOBAL VARIABLES ==========
 
 static const char *TAG = "SERVOS";   // esp_err variable
 
-int16_t pitch_angle = 0;
-int16_t roll_angle = 0;
-uint16_t pitch_pwm_min = PWM_MIN;
-uint16_t roll_pwm_min = PWM_MIN;
-uint16_t pitch_pwm_max = PMW_MAX;
-uint16_t roll_pwm_max = PMW_MAX;
+typedef struct _servo_t_{
+    int16_t angle;
+    uint16_t pwm_min;
+    uint16_t pwm_max;  
+} servo_data_t;
+servo_data_t pitch_servo = {
+    .angle = 0,
+    .pwm_min = PWM_MIN,
+    .pwm_max = PMW_MAX,
+};
+servo_data_t roll_servo = {
+    .angle = 0,
+    .pwm_min = PWM_MIN,
+    .pwm_max = PMW_MAX,
+};
 
 // ============ EXTERNAL FUNCTIONS ============
 
@@ -30,7 +35,7 @@ void servo_setup(){
         .clk_cfg          = LEDC_AUTO_CLK
     };
     ledc_channel_config_t ledc_channel_1 = {
-        .gpio_num       = PIN_PITCH,
+        .gpio_num       = SERVO_PITCH,
         .speed_mode     = LEDC_LOW_SPEED_MODE,
         .channel        = LEDC_CHANNEL_0,
         .intr_type      = LEDC_INTR_DISABLE,
@@ -46,7 +51,7 @@ void servo_setup(){
         .clk_cfg          = LEDC_AUTO_CLK
     };
     ledc_channel_config_t ledc_channel_2 = {
-        .gpio_num       = PIN_ROLL,
+        .gpio_num       = SERVO_ROLL,
         .speed_mode     = LEDC_LOW_SPEED_MODE,
         .channel        = LEDC_CHANNEL_1,
         .intr_type      = LEDC_INTR_DISABLE,
@@ -59,8 +64,8 @@ void servo_setup(){
     ESP_ERROR_CHECK( ledc_channel_config( &ledc_channel_1 ) );
     ESP_ERROR_CHECK( ledc_timer_config( &ledc_timer_2 ) );
     ESP_ERROR_CHECK( ledc_channel_config( &ledc_channel_2 ) );
-    servo_pos( 0, SERVO_PITCH );
-    servo_pos( 0, SERVO_ROLL );
+    servo_set_angle( 0, SERVO_PITCH );
+    servo_set_angle( 0, SERVO_ROLL);
     ESP_LOGI( TAG, "Servos Initialized" );
 }
 
@@ -69,100 +74,121 @@ void servo_setup(){
     total input range is -9000 to 9000
     each increment in angle represents a cent of an degree
 */
-void servo_pos( int16_t angle, servo_t servo ){
+void servo_set_angle( int16_t angle, servo_t servo ){
     uint16_t pos = 0;
 
+    if( ( angle >= N_HALF_ANGLE ) && ( angle <= HALF_ANGLE ) ){
+        switch( servo ){
+        case SERVO_PITCH:
+            pitch_servo.angle = angle;
+            pos = ( ( ( pitch_servo.pwm_max - pitch_servo.pwm_min ) * angle ) / FULL_ANGLE ); // angular coefficient
+            pos += ( pitch_servo.pwm_max + pitch_servo.pwm_min ) / 2; // linear coefficient
+
+            ledc_set_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, pos );
+            ledc_update_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0 );
+            break;
+        case SERVO_ROLL:
+            roll_servo.angle = angle;
+            pos = ( ( ( roll_servo.pwm_max - roll_servo.pwm_min ) * angle ) / FULL_ANGLE ); // angular coefficient
+            pos += ( roll_servo.pwm_max + roll_servo.pwm_min ) / 2; // linear coefficient
+
+            ledc_set_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, pos );
+            ledc_update_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1 );
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+// update servo pos calculation after range adjustments
+void update_servos(){
+    servo_set_angle( pitch_servo.angle, SERVO_PITCH );
+    servo_set_angle( roll_servo.angle, SERVO_ROLL );
+}
+
+// adjusts the min value of the PWM range
+void servo_set_pwm_min( int16_t new_pwm_min, servo_t servo ){
+    if( ( new_pwm_min >= N_HALF_ANGLE ) && ( new_pwm_min <= 0 ) ){
+        switch( servo ){
+            case SERVO_PITCH:
+                pitch_servo.pwm_min = new_pwm_min;
+                break;
+            case SERVO_ROLL:
+                roll_servo.pwm_min = new_pwm_min;
+                break;
+            default:
+                break;
+        }
+        update_servos();
+    }
+}
+
+// adjusts the max value of the PWM range
+void servo_set_pwm_max( int16_t new_pwm_max, servo_t servo ){
+    if( ( new_pwm_max <= HALF_ANGLE ) && ( new_pwm_max >= 0 ) ){
+        switch( servo ){
+            case SERVO_PITCH:
+                pitch_servo.pwm_max = new_pwm_max;
+                break;
+            case SERVO_ROLL:
+                roll_servo.pwm_max = new_pwm_max;
+                break;
+            default:
+                break;
+        }
+        update_servos();
+    }
+}
+
+// returns the angle of the servo
+int16_t servo_return_angle( servo_t servo ){
+    int16_t value = 0;
+
     switch( servo ){
     case SERVO_PITCH:
-        pitch_angle = angle;
-        pos = ( ( ( pitch_pwm_max - pitch_pwm_min ) * pitch_angle ) / ( 9000 * 2 ) ) + ( ( pitch_pwm_max + pitch_pwm_min ) / 2 );
-
-        ledc_set_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, pos );
-        ledc_update_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0 );
+        value = pitch_servo.angle;
         break;
     case SERVO_ROLL:
-        roll_angle = angle;
-        pos = ( ( ( roll_pwm_max - roll_pwm_min ) * roll_angle ) / ( 9000 * 2 ) ) + ( ( roll_pwm_max + roll_pwm_min ) / 2 );
-
-        ledc_set_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, pos );
-        ledc_update_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1 );
+        value = roll_servo.angle;
         break;
     default:
         break;
     }
+
+    return value;
 }
 
-// adjusts the min and maximum value of the PWM range function
-void servo_cal( int16_t angle_min, int16_t angle_max, servo_t servo ){
-    switch( servo ){
-    case SERVO_PITCH:
-        pitch_pwm_min += angle_min;
-        pitch_pwm_max += angle_max;
-
-        servo_pos( pitch_angle, servo );
-        break;
-    case SERVO_ROLL:
-        roll_pwm_min += angle_min;
-        roll_pwm_max += angle_max;
-        
-        servo_pos( roll_angle, servo );
-        break;
-    default:
-        break;
-    }
-}
-
-/* Converts serial orders to int16_t position data
-   serial characters are:
-    0 - signal, '+' or '-'
-    1 - number
-    2 - number
-    3 - '.' char to make prompting easier
-    4 - number
-    5 - number
-   returns 0x7FFF at error
-*/
-int16_t servo_string_to_number( char *pointer ){
-    int16_t result = 0x7FFF;
-
-    if( ( ( pointer[0] == '+' ) || ( pointer[0] == '-' ) ) &&
-        ( ( pointer[1] >= '0' ) && ( pointer[1] <= '9' ) ) &&
-        ( ( pointer[2] >= '0' ) && ( pointer[2] <= '9' ) ) &&
-        ( ( pointer[3] >= '0' ) && ( pointer[3] <= '9' ) ) &&
-        ( ( pointer[4] >= '0' ) && ( pointer[4] <= '9' ) )
-        ){
-        result = pointer[ 4 ] - 48;
-        result += ( pointer[ 3 ] - 48 ) * 10;
-        result += ( pointer[ 2 ] - 48 ) * 100;
-        result += ( pointer[ 1 ] - 48 ) * 1000;
-        if( pointer[ 0 ] == '-' )
-            result *= -1;
-    }
-
-    return result;
-}
-
-uint16_t servo_return_cal( calib_t parameter ){
+// returns the max pwm of the servo
+uint16_t servo_return_pwm_max( servo_t servo ){
     uint16_t value = 0;
 
-    switch( parameter ){
-    case PITCH_MAX:
-        value = pitch_pwm_max;
+    switch( servo ){
+    case SERVO_PITCH:
+        value = pitch_servo.pwm_max;
         break;
-    case PITCH_MIN:
-        value = pitch_pwm_min;
+    case SERVO_ROLL:
+        value = roll_servo.pwm_max;
         break;
-    case PITCH_ANG:
-        value = pitch_angle;
+    default:
         break;
-    case ROLL_MAX:
-        value = roll_pwm_max;
+    }
+
+    return value;
+}
+
+// returns the min pwm of the servo
+uint16_t servo_return_pwm_min( servo_t servo ){
+    uint16_t value = 0;
+
+    switch( servo ){
+    case SERVO_PITCH:
+        value = pitch_servo.pwm_min;
         break;
-    case ROLL_MIN:
-        value = roll_pwm_min;
+    case SERVO_ROLL:
+        value = roll_servo.pwm_min;
         break;
-    case ROLL_ANG:
-        value = roll_angle;
+    default:
         break;
     }
 

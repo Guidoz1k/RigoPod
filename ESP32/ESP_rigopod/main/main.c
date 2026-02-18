@@ -9,13 +9,29 @@
 // ========== GLOBAL VARIABLES ==========
 
 uint32_t time_counter = 0;  // global timer
+enum _program_{
+    NO_DEMO = 0,
+    DEMO_LED = 1,
+    DEMO_LIDAR = 2,
+    DEMO_SERVO = 3,
+} program = DEMO_SERVO;
 
 // ========== MAIN PROGRAM ==========
 
 void task_core0(){
-    //led_demo();
-    //lidar_demo();
-    servo_demo();
+    switch(program){
+        case DEMO_LED:
+            led_demo();
+            break;
+        case DEMO_LIDAR:
+            lidar_demo();
+            break;
+        case DEMO_SERVO:
+            servo_demo();
+            break;
+        default: // NO_DEMO
+            break;
+    }
     while( 1 ){
         delay_milli(1000);
     }
@@ -149,13 +165,16 @@ void core1Task( void* parameter ){
  // RUNS ON CORE 0
 void app_main(){
     delay_milli( 1000 );
-    //serial_setup();
+    //serial_setup(); DEPRECATED
     led_setup();
-    //xts1_setup();
+    if( ( program == NO_DEMO ) || ( program == DEMO_LIDAR ) ){
+        xts1_setup();
+    }
     servo_setup();
+ 
     //timer_core0_setup(); CORE 0 TIMER INTERRUPT DISABLED
 
-    printf("\n\nInitialization complete!\n");
+    printf("\nInitialization complete!\n\n");
     //fflush(stdout);
 
     // core 1 task creation

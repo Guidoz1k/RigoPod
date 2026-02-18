@@ -1,4 +1,4 @@
-#include "main.h"
+#include "demos.h"
 
 /* MODULE PINOUT
 
@@ -30,7 +30,7 @@ void lidar_demo(){
         "ERROR -1: SPI communication error",
     };
     uint8_t i;
-    int16_t measurements[ DATASET ] = {0}, minimum, maximum;
+    int16_t measurements[ DATASET ] = {0}, minimum, maximum, current, sensor;
     float variance, standard_deviation, mean;
 
     printf( "\n" );
@@ -45,9 +45,11 @@ void lidar_demo(){
             // acquire data and check for error messages
             measurements[ i ] = 0;
             while( measurements[ i ] < 1 ){
-                measurements[ i ] = xts1_measure_distance();
-                if( measurements[ i ] < 0 )
-                    printf( "  --> %s\n", distance_diag[ measurements[ i ] + 13 ] );
+                sensor = xts1_measure_distance( &current );
+                if( sensor < 0 )
+                    printf( "  --> %s\n", distance_diag[ sensor + 13 ] );
+                else
+                    measurements[ i ] = current;
             }
             // check for minimum
             if( measurements[ i ] < minimum )

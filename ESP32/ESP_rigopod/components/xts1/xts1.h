@@ -97,6 +97,40 @@
         ( idx == XTS1_RREG_CHIP__ID ) || \
         ( idx == XTS1_RREG_SERIAL_O ) )
 
+// ============ EXTERNAL TYPES ============
+
+/* based on XT-S1 error codes
+    -13: overexposure
+    -12: no object detected
+    -11: abnormal TOF image
+    -10: abnormal temperature image
+    -9: abnormal grey scale image
+    -8: reserve
+    -7: signal too weak
+    -6: signal too strong
+    -5: reserve
+    -4: sample data below min value
+    -3: sample data beyond max value
+    -2: pixel saturation
+    -1: SPI communication error
+*/
+typedef enum{
+    OPERATION_OK  = 1,
+    OVEREXPOSURE  = -13,
+    NO_OBJ_DETECT = -12,
+    ABNORMAL_TOF  = -11,
+    ABNORMAL_TEMP = -10,
+    ABNORMAL_GREY = -9,
+    RESERVED_OUT1 = -8,
+    SIGNAL_WEAK   = -7,
+    SIGNAL_STRONG = -6,
+    RESERVED_OUT2 = -5,
+    SAMPLE_BELOW  = -4,
+    SAMPLE_ABOVE  = -3,
+    PIXEL_SATURAT = -2,
+    SPI_COMM_ERR  = -1,
+} measurement_output_t;
+
 // ============ EXTERNAL FUNCTIONS ============
 
 void xts1_setup();
@@ -107,6 +141,6 @@ void xts1_setup();
 
 //esp_err_t xts1_sys_error( uint32_t *value );
 
-uint16_t xts1_measure_distance();
+measurement_output_t xts1_measure_distance(int16_t *distance);
 
 #endif /* __XTS1_H */

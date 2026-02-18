@@ -42,13 +42,16 @@ void delay_tick(){
     vTaskDelay( 1 );
 }
 
-// masking of FreeRTOS delay function
+// masking of FreeRTOS delay function (60s MAX)
 void delay_milli( uint16_t period ){
-    vTaskDelay( pdMS_TO_TICKS( period ) );
+    if( period <= MILLI_MAX )
+        vTaskDelay( pdMS_TO_TICKS( period ) );
 }
 
-// pooling delay using esp timer count
+// pooling delay using esp timer count (60s MAX)
 void delay_micro( uint32_t microseconds ){
     uint64_t start_time = esp_timer_get_time();
-    while( esp_timer_get_time() < ( start_time + microseconds - 1 ) );
+
+    if( microseconds <= MICRO_MAX )
+        while( esp_timer_get_time() < ( start_time + microseconds - 1 ) );
 }

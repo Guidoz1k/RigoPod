@@ -9,6 +9,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+// ============ DEFINITIONS ============
+
+#define MILLI_MAX   60000
+#define MICRO_MAX   60000000
+
 // ============ EXTERNAL FUNCTIONS ============
 
 void delay_tick();
