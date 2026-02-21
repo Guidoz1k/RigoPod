@@ -1,4 +1,4 @@
-#include "demos.h"
+#include "demo_lidar.h"
 
 /* MODULE PINOUT
 

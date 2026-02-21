@@ -15,13 +15,13 @@ typedef struct _servo_t_{
 } servo_data_t;
 servo_data_t pitch_servo = {
     .angle = 0,
-    .pwm_min = PWM_MIN,
-    .pwm_max = PMW_MAX,
+    .pwm_min = PWM_MIN_STD,
+    .pwm_max = PMW_MAX_STD,
 };
 servo_data_t roll_servo = {
     .angle = 0,
-    .pwm_min = PWM_MIN,
-    .pwm_max = PMW_MAX,
+    .pwm_min = PWM_MIN_STD,
+    .pwm_max = PMW_MAX_STD,
 };
 
 // ============ EXTERNAL FUNCTIONS ============
@@ -133,6 +133,25 @@ void servo_set_pwm_max( int16_t new_pwm_max, servo_t servo ){
                 break;
             case SERVO_ROLL:
                 roll_servo.pwm_max = new_pwm_max;
+                break;
+            default:
+                break;
+        }
+        update_servos();
+    }
+}
+
+// adds or subtracts number from both PWM max and min
+void servo_move_pwm( int16_t pwm_bias, servo_t servo ){
+    if( ( pwm_bias <= PWM_INC_MAX ) && ( pwm_bias >= PWM_DEC_MAX ) ){
+        switch( servo ){
+            case SERVO_PITCH:
+                pitch_servo.pwm_max += pwm_bias;
+                pitch_servo.pwm_min += pwm_bias;
+                break;
+            case SERVO_ROLL:
+                roll_servo.pwm_max += pwm_bias;
+                roll_servo.pwm_min += pwm_bias;
                 break;
             default:
                 break;

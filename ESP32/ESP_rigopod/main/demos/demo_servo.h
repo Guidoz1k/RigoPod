@@ -1,5 +1,7 @@
-#ifndef __DEMOS_H
-#define __DEMOS_H
+#ifndef __DEMO_SERVO_H
+#define __DEMO_SERVO_H
+
+// ========== IDF LIBRARIES ==========
 
 #include <stdio.h>
 #include <inttypes.h>
@@ -13,4 +15,9 @@
 #include <driver/gptimer.h>
 #include <math.h>
 
-#endif /* __DEMOS_H */
+// ========== INTERNAL LIBRARIES ==========
+
+#include "servo.h"
+#include "delay.h"
+
+#endif /* __DEMO_SERVO_H */

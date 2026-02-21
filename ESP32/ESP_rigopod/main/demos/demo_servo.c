@@ -1,15 +1,44 @@
-#include "demos.h"
+#include "demo_servo.h"
 
-char buffer[ 8 ] = {0};
+#define INT_ERROR   -0x8000
+#define ABS(x)  (((x)<0)?(-(x)):(x))
+
 servo_t servo = SERVO_PITCH;
 
-void clear_buffer(){
+// converts series of chars to int16_t, including signal as first char
+int16_t buffer_to_int( char *buffer, bool is_signed, uint8_t size){
+    int16_t value = 0;
+    int16_t decimal = 1;
+    int16_t signal = 1;
     uint8_t i = 0;
 
-    for(i = 0; i < 8; i++){
-        buffer[ i ] = 0;
+    if( ( is_signed == true ) && ( buffer[ 0 ] != '+' ) && ( buffer[ 0 ] != '-' ) )
+        value = INT_ERROR;
+    else{
+        if( is_signed == true ){
+            if( buffer[ 0 ] == '-' )
+                signal = -1;
+            buffer++;
+        }
+        while( ( i < size ) && ( buffer[ size - 1 - i ] >= '0' ) && ( buffer[ size - 1 - i ] <= '9' ) ){
+            value += ( buffer[ size - 1 - i ] - 48 ) * decimal;
+            decimal *= 10;
+            i++;
+        }
+        value *= signal;
     }
-    
+
+    return value;
+}
+
+char* print_ang(int16_t angle){
+    static char buffer[ 8 ] = { '+', '0', '0', '.', '0', '0', '\0', '\0' };
+
+    if( angle < 0 )
+        buffer[ 0 ] = '-';
+    sprintf( (char *)&buffer[ 1 ], "%02d.%02d", ABS(angle) / 100, (uint8_t)( ABS(angle) % 100 ) );
+
+    return buffer;
 }
 
 void print_help(){
@@ -21,6 +50,9 @@ void print_help(){
     printf( " Setting angle [A]: [signal][4 chars number]\n" );
     printf( "     signal = + or - depending of direction\n" );
     printf( "     number = from +9000 to -9000, representing 90 degrees\n\n" );
+    printf( " Adjusting PWM zero [Z]: [signal][3 chars number]\n" );
+    printf( "     signal = + or - depending of direction\n" );
+    printf( "     number = from +256 to -256 by each adjustment\n\n" );
     printf( " Calibrating maximum PWM [X]: [5 chars number]\n" );
     printf( "     number = 5 characters for PWM\n\n" );
     printf( " Calibrating minimum PWM [N]: [5 chars number]\n" );
@@ -33,28 +65,41 @@ void print_help(){
 
 void setting_angle(){
     int16_t value = 0;
+    char buffer[ 5 ] = {0};
 
-    clear_buffer();
+    fflush(stdin);
     printf( "\n ANGLE: " );
     while( scanf( "%c%c%c%c%c", &buffer[ 0 ], &buffer[ 1 ], &buffer[ 2 ], &buffer[ 3 ], &buffer[ 4 ] ) != 5 )
         delay_milli( 10 );
 
-    if( ( ( buffer[0] == '+' ) || ( buffer[0] == '-' ) ) &&
-        ( ( buffer[1] >= '0' ) && ( buffer[1] <= '9' ) ) &&
-        ( ( buffer[2] >= '0' ) && ( buffer[2] <= '9' ) ) &&
-        ( ( buffer[3] >= '0' ) && ( buffer[3] <= '9' ) ) &&
-        ( ( buffer[4] >= '0' ) && ( buffer[4] <= '9' ) )
-        ){
-        value = buffer[ 4 ] - 48;
-        value += ( buffer[ 3 ] - 48 ) * 10;
-        value += ( buffer[ 2 ] - 48 ) * 100;
-        value += ( buffer[ 1 ] - 48 ) * 1000;
-        if( buffer[ 0 ] == '-' )
-            value *= -1;
-        
-        if( ( value >= -9000 ) && ( value <= 9000 ) ){
+    value = buffer_to_int( buffer, true, 4 );
+    if( value != INT_ERROR ){
+        if( ( value >= N_HALF_ANGLE ) && ( value <= HALF_ANGLE ) ){
             servo_set_angle( value, servo );
-            printf( " DONE " );
+            printf( " %s angle DONE ", print_ang( value ) );
+        }
+        else
+            printf( "INVALID RANGE" );
+    }
+    else{
+        printf( "INVALID POSITION" );
+    }
+}
+
+void setting_bias(){
+    int16_t value = 0;
+    char buffer[ 4 ] = {0};
+
+    fflush(stdin);
+    printf( "\n ZERO BIAS: " );
+    while( scanf( "%c%c%c%c", &buffer[ 0 ], &buffer[ 1 ], &buffer[ 2 ], &buffer[ 3 ] ) != 4 )
+        delay_milli( 10 );
+
+    value = buffer_to_int( buffer, true, 3 );
+    if( value != INT_ERROR ){
+        if( ( value >= PWM_DEC_MAX ) && ( value <= PWM_INC_MAX ) ){
+            servo_move_pwm( value, servo );
+            printf( " %+04d PWM BIAS DONE ", value );
         }
         else
             printf( "INVALID RANGE" );
@@ -66,28 +111,18 @@ void setting_angle(){
 
 void setting_max(){
     int16_t value = 0;
+    char buffer[ 5 ] = {0};
 
-    clear_buffer();
+    fflush(stdin);
     printf( "\n PWM MAX: " );
     while( scanf( "%c%c%c%c%c", &buffer[ 0 ], &buffer[ 1 ], &buffer[ 2 ], &buffer[ 3 ], &buffer[ 4 ] ) != 5 )
         delay_milli( 10 );
 
-    if( ( ( buffer[0] >= '0' ) && ( buffer[0] <= '9' ) ) &&
-        ( ( buffer[1] >= '0' ) && ( buffer[1] <= '9' ) ) &&
-        ( ( buffer[2] >= '0' ) && ( buffer[2] <= '9' ) ) &&
-        ( ( buffer[3] >= '0' ) && ( buffer[3] <= '9' ) ) &&
-        ( ( buffer[4] >= '0' ) && ( buffer[4] <= '9' ) )
-        ){
-        value = buffer[ 4 ] - 48;
-        value += ( buffer[ 3 ] - 48 ) * 10;
-        value += ( buffer[ 2 ] - 48 ) * 100;
-        value += ( buffer[ 1 ] - 48 ) * 1000;
-        if( buffer[ 0 ] == '-' )
-            value *= -1;
-        
-        if( ( value >= 0 ) && ( value <= PMW_MAX ) ){
+    value = buffer_to_int( buffer, false, 5 );
+    if( value != INT_ERROR ){
+        if( ( value > servo_return_pwm_min( servo ) ) && ( value <= PWM_MAX ) ){
             servo_set_pwm_max( value, servo );
-            printf( " DONE " );
+            printf( " %04d PWM MAX DONE ", value );
         }
         else
             printf( "INVALID RANGE" );
@@ -99,28 +134,18 @@ void setting_max(){
 
 void setting_min(){
     int16_t value = 0;
+    char buffer[ 5 ] = {0};
 
-    clear_buffer();
+    fflush(stdin);
     printf( "\n PWM MIN: " );
     while( scanf( "%c%c%c%c%c", &buffer[ 0 ], &buffer[ 1 ], &buffer[ 2 ], &buffer[ 3 ], &buffer[ 4 ] ) != 5 )
         delay_milli( 10 );
 
-    if( ( ( buffer[0] >= '0' ) && ( buffer[0] <= '9' ) ) &&
-        ( ( buffer[1] >= '0' ) && ( buffer[1] <= '9' ) ) &&
-        ( ( buffer[2] >= '0' ) && ( buffer[2] <= '9' ) ) &&
-        ( ( buffer[3] >= '0' ) && ( buffer[3] <= '9' ) ) &&
-        ( ( buffer[4] >= '0' ) && ( buffer[4] <= '9' ) )
-        ){
-        value = buffer[ 4 ] - 48;
-        value += ( buffer[ 3 ] - 48 ) * 10;
-        value += ( buffer[ 2 ] - 48 ) * 100;
-        value += ( buffer[ 1 ] - 48 ) * 1000;
-        if( buffer[ 0 ] == '-' )
-            value *= -1;
-        
-        if( ( value >= 0 ) && ( value <= PMW_MAX ) ){
+    value = buffer_to_int( buffer, false, 5 );
+    if( value != INT_ERROR ){
+        if( ( value >= PWM_MIN ) && ( value < servo_return_pwm_max( servo ) ) ){
             servo_set_pwm_min( value, servo );
-            printf( " DONE " );
+            printf( " %04d PWM MIN DONE ", value );
         }
         else
             printf( "INVALID RANGE" );
@@ -131,20 +156,22 @@ void setting_min(){
 }
 
 void reading_values(){
-    clear_buffer();
+    char buffer = 0;
+
+    fflush(stdin);
     printf( "\n READING: " );
-    while( scanf( "%c", buffer ) != 1 )
+    while( scanf( "%c", (char *)&buffer ) != 1 )
         delay_milli( 10 );
 
-    switch( buffer[ 0 ] ){
+    switch( buffer ){
     case 'A':
-        printf( " Angle = %d ", servo_return_angle( servo ) );
+        printf( " Angle = %s ", print_ang( servo_return_angle( servo ) ) );
         break;
     case 'X':
-        printf( " Maximum PWM = %d ", servo_return_pwm_max( servo )  );
+        printf( " Maximum PWM = %05d ", servo_return_pwm_max( servo )  );
         break;
     case 'N':
-        printf( " Minimum PWM = %d ", servo_return_pwm_min( servo )  );
+        printf( " Minimum PWM = %05d ", servo_return_pwm_min( servo )  );
         break;
     default:
         printf( "INVALID COMMAND" );
@@ -153,15 +180,21 @@ void reading_values(){
 }
 
 void setting_function(){
-    clear_buffer();
+    char buffer = 0;
+
+    fflush(stdin);
     printf( "\n FUNCTION: " );
-    while( scanf( "%c", buffer ) != 1 )
+    while( scanf( "%c", (char *)&buffer ) != 1 )
         delay_milli( 10 );
 
-    switch( buffer[ 0 ] ){
+    switch( buffer ){
     case 'A':
         printf( " Angle config " );
         setting_angle();
+        break;
+    case 'Z':
+        printf( " Zero config " );
+        setting_bias();
         break;
     case 'X':
         printf( " Maximum PWM config " );
@@ -182,12 +215,14 @@ void setting_function(){
 }
 
 void setting_servo(){
-    clear_buffer();
+    char buffer = 0;
+
+    fflush(stdin);
     printf( "\n\n SERVO: " );
-    while( scanf( "%c", buffer ) != 1 )
+    while( scanf( "%c", (char *)&buffer ) != 1 )
         delay_milli( 10 );
 
-    switch( buffer[ 0 ] ){
+    switch( buffer ){
         case 'P':
             servo = SERVO_PITCH;
             printf( " Pitch Servo selected" );

@@ -14,9 +14,13 @@ enum _program_{
     DEMO_LED = 1,
     DEMO_LIDAR = 2,
     DEMO_SERVO = 3,
-} program = DEMO_SERVO;
+} program = DEMO_LED;
 
 // ========== MAIN PROGRAM ==========
+
+void main_task(){
+
+}
 
 void task_core0(){
     switch(program){
@@ -33,7 +37,8 @@ void task_core0(){
             break;
     }
     while( 1 ){
-        delay_milli(1000);
+        main_task();
+        delay_tick();
     }
 }
 
