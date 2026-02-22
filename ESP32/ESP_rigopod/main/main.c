@@ -14,7 +14,7 @@ enum _program_{
     DEMO_LED = 1,
     DEMO_LIDAR = 2,
     DEMO_SERVO = 3,
-} program = DEMO_LED;
+} program = DEMO_SERVO;
 
 // ========== MAIN PROGRAM ==========
 

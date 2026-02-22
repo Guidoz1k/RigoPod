@@ -44,6 +44,8 @@ void servo_set_pwm_max( int16_t new_pwm_max, servo_t servo );
 
 void servo_move_pwm( int16_t pwm_bias, servo_t servo );
 
+void servo_wide_pwm( int16_t pwm_bias, servo_t servo );
+
 int16_t servo_return_angle( servo_t servo );
 
 uint16_t servo_return_pwm_max( servo_t servo );

@@ -109,7 +109,7 @@ void update_servos(){
 
 // adjusts the min value of the PWM range
 void servo_set_pwm_min( int16_t new_pwm_min, servo_t servo ){
-    if( ( new_pwm_min >= N_HALF_ANGLE ) && ( new_pwm_min <= 0 ) ){
+    if( ( new_pwm_min >= PWM_MIN ) && ( new_pwm_min <= 0 ) ){
         switch( servo ){
             case SERVO_PITCH:
                 pitch_servo.pwm_min = new_pwm_min;
@@ -126,7 +126,7 @@ void servo_set_pwm_min( int16_t new_pwm_min, servo_t servo ){
 
 // adjusts the max value of the PWM range
 void servo_set_pwm_max( int16_t new_pwm_max, servo_t servo ){
-    if( ( new_pwm_max <= HALF_ANGLE ) && ( new_pwm_max >= 0 ) ){
+    if( ( new_pwm_max <= PWM_MAX ) && ( new_pwm_max >= 0 ) ){
         switch( servo ){
             case SERVO_PITCH:
                 pitch_servo.pwm_max = new_pwm_max;
@@ -152,6 +152,25 @@ void servo_move_pwm( int16_t pwm_bias, servo_t servo ){
             case SERVO_ROLL:
                 roll_servo.pwm_max += pwm_bias;
                 roll_servo.pwm_min += pwm_bias;
+                break;
+            default:
+                break;
+        }
+        update_servos();
+    }
+}
+
+// adds or subtracts number from PWM max and min, inverting one, to amplify pwm curve
+void servo_wide_pwm( int16_t pwm_bias, servo_t servo ){
+    if( ( pwm_bias <= PWM_INC_MAX ) && ( pwm_bias >= PWM_DEC_MAX ) ){
+        switch( servo ){
+            case SERVO_PITCH:
+                pitch_servo.pwm_max += pwm_bias;
+                pitch_servo.pwm_min -= pwm_bias;
+                break;
+            case SERVO_ROLL:
+                roll_servo.pwm_max += pwm_bias;
+                roll_servo.pwm_min -= pwm_bias;
                 break;
             default:
                 break;

@@ -51,14 +51,16 @@ void print_help(){
     printf( "     signal = + or - depending of direction\n" );
     printf( "     number = from +9000 to -9000, representing 90 degrees\n\n" );
     printf( " Adjusting PWM zero [Z]: [signal][3 chars number]\n" );
-    printf( "     signal = + or - depending of direction\n" );
+    printf( "     signal = + to increase or - to decrease\n" );
+    printf( "     number = from +256 to -256 by each adjustment\n\n" );
+    printf( " Adjusting PWM range [R]: [signal][3 chars number]\n" );
+    printf( "     signal = + to widen or - to narrow\n" );
     printf( "     number = from +256 to -256 by each adjustment\n\n" );
     printf( " Calibrating maximum PWM [X]: [5 chars number]\n" );
     printf( "     number = 5 characters for PWM\n\n" );
     printf( " Calibrating minimum PWM [N]: [5 chars number]\n" );
     printf( "     number = 5 characters for PWM\n\n" );
-    printf( " Reading values [R]: [values]\n" );
-    printf( "     values = A for angle, X for max PWM, N for minimum PWM\n\n" );
+    printf( " Reading values [D]: Displays all servo data\n\n" );
     printf( " You can also send the entire command like \"RA+9000\" for setting Roll Angle as 90deg\n" );
     printf( " \n" );
 }
@@ -99,7 +101,32 @@ void setting_bias(){
     if( value != INT_ERROR ){
         if( ( value >= PWM_DEC_MAX ) && ( value <= PWM_INC_MAX ) ){
             servo_move_pwm( value, servo );
-            printf( " %+04d PWM BIAS DONE ", value );
+            printf( " %+04d PWM BIAS DONE \n", value );
+            printf( " MIN PWM: %05d MAX PWM: %05d ", servo_return_pwm_min( servo ), servo_return_pwm_max( servo ) );
+        }
+        else
+            printf( "INVALID RANGE" );
+    }
+    else{
+        printf( "INVALID POSITION" );
+    }
+}
+
+void setting_range(){
+    int16_t value = 0;
+    char buffer[ 4 ] = {0};
+
+    fflush(stdin);
+    printf( "\n PWM RANGE: " );
+    while( scanf( "%c%c%c%c", &buffer[ 0 ], &buffer[ 1 ], &buffer[ 2 ], &buffer[ 3 ] ) != 4 )
+        delay_milli( 10 );
+
+    value = buffer_to_int( buffer, true, 3 );
+    if( value != INT_ERROR ){
+        if( ( value >= PWM_DEC_MAX ) && ( value <= PWM_INC_MAX ) ){
+            servo_wide_pwm( value, servo );
+            printf( " %+04d PWM RANGE DONE \n", value );
+            printf( " MIN PWM: %05d MAX PWM: %05d ", servo_return_pwm_min( servo ), servo_return_pwm_max( servo ) );
         }
         else
             printf( "INVALID RANGE" );
@@ -156,27 +183,9 @@ void setting_min(){
 }
 
 void reading_values(){
-    char buffer = 0;
-
-    fflush(stdin);
-    printf( "\n READING: " );
-    while( scanf( "%c", (char *)&buffer ) != 1 )
-        delay_milli( 10 );
-
-    switch( buffer ){
-    case 'A':
-        printf( " Angle = %s ", print_ang( servo_return_angle( servo ) ) );
-        break;
-    case 'X':
-        printf( " Maximum PWM = %05d ", servo_return_pwm_max( servo )  );
-        break;
-    case 'N':
-        printf( " Minimum PWM = %05d ", servo_return_pwm_min( servo )  );
-        break;
-    default:
-        printf( "INVALID COMMAND" );
-        break;
-    }
+    printf( "\n    Angle = %s ", print_ang( servo_return_angle( servo ) ) );
+    printf( "\n    Maximum PWM = %05d ", servo_return_pwm_max( servo ) );
+    printf( "\n    Minimum PWM = %05d ", servo_return_pwm_min( servo ) );
 }
 
 void setting_function(){
@@ -196,6 +205,10 @@ void setting_function(){
         printf( " Zero config " );
         setting_bias();
         break;
+    case 'R':
+        printf( " Range config " );
+        setting_range();
+        break;
     case 'X':
         printf( " Maximum PWM config " );
         setting_max();
@@ -204,8 +217,8 @@ void setting_function(){
         printf( " Minimum PWM config " );
         setting_min();
         break;
-    case 'R':
-        printf( " Value reading " );
+    case 'D':
+        printf( " Servo Data " );
         reading_values();
         break;
     default:
