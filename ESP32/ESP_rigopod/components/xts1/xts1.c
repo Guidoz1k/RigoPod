@@ -137,7 +137,7 @@ esp_err_t xts1_write_register( uint16_t address_index, uint16_t value ){
     esp_err_t operation = ESP_OK;
     uint8_t wait = 0;
 
-    if( XTS1_IS_REG_HOLDING(address_index) ){
+    if( XTS1_IS_REG_HOLDING( address_index ) ){
         modbus_write_register_command( address_index, value );
         while( ( wait < TIMEOUT ) && ( modbus_check_buffer() != MODBUS_FRAME_SIZE_WRITE ) ){
             wait++;
@@ -158,15 +158,13 @@ esp_err_t xts1_read_register( uint16_t address_index, uint16_t *value ){
     uint8_t wait = 0;
     uint8_t buffer[ MODBUS_FRAME_SIZE_READ ] = {0};
 
-    if( XTS1_IS_REG_HOLDING(address_index) )
+    if( XTS1_IS_REG_HOLDING( address_index ) )
         modbus_read_register_command( address_index, 1, MODBUS_FC_READ_HOLDING );
     else{
-        if( XTS1_IS_REG_INPUT(address_index) ){
+        if( XTS1_IS_REG_INPUT(address_index) )
             modbus_read_register_command( address_index, 1, MODBUS_FC_READ_INPUT );
-        }
-        else{
+        else
             operation = ESP_ERR_INVALID_ARG;
-        }
     }
 
     if( operation != ESP_ERR_INVALID_ARG ){
