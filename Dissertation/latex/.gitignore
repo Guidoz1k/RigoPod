@@ -1,8 +1,10 @@
+
 *.pdf
 *.lof
 *.log
 *.lot
 *.out
+*.pdf
 *.toc
 *.texe
 *.aux
