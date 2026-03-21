@@ -1214,8 +1214,8 @@
   \end{flushright}%
 }
 
-\newenvironment{agradecimentos}{%
-  \chapter*{Agradecimentos}%
+\newenvironment{acknowledgements}{%
+  \chapter*{Acknowledgements}%
 }{}
 
 %==============================================================================

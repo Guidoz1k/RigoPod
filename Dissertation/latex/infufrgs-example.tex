@@ -1,74 +1,24 @@
-\documentclass[ppgc,diss,english]{infufrgs}
+\documentclass[ppgc, diss, english]{infufrgs}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{amsmath}
 
-%------------------------------------------------------------------------------
-% Document metadata
-%------------------------------------------------------------------------------
-\title{Um Exemplo de Monografia do Instituto de Informática da UFRGS}
-\translatedtitle{Using \LaTeX\ to Prepare Documents at INF/UFRGS}
+\title{RIGOpod: Range inference for ground objects }
+\translatedtitle{lambendo maçaneta até justificar as medidas do covid}
 
-% Author: \author{Surname}{First Name(s)}
-\author{Madruga}{Rodrigo Dalto\'e}
-
-% Advisor (title is optional): \advisor[Title]{Surname}{First Name(s)}
+\author{Madruga}{Rodrigo Daltoé}
 \advisor[Prof.~Dr.]{Pereira}{Carlos Eduardo}
-
-% Date of the defence.  Defaults to the current month and year if omitted.
 \date{2026}
 
-% Location of the defence.  Defaults to Porto Alegre, RS.
-%\location{Itaquaquecetuba}{SP}
-
-%------------------------------------------------------------------------------
-% Keywords — use Title Case; up to 10 keywords per language
-%------------------------------------------------------------------------------
 \keyword{Sensor fusion, Time-of-Flight, Computer Vision, UAV's, Gimbal, Drone Pod}
+\translatedkeyword{xuplitz, pimbolitz}
 
-\translatedkeyword{Computer Science}
-\translatedkeyword{Document formatting}
-\translatedkeyword{LaTeX}
-
-%==============================================================================
 \begin{document}
-%==============================================================================
 
-% Title page + CIP (or nominata page)
 \maketitle
 
-%------------------------------------------------------------------------------
-% Optional front matter
-%------------------------------------------------------------------------------
-\begin{dedicatoria}
-  À minha família.
-\end{dedicatoria}
-
-\begin{agradecimentos}
-  Agradeço a todos que contribuíram para a realização deste trabalho.
-\end{agradecimentos}
-
-%------------------------------------------------------------------------------
-% Abstract in the primary language
-%------------------------------------------------------------------------------
-\begin{abstract}
-  Este documento demonstra o uso da classe \textit{infufrgs} para a preparação
-  de monografias, dissertações e teses no Instituto de Informática da UFRGS.
-  A classe fornece formatação automática da folha de rosto, sumário, listas de
-  figuras e tabelas, referências no padrão ABNT e outros elementos
-  pré-textuais e pós-textuais.
-\end{abstract}
-
-%------------------------------------------------------------------------------
-% Abstract in the second language (translatedabstract)
-%------------------------------------------------------------------------------
-\begin{translatedabstract}
-  This document demonstrates the use of the \textit{infufrgs} class for
-  preparing monographs, dissertations and theses at the Institute of
-  Informatics of UFRGS.  The class provides automatic formatting of the
-  title page, table of contents, lists of figures and tables, ABNT-style
-  references, and other front- and back-matter elements.
-\end{translatedabstract}
+\input{xtras/front.tex}
+\input{xtras/abstract.tex}
 
 %------------------------------------------------------------------------------
 % Lists
