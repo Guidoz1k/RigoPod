@@ -1,5 +1,7 @@
 latex on vscode via https://mathjiajia.github.io/vscode-and-latex/
 
+important: in mathjiajia's text you find instructions for path defining in windows 10 (https://www.computerhope.com/issues/ch000549.htm)
+
 Bibliography not being recognized nor rendered:
 
 In the Tex section of the Latex-Workshop extension (in the most left vertical panel) it should appear the 'commands' section. Inside that section, it should appear de option 'Build Latex Projects' -> 'Recipe: pdflatex-bibtex-pdflatex x2'.
