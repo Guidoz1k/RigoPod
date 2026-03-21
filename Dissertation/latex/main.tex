@@ -1,0 +1,46 @@
+\documentclass[tex/ppgc,tex/diss,english]{tex/iiufrgs}
+
+\usepackage[brazilian,english]{babel}
+\usepackage[T1]{fontenc}        % pacote para conj. de caracteres correto
+\usepackage[utf8]{inputenc}   % pacote para acentuação
+\usepackage[alf,abnt-emphasize=bf]{abntex2cite}	% pacote para usar citações abnt
+\usepackage{graphicx}           % pacote para importar figuras
+\usepackage{times}              % pacote para usar fonte Adobe Times
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{expex}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{minted}
+
+\title{The art of fucking raw and looking good doing it}
+
+\author{Daltoé Madruga}{Rodrigo}
+\advisor[Prof.~Dr.]{Pereira}{Carlos Eduardo}
+
+\keyword{Sensor fusion, Time-of-Flight, Computer Vision, UAV's, Gimbal, GNSS}
+\date{}{2025}
+
+\begin{document}
+
+\maketitle
+
+\input{extras/index}
+\tableofcontents
+
+\input{chapters/introduction}
+\input{chapters/background}
+\input{chapters/relatedworks}
+\input{chapters/proposal}
+\input{chapters/methodology}
+\input{chapters/results}
+\input{chapters/conclusion}
+
+\bibliographystyle{abntex2-alf}
+\bibliography{biblio}
+
+\end{document}
