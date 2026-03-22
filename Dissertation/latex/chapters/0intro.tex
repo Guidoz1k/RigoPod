@@ -1,19 +1,143 @@
-\chapter{Introdução}
+\chapter{Introduction}
+\label{cap:intro}
 
-Este capítulo introduz o tema do trabalho.  Citações bibliográficas seguem a
-norma ABNT; por exemplo, a linguagem \LaTeX\ foi descrita por \cite{jorge}.
+\section{The initial problem}
 
-%Figuras devem ser referenciadas pelo número (Figura~\ref{fig:exemplo}).
+In order to navigate the real word, autonomous drones need to estimate their position
+with reference to the world, with a certain precision \cite{introLivro1}. When used in
+rural areas, drones are often used to disperse seeds, pesticides, or survey the field.
+Field surveillance and inspection can now be done remotely, without the need for the
+farmer to traverse the entire plantation, which could be thousands of acres of land
+ \cite{introArtigo1}. Urban environments also benefit from drone services, from preventive
+ maintenance services \cite{droneurban1} to emergency reponse infrastructure \cite{droneurban2}
+\cite{droneurban3}.
 
-\begin{figure}[htbp]
-  \centering
-  \fbox{\rule{0pt}{4cm}\rule{6cm}{0pt}}
-  \caption{Exemplo de figura com legenda centralizada.}
-  \label{fig:exemplo}
-\end{figure}
+\gls{gnss} is the main positioning system used for drones \cite{introLivro2}. Although GNSS
+systems allow for more precise flight procedures, they come with a drawback: More precise and
+robust systems usually involve heavier and bulkier hardware. Absolute positioning may not be
+necessary in most cases though: Sometimes, the position of the drone is not as critical as its
+position relative to a ground mission target, sometimes called \gls{poi}. While the accuracy of
+the absolute position of the drone can be incresed over time through the use of filtering,
+quick and precise relative positioning between the drone and ground target is critical so the drone
+can either approach it or avoid it.
 
-\section{Organização do Texto}
+The purpose of this dissertation is to investigate the feasibility of a sensor fusion system for precise
+ground target location, comprising of one distance measuring pod, to be attached to the drone as payload.
+The drone system itself is out of the scope of this work.
 
-O restante deste documento está organizado da seguinte forma.  O
-Capítulo~\ref{cap:fundamentacao} apresenta a fundamentação teórica.
-O Capítulo~\ref{cap:conclusao} apresenta as conclusões.
+\section{Mission scope}
+
+As mentioned before, the drone absolute position acquisition system is not part of the scope of this
+work. This dissertation will focus on the payload (also refered as pod) of the drone, to be connected
+to the drone in order to measure distances. A first system will be developed to behave as a drone, and
+through the use of computer vision will identify a test target and calculate it's direction relative
+to the drone. This direction information will be transmitted to the pod, as a set of angles, and the
+pod will then measure the distance between the pod and target. It will also compensate for parallax, 
+as the pod could be positioned anywhere in the drone, and then estimate the distance between the
+camera to the object, as if the camera itself had measured it instead of an external module.
+
+Different sensors have different specifications. In order to investigate the many devices to design
+a precise drone location system, well-defined requirements are of the utmost importance. As this
+survey was carried out in Brazil, all system specifications will be defined by
+Brazilian regulations and plantation standards.
+
+The first parameter to define is the altitude range in which the drone will fly. Brazil's Ministry of
+Agriculture defines, as of November 2024 \cite{dronealturaagro}, that the maximum flight altitude allowed for
+for a drone used for agricultural purposes or far from crowded areas at is 400 feet (approximately 120 meters).
+In addition to this resolution, the \gls{anac} defines that any drone that flies above 400
+feet must be registered and licensed \cite{dronealturaANAC}. This is, of course, the maximum allowed
+altitude of operations, and not necessarily the altitude at which the drone will, in fact, operate.
+
+\section{System Architecture}
+
+This theoretical target location system will consist on a target-to-drone distance measuring system.
+The pod should first communicate to the drone system in order to receive orientation. Then measure the
+distance to target on ground. To get correct distance (and thus position) of the target to the drone,
+the pod system should make some corrections necessary for the difference in point-of-view.
+
+
+\section{Different technologies for target location}
+
+With the drone position measured with precision, the POI's position can be estimated by simple
+geometry: The drone's position is a known point in space, and the system could measure the
+distance between the drone and the target and the angle between the drone's orientation and the
+observed POI.
+
+\subsection{Ultrasonic Sensors}
+
+Ultrasonic sensors consist of a sensor that emits ultrasonic pulses (above 20 kHz)
+and measures the time between the emission and the receiving of an echo \cite{ultrasound1}.
+Ultrasonic sensors are commonly used in robotics, automotive parking systems, and level detection
+because of their ability to detect objects without requiring physical contact. They are inexpensive,
+work well under various lighting conditions, and are effective in detecting both solid and liquid
+surfaces, although their accuracy can be affected by environmental factors such as temperature,
+air pressure, and the type of surface to be detected. Ultrasonic sensors rarely measure distances
+greater than 10 meters \cite{ultrasound2}.
+
+\subsection{Light-based sensors}
+
+Similarly to radio waves, there are equivalent sensors that utilize electromagnetic radiation
+in the visible spectrum. The main types of light-based sensors are the following
+ \cite{infrared}\cite{laserrangefinder}:
+
+\begin{itemize}
+  \item \gls{tof} : These sensors emit light (typically laser or infrared) and measure
+  the time it takes for the reflected light to return to the sensor. They are widely used in
+  smartphones, robotics, and drones because of their precision and ability to operate over a range
+  of distances. These modules can be multi-point or single-point of measurement.
+  \item Light Detection and Ranging (LIDAR): These use laser beams to measure distance by timing the
+  reflected light. LIDAR systems are commonly used in autonomous vehicles, mapping, and industrial
+  applications due to their high accuracy and ability to create 3D maps. Usually consist of a light
+  transmitter and receiver module rotating, in order to get wide angles of measurements.
+  \item Structured Light Sensors: These sensors project a known light pattern (for example, a grid)
+  onto an object and analyze the deformation of the pattern to calculate distance. They are used in
+  depth-sensing cameras like Microsoft Kinect for 3D scanning and motion tracking.
+  \item Stereo Vision: This method uses two or more cameras to simulate human binocular vision.
+  By analyzing the disparity between images captured by each camera, it calculates the depth and distance.
+  Stereo vision is used in robotics, AR/VR, and object recognition systems.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% tof + gimbal vs matrix tof vs lidar
+
+TOF and LIDAR are preferred in the field of drones and other autonomous robots for their simplicity,
+size, and wide range of specifications CITATION. Structured Light Sensors are more commonly used in
+civil engineering, as they are usually too bulky to be fitted on a drone. Stereo visio is by far the
+most complex of all the methods cited, being very complex and hard to calibrate CITATION.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Radar}
+
+Radar modules are increasingly used in drones for applications such as obstacle detection,
+collision avoidance, and terrain mapping \cite{radaraltimetro2}. By emitting radio waves and
+analyzing the reflected signals, radar sensors provide precise distance and velocity measurements,
+even in low visibility conditions such as fog, rain, or darkness, where optical sensors can
+struggle \cite{introtoradar}. Radar's ability to detect objects over longer distances and through
+cluttered environments makes it ideal for autonomous navigation and enhancing flight safety.
+In addition, advanced radar systems, such as millimeter-wave radar, are used for altimetry and
+precise positioning during landings, particularly in drones operating in challenging outdoor environments. 
+
+Although radar modules offer many advantages for drones, they also have notable disadvantages.
+One key limitation is their high power consumption, which can reduce the drone's battery life,
+particularly in smaller systems. Additionally, radar systems can struggle with resolution limitations,
+especially for small or closely spaced objects, making them less effective for detecting fine details
+compared to optical sensors like LIDAR or cameras. Environmental factors, such as electromagnetic
+interference, can also affect performance and introduce noise into the radar signal. Furthermore,
+cost can be a barrier, as advanced radar systems, such as millimeter-wave radars, tend to be more
+expensive than simpler alternatives like ultrasonic or infrared sensors. Lastly, the complexity of
+data processing and integration with other onboard systems requires advanced algorithms and additional
+computational resources, which may complicate the drone's design.
+
+\section{Target location}
+
+%justificativa da escolha de sensores e ranges de operacao
+
+Of all types of sensors analyzed in this work, optical ranging sensors are the more capable and
+precise for weight, volume, and price. Light-based sensors, such as infrared or laser rangefinders,
+fit perfectly within the technical constraints of the design. Radar is too complex, bulky, and
+expensive. Ultrasound sensors are simply not precise enough.
+
+As the angle of the target relative to the drone module would be known via the camera, the only
+measure required would be the distance of the target to the module. The rangefinder would be
+measuring this distance from above, and the geometry errors corrected.
+

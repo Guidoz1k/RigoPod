@@ -13,3 +13,13 @@
 *.fdb_latexmk
 *.fls
 *.synctex.gz
+
+#after adding glossaries lib
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.ist

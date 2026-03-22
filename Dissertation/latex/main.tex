@@ -3,15 +3,19 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 
-\title{RIGOpod: Range inference for ground objects }
-\translatedtitle{lambendo maçaneta até justificar as medidas do covid}
+% better way of making a glossary (check readme.md)
+\usepackage[acronym]{glossaries}
+\makeglossaries
+
+\title{Outdoors Distance To Ground Object Measuring Pod for UAV's}
+\translatedtitle{Módulo Para Medição De Distancia Até Objeto Em Solo Para VANT's}
 
 \author{Madruga}{Rodrigo Daltoé}
 \advisor[Prof.~Dr.]{Pereira}{Carlos Eduardo}
 \date{2026}
 
-\keyword{Sensor fusion, Time-of-Flight, Computer Vision, UAV's, Gimbal, Drone Pod}
-\translatedkeyword{xuplitz, pimbolitz}
+\keyword{Sensor fusion, Computer Vision, UAV's, Gimbal, Drone Pod, LiDAR, Parallax}
+\translatedkeyword{Fusão de Sensores, Visão Computacional, VANT's, Gimbal, Módulo para Drones, LiDAR, Paralaxe}
 
 \begin{document}
 
@@ -23,6 +27,8 @@
 \tableofcontents
 \listoffigures
 \listoftables
+\input{xtras/abbreviations.tex}
+\printglossary[type=\acronymtype,title=List of Abbreviations]
 
 \input{chapters/0intro.tex}
 \input{chapters/1background.tex}
