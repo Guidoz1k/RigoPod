@@ -1,14 +1,258 @@
 \chapter{Theory Background}
 \label{cap:back}
 
-\section{Drone Subsystem}
+This chapter presents the theoretical concepts that support the development of the proposed
+system. The system consists of a drone payload, or pod. The test prototype will consist of
+two system and a communication channel: The drone payload and a drone system, that will serve
+to test the payload's performance. The drone itself will consist of a small embedded computer
+that will using a computer vision subsystem to identify a ground target. Then, the drone
+system will send the direction angles to the drone payload for it to execute the measurement
+and error correction routines. The resulting values are then sent back to the drone system
+for logging.
 
-\subsection{Computer Vision}
+The pod will contain a light-based time-of-flight distance sensor mounted on a gimbal mechanism.
+When the drone system sends a specific direction, the pod will measure the distance from the
+drone to the target taking  geometric effects such as line-of-sight and parallax into account.
+
+\section{Drone subsystem}
+
+The drone system is responsible for perception, processing, and identification of the initial
+payload orientation. In this work, the drone platform incorporates an onboard computing system
+capable of running computer vision algorithms. The purpose of this subsystem is to identify
+objects of interest in the environment and determine the appropriate pointing direction for
+the distance measurement sensor.
+
+The information extracted from image processing algorithms can be used to generate control
+commands for the gimbal system. These commands orient the distance sensor toward the
+detected target, enabling the measurement of the distance between the drone and the object
+of interest.
+
+The drone subsystem therefore performs three primary functions:
+
+\begin{itemize}
+  \item Image acquisition from the onboard camera.
+  \item Image processing and feature detection.
+  \item Target localization and gimbal pointing control.
+\end{itemize}
+
+\subsection{Computer vision}
+
+Computer vision is a field of study that enables machines to interpret and understand visual
+information from the environment. It involves acquiring images, processing them, extracting
+meaningful features, and making decisions based on those features. A typical computer vision
+pipeline consists of several stages \cite{cv1}:
+
+\begin{enumerate}
+  \item Image acquisition
+  \item Pre-processing
+  \item Feature extraction
+  \item Object detection or classification
+  \item Decision or control output
+\end{enumerate}
+
+\subsubsection{Image acquisition}
+
+Image acquisition consists of capturing an image from an image sensor, like a camera. cameras
+have many different parameters, but the basic ones are \cite{photo}:
+
+\begin{itemize}
+  \item \gls{fov}
+  \item Resolution
+  \item \gls{fps}
+\end{itemize}
+
+\gls{fov} defines the angular area the camera can capture. A wider \gls{fov} covers more
+of the scene, while a narrower \gls{fov} focuses on a smaller area with greater detail.
+Resolution refers to the number of pixels in an image. Higher resolution provides more
+detail but increases data size and processing requirements. \gls{fps}, or frame rate,
+indicates how many images are captured per second. Higher frame rates produce smoother
+motion, while lower frame rates reduce data and processing demands, a simple example can
+be seen in figure~\ref{fig:1img1}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.5\textwidth]{01/1img1}
+  \caption{Field of View of a camera and its resolution}
+  \label{fig:1img1}
+\end{figure}
+
+\subsubsection{Pre-processing and feature extraction}
+
+Image pre-processing may involve operations such as filtering, noise reduction, and contrast
+enhancement. Feature extraction methods detect relevant structures in the image, such as
+edges, corners, shapes, or textures. This step usually involves a mask, that is used to
+identify objects or track their movement within the camera frame \cite{cv2}.
+
+\subsubsection{Object detection and decision making}
+
+Once a target is detected, its position in the image coordinates can be calculated. This
+position can then be transformed into a direction relative to the camera frame. For this,
+the inclination of the camera and camera lens angles are taken into account. The direction
+information can be sent to the pod, that will point the gimbal-mounted sensor, allowing
+the sensor to align with the target detected by the vision system \cite{cv3}.
 
 \subsubsection{OpenCV}
 
-\section{Distance Measuring Pod}
+\gls{opencv} (logo in figure~\ref{fig:1opencv}) is an open-source software library widely used for computer vision and image
+processing applications\cite{opencv}. It provides a comprehensive set of algorithms
+optimized for real-time performance. The library supports a wide range of functionalities,
+including:
 
-\subsection{Light-Based Time-of-Flight}
+\begin{itemize}
+  \item Image filtering and transformations
+  \item Feature detection and extraction
+  \item Object detection and recognition
+  \item Camera calibration
+  \item Motion analysis
+  \item Machine learning integration
+\end{itemize}
 
-\section{Line-of-Sight and Parallax}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.2\textwidth]{01/1opencv}
+  \caption{OpenCV's Logo}
+  \label{fig:1opencv}
+\end{figure}
+
+\gls{opencv} is designed to be highly efficient and supports multiple programming languages,
+including C++, Python, and Java. Its optimized implementations make it suitable for embedded
+systems and single-board computers.
+
+In this project, \gls{opencv} can be used to process images captured by the drone's camera
+in real time. The algorithms implemented in \gls{opencv} can detect objects or features of
+interest and determine their location in the image frame. This information is then used to
+compute the angular offset between the camera's optical axis and the detected target.
+
+\section{Distance measuring pod}
+
+The distance measuring pod is a payload mounted on the drone that will contain the hardware
+responsible for measuring the distance to a target. The pod integrates two main components:
+a \gls{tof} distance sensor and a gimbal mechanism that controls the orientation of the sensor.
+
+The purpose of the pod is to measure the distance between the drone and an object detected
+by the vision system. Since the camera and the distance sensor may not always share the
+same orientation, a gimbal mechanism is used to align the sensor with the detected target.
+
+The pod therefore acts as an independent measurement subsystem that receives pointing
+commands from the drone's main processing unit and will not only measure the distance
+but also compensate for any geometric error.
+
+\subsection{Light-based time-of-flight sensors}
+
+\gls{tof} distance measurement is a technique used to determine the distance between a sensor
+and an object by measuring the time required for light to travel to the object and return to
+the sensor \cite{tof1}.
+
+In a typical light-based ToF system, the sensor emits a short pulse of light, usually in
+the infrared spectrum. This light propagates through space until it reaches an object,
+where it is reflected back toward the sensor. The sensor then detects the reflected light
+and measures the time interval between emission and detection. Because the speed
+of light is known and constant in air, the distance to the object can be calculated using
+the relation:
+
+\begin{equation}
+  d = \frac{c \cdot t}{2}
+\end{equation}
+
+%where:
+
+\begin{itemize}
+  \item $d$ is the distance to the object
+  \item $c$ is the speed of light
+  \item $t$ is the measured round-trip travel time
+\end{itemize}
+
+The division by two is necessary because the measured time corresponds to the round-trip
+travel of the light signal.
+
+\gls{tof} sensors offer several advantages compared to other distance measurement
+techniques \cite{tof2}. They can operate independently of ambient lighting conditions, provide
+relatively fast measurements, and offer good accuracy over short to medium distances.
+However, several factors may affect measurement accuracy , including:
+
+\begin{itemize}
+  \item Surface reflectivity of the target
+  \item Ambient infrared interference
+  \item Sensor field of view
+  \item Multipath reflections
+\end{itemize}
+
+\subsection{Sensor gimbal}
+
+A gimbal is a mechanical structure that allows an object to rotate about one or more axes
+while maintaining controlled orientation. An example of a gimbal stabilizing a camera can be
+seen in figure~\ref{fig:1gimbal}. Gimbal mechanisms are commonly used in camera
+stabilization systems, aerospace instruments, and robotic platforms \cite{gimbal}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.5\textwidth]{01/1gimbal}
+  \caption{Stabilizing gimbal with camera}
+  \label{fig:1gimbal}
+\end{figure}
+
+In the proposed system, the gimbal will allow the distance sensor to be oriented independently
+of the drone's body orientation. This capability is important because the drone may need to
+maintain a stable flight attitude while directing the sensor toward different targets.
+
+A typical gimbal used in robotic applications provides two or three degrees of freedom. A
+two-axis gimbal allows rotation in pitch and yaw, enabling the sensor to point in any
+direction within a hemispherical field of view. A three-degrees gimbal include roll control
+for full stabilization and orientation control. Ideally, when mounting a sensor on a gimbal,
+it is desirable to mount the sensor in the gimbal in a way that its position does not vary
+with any change in its angle. This ensures the sensor's position remains constant throughout
+all gimbal movements, simplifying parallax compensation \cite{robotics2}.
+
+The gimbal is usually actuated by servo motors, using either brushed or brushless motors.
+The control system receives commands from the drone's processing unit and adjusts the
+orientation of the sensor accordingly \cite{servos}.
+
+The relationship between the target position detected by the camera and the gimbal angles
+must be carefully calibrated. This calibration ensures that the direction indicated by
+the computer vision system corresponds to the physical direction in which the sensor must
+point.
+
+\section{Line-of-sight and parallax}
+
+Accurate distance measurement requires a clear geometric understanding of the relationship
+between the camera, the distance sensor, and the observed target. Two important concepts
+in this context are \gls{los} and parallax.
+
+\gls{los} refers to the direct path between the sensor and the target. A valid
+measurement can only be obtained if the emitted signal travels unobstructed to the target
+and the reflected signal returns to the sensor. The first \gls{los} that must be accounted
+for is the one between the camera and the target. The second \gls{los} is the one between
+the \gls{tof} sensor and the target \cite{parallax1}.
+
+In systems where the camera and the distance sensor are located at different positions,
+their respective lines of sight may not coincide. This spatial separation introduces a
+geometric effect known as parallax. An example where both camera and distance sensor are
+pointing at the same angle but not at the same target can be seen in figure~\ref{fig:1img2}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{01/1img2}
+  \caption{Parallax error happens because distance sensor and camera don't share same LoS}
+  \label{fig:1img2}
+\end{figure}
+
+Parallax occurs when an object appears at different positions relative to the background
+when observed from different viewpoints. In the context of this system, the camera and
+the distance sensor may observe the same object from slightly different positions. As a
+result, the target detected by the camera may not lie exactly along the measurement axis
+of the distance sensor \cite{parallax2}.
+
+The magnitude of the parallax error depends on several factors:
+
+\begin{itemize}
+  \item The physical separation between the camera and the distance sensor
+  \item The distance to the target
+  \item The orientation of the sensor relative to the camera
+\end{itemize}
+
+For distant targets, the parallax effect becomes smaller because the angular difference
+between the viewpoints decreases. However, for nearby targets the error can become significant.
+To reduce parallax effects, the system may use calibration procedures that determine the
+spatial transformation between the camera frame and the sensor frame. By knowing this
+transformation, it becomes possible to compute the correct pointing direction for the
+gimbal-mounted sensor.
