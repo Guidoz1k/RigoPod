@@ -1,0 +1,271 @@
+% This ensures VS Code compiles the main file even when you're editing a chapter.
+% !TeX root = ../main.tex
+
+\chapter{Proposal}
+\label{cap:prop}
+
+This chapter presents the proposed architecture of the prototype used to test the
+feasibility of a sensor fusion system for precise ground target localization. As mentioned
+in Chapter~\ref{cap:intro}, this work focuses on the development of the drone pod subsystem,
+specifically on the sensor fusion for precise distance measurements and parallax correction.
+
+As the drone itself is not as critical as the payload, it will be replaced by an
+embedded computer that will execute the functions of the drone. It will not only perform
+computer vision tasks and command the distance-measuring pod, but also receive all the data
+processed by the pod and log everything, allowing the system's performance to be analyzed.
+
+As mentioned in Chapter~\ref{cap:intro}, the most commonly used electronic sensors for
+distance measurements in drones are single-point or multi-point \gls{tof} sensors. As the
+pod is to intended to be used as a standalone, and as flexible as possible as a drone
+component, it must be able to operate over any distance that a drone might need to measure
+for a ground object.
+Assuming that the drone will fly at an approximate maximum altitude of 120m, this means that
+the target will be at least 120m away from the drone, under ideal conditions,
+when it is directly below the sensor.
+As the target moves away from the point directly below the drone on the ground,
+the distance increases. This relationship between the position of the ground target and the
+distance to the drone can be better understood via the Figure~\ref{fig:3img1}. The final
+distance can be expressed either by the Equation~\ref{eq:dist_to_gnd1} or by the
+Equation~\ref{eq:dist_to_gnd2}:
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.55\textwidth]{4/img1}
+  \caption{Distance from drone to target as a function of target's position on ground in 2D}
+  \label{fig:3img1}
+\end{figure}
+
+\begin{equation}
+  \label{eq:dist_to_gnd1}
+  \scalebox{1.5}{$ d = \sqrt{ x^2 + h^2 } $}
+\end{equation}
+
+\begin{equation}
+  \label{eq:dist_to_gnd2}
+  \scalebox{1.5}{$ d = h \cdot sec\bigg( ~ tan^-1\Big( ~ \frac{x}{h} ~ \Big) ~ \bigg) $}
+\end{equation}
+
+%where:
+
+\begin{itemize}
+  \item $d$ is the distance to the object on the ground
+  \item $h$ is the height of the drone
+  \item $x$ is the position of the object on the ground
+\end{itemize}
+
+With such large distances like that, flash \gls{lidar} becomes too expensive or
+difficult to source.
+As the pod will need to provide only the distance to a single target at a time,
+there is no need to use a complex system such as scanning \gls{lidar}, as it is it's
+heavy, consumes a significant amount of power, and has a continuously running motor.
+As mentioned in the Chapter~\ref{cap:intro}, a hybrid solution using a single \gls{tof}
+sensor mounted on a gimbal achieves both the ability to point in multiple directions
+and to operate over long distances with cheaper and simpler devices.
+
+\section{Drone subsystem}
+
+As already mentioned in this chapter as well as in Chapter~\ref{cap:back}, the drone
+subsystem will be responsible for behaving as a drone, so the performance of the distance
+measuring pod can be evaluated indoors, without the need to cycle batteries:
+
+\begin{itemize}
+  \item Image acquisition from the onboard camera.
+  \item Image processing and feature detection.
+  \item Target localization.
+  \item Gimbal pointing control.
+  \item Distance information logging.
+\end{itemize}
+
+The drone subsystem will consist of a \gls{sbc}, connected to the camera and the pod,
+running a program that executes the computer vision task of identifying the target and
+its respective direction from the drone.
+
+\subsection{SBC and Camera}
+
+The chosen \gls{sbc} for the project was the Raspberry Pi model 5 8GB \cite{rasppi51}.
+This \gls{sbc} was chosen because it is the latest iteration of the Raspberry Pi \gls{sbc}
+family, which holds an approximate 30\% share of the \gls{sbc} market \cite{rasppi52}.
+
+As the Raspberry Pis are the most popular \gls{sbc} in the market, it is the
+easiest \gls{sbc} to purchase anywhere in the world.
+Also, because of their popularity, there is plenty of information and support online,
+not only in official forums but also on other engineering forums and sources.
+This drastically facilitates development.
+
+This \gls{sbc} includes a
+Broadcom BCM2712 2.4GHz quad-core 64-bit Arm Cortex-A76 CPU,
+VideoCore VII GPU,
+8GB LPDDR4X-4267 SDRAM,
+and many interfaces and connectors, including 4-lane MIPI connectors for the camera and
+a pin header for many different serial protocols to be used to communicate with the pod
+subsystem. The board is powered by a 5V/5A DC power supply via USB-C.
+The exact model can be seen in Figure~\ref{fig:4rasp}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{4/rasp}
+  \caption{Raspberry Pi model 5}
+  \label{fig:4rasp}
+\end{figure}
+
+The \gls{sbc} will run on Raspberry Pi OS, an OS made specifically for the Raspberry Pi
+hardware. Raspberry Pi OS, known as Raspbian, is a port of Debian Trixie. Debian
+itself is a Linux distribuition, which makes Raspbian also a Linux distribuition.
+
+The chosen camera to be connected to the Raspberry Pi 5 was the Camera Module 3, an
+official camera module for the Raspberry Pi \gls{sbc} family \cite{raspcam}. The camera
+uses a back-illuminated, stacked CMOS 12-megapixel Sony IMX708 image sensor, capable
+of capturing images with 4608 $\times$ 2592 pixels, with a diagonal field of view of 75
+degrees. The chosen resolution used will be 2304 $\times$ 1296 pixels, so it is still
+very close to FullHD resolution but smaller, which may help with processing time when
+running computer vision algorithms, while keeping the same ratio, thus the same
+\gls{fov}.
+
+\subsection{Computer vision subroutine}
+
+For the computer vision task, the library chosen was \gls{opencv}, in Python.
+OpenCV is the most widely used computer vision library in the world \cite{opencv}.
+It has functions to perform every part of the computer vision pipeline involved in
+the project, from image acquisition to feature detection.
+This library will be used to obtain simple feature detection capabilities,
+allowing the project to be tested with tasks such identifying a dot on the
+wall, or a circle of certain color.
+This will make testing the whole system a lot easier by being able to print targets
+on paper and fixed them on many different surfaces.
+
+The chosen programming language to be used in the drone subsystem is Python, due to
+it ease of learning, use, and test many different algorithms, including \gls{opencv}.
+The Python code will make calls to Raspbian to receive images from the camera, and to
+send messages to the pod subsystem via the communication pin header.
+
+\section{Distance measuring pod}
+
+The second subsystem in the prototype, and the main focus of this work, the distance
+measuring pod will consist mainly of a distance measuring sensor, a gimbal to aim the
+sensor according to a specific direction, a microcontroller to control everything,
+process the data and send it back to the drone subsystem.
+The full cycle of the measuring routine would consist of:
+
+\begin{itemize}
+  \item Direction data communication from the drone.
+  \item Gimbal control.
+  \item Sensor data acquisition.
+  \item Data processing and parallax compensation.
+  \item Final distance data communication back to the drone.
+\end{itemize}
+
+In order to perform all these tasks, a digital, programmable system will be used. The
+hardware chosen for this task is a microcontroller. A microcontroller is a compact
+integrated circuit designed to perform specific control tasks within an embedded system.
+It combines a processor core, memory (such as RAM and flash), and input/output
+peripherals on a single chip.
+Unlike general-purpose computers, microcontrollers are optimized for
+interacting with hardware, allowing them to read sensors, process data, and control
+actuators in real time.
+
+\subsection{Microcontroller and framework}
+
+The chosen microcontroller for the pod subsystem is the ESP32-S3 \cite{esp32s3}.
+The ESP32-S3 is a low-power microcontroller developed by Espressif Systems.
+It is the successor of the well known ESP32. The ESP32-S3 features
+a dual-core XTensa LX7 processor architecture, running at 240MHz,
+512kB of SRAM,
+and 384 KB ROM.
+The device features a wide range of peripherals, such as GPIO, SPI, I²C, UART, ADC,
+and PWM, enabling flexible interfacing with sensors and external components.
+A board with the chosen microcontroller module can be seen in Figure~\ref{fig:4esp}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{4/esp}
+  \caption{ESP32-S3 module on development board}
+  \label{fig:4esp}
+\end{figure}
+
+The microcontroller was chosen for its availability, flexibility, price point and also
+the development environment. Espressif Systems developed a framework called ESP-IDF
+\cite{espidf}. This framework includes a \gls{hal}, which gives the embedded developer
+a fast and reliable way of accessing the hardware controlled by the microcontroller.
+This shortens development time and system bring-up tests, which helps with the rapid
+prototyping phase of the project.
+
+\subsection{Single-point ToF sensor}
+
+The chosen sensor to measure distance to objects from the pod is a ToFFuture Technology
+XT-S1 \gls{lidar} sensor \cite{xts1}. The XT-S1 is a compact single-point \gls{ir} laser sensor
+based on the \gls{tof} principle.
+It weighs only 9 grams and consumes less than 0.5W.
+The sensor can operate in environments with intense lighting conditions of up to
+100klux, while measuring distance up to 24m distant objects of 10\% reflectivity.
+It's accuracy is $\pm$2\%, with a measurement frequency of 50Hz.
+
+The sensor was chosen for its easy availability, low price, small size and weight and
+good outdoor performance. The sensor module can be seen in Figure~\ref{fig:4xts1}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{4/xts1}
+  \caption{Xt-S1 sensor module and it's dimensions}
+  \label{fig:4xts1}
+\end{figure} 
+
+\subsection{Sensor gimbal}
+
+A gimbal is a mechanical system that allows a sensor to rotate about one or more axes,
+typically to stabilize its orientation or to actively control its field of view.
+By decoupling the sensor from the motion of the base platform, a gimbal enables precise
+pointing and smooth tracking, which is essential in applications such as imaging,
+scanning, and navigation.
+
+The motion of a gimbal is commonly achieved using servomotors, which provide controlled
+angular positioning through closed-loop feedback. In a typical configuration, each axis
+of the gimbal is driven by a servomotor that receives a position command and adjusts its
+shaft angle accordingly. Feedback is obtained either from an internal sensor or an
+external encoder, allowing the control system to minimize the error between the desired
+and actual position. This enables accurate, repeatable, and dynamic movement of
+the sensor.
+
+Traditional servomotors are often based on brushed DC motors combined with a gearbox and
+a position feedback element, such as a potentiometer. These systems are relatively simple
+and cost-effective, but they suffer from mechanical wear due to the brushes in the long
+term, limited precision from the feedback device, and backlash introduced by the gearbox.
+
+In contrast, modern servomotors based on brushless DC (BLDC) motors use electronic
+commutation and typically incorporate high-resolution magnetic angle sensors for position
+feedback. These sensors provide precise, contactless measurement of the motor's shaft
+angle, eliminating wear and improving reliability. BLDC-based servos also offer smoother
+motion, higher efficiency, lower noise, and better dynamic response compared to brushed
+counterparts. The downsides of using BLDC motors in a servo system are a significant
+increase in complexity, price, and availability of components.
+
+The chosen type of motor for the prototype will initially be brushed DC servomotors, as
+they are cheaper, easy to purchase, and easy to model and control, in contrast with their
+BLDC counterparts, which usually need customized control solutions and BLDC drivers. In
+order to compensate for the downsides of using brushed DC servomotors, high-torque,
+robust servomotor models were used, for these have smaller mechanical tolerances, show
+less wear and tear due to improved quality on gears and more accurate digital feedback
+sensor systems.
+
+\subsection{Parallax compensation}
+
+% fuck me i guess
+
+\section{3D printing}
+
+Additive manufacturing, specifically 3D printing, is employed in the development of the
+prototype chassis for both the drone and pod subsystems as a means of rapid prototyping
+and design iteration. This approach enables the quick fabrication of structural
+components directly from digital models, significantly reducing development time and
+cost compared to traditional manufacturing methods.
+
+Through 3D printing, it is possible to produce custom-designed parts that precisely
+match the geometry and requirements of the system. This is particularly advantageous for
+integrating sensors, electronics, and mechanical assemblies, as mounting features,
+enclosures, and supports can be tailored to fit specific components without the need for
+standardized parts or complex machining processes.
+
+Additionally, the use of 3D printing allows for iterative testing and refinement of the
+chassis design. Components can be easily modified and reprinted to address issues such
+as structural integrity, weight distribution, or accessibility. This flexibility is
+especially valuable during the early stages of development, where design requirements
+may evolve rapidly. 

@@ -1,0 +1,74 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Related Works
+
+@Article{rel1,
+  AUTHOR = {Hansen, Jakob Grimm and de Figueiredo, Rui Pimentel},
+  TITLE = {Active Object Detection and Tracking Using Gimbal Mechanisms for Autonomous Drone Applications},
+  JOURNAL = {Drones},
+  VOLUME = {8},
+  YEAR = {2024},
+  NUMBER = {2},
+  ARTICLE-NUMBER = {55},
+  URL = {https://www.mdpi.com/2504-446X/8/2/55},
+  ISSN = {2504-446X},
+  ABSTRACT = {Object recognition, localization, and tracking play a role of primordial importance in computer vision applications. However, it is still an extremely difficult task, particularly in scenarios where objects are attended to using fast-moving UAVs that need to robustly operate in real time. Typically the performance of these vision-based systems is affected by motion blur and geometric distortions, to name but two issues. Gimbal systems are thus essential to compensate for motion blur and ensure visual streams are stable. In this work, we investigate the advantages of active tracking approaches using a three-degrees-of-freedom (DoF) gimbal system mounted on UAVs. A method that utilizes joint movement and visual information for actively tracking spherical and planar objects in real time is proposed. Tracking methodologies are tested and evaluated in two different realistic Gazebo simulation environments: the first on 3D positional tracking (sphere) and the second on tracking of 6D poses (planar fiducial markers). We show that active object tracking is advantageous for UAV applications, first, by reducing motion blur, caused by fast camera motion and vibrations, and, second, by fixating the object of interest within the center of the field of view and thus reducing re-projection errors due to peripheral distortion. The results demonstrate significant object pose estimation accuracy improvements of active approaches when compared with traditional passive ones. More specifically, a set of experiments suggests that active gimbal tracking can increase the spatial estimation accuracy of known-size moving objects, under conditions of challenging motion patterns and in the presence of image distortion.},
+  DOI = {10.3390/drones8020055}
+}
+
+@Article{rel2,
+  AUTHOR = {Gašparović, Mateo and Jurjević, Luka},
+  TITLE = {Gimbal Influence on the Stability of Exterior Orientation Parameters of UAV Acquired Images},
+  JOURNAL = {Sensors},
+  VOLUME = {17},
+  YEAR = {2017},
+  NUMBER = {2},
+  ARTICLE-NUMBER = {401},
+  URL = {https://www.mdpi.com/1424-8220/17/2/401},
+  PubMedID = {28218699},
+  ISSN = {1424-8220},
+  ABSTRACT = {In this paper, results from the analysis of the gimbal impact on the determination of the camera exterior orientation parameters of an Unmanned Aerial Vehicle (UAV) are presented and interpreted. Additionally, a new approach and methodology for testing the influence of gimbals on the exterior orientation parameters of UAV acquired images is presented. The main motive of this study is to examine the possibility of obtaining better geometry and favorable spatial bundles of rays of images in UAV photogrammetric surveying. The subject is a 3-axis brushless gimbal based on a controller board (Storm32). Only two gimbal axes are taken into consideration: roll and pitch axes. Testing was done in a flight simulation, and in indoor and outdoor flight mode, to analyze the Inertial Measurement Unit (IMU) and photogrammetric data. Within these tests the change of the exterior orientation parameters without the use of a gimbal is determined, as well as the potential accuracy of the stabilization with the use of a gimbal. The results show that using a gimbal has huge potential. Significantly, smaller discrepancies between data are noticed when a gimbal is used in flight simulation mode, even four times smaller than in other test modes. In this test the potential accuracy of a low budget gimbal for application in real conditions is determined.},
+  DOI = {10.3390/s17020401}
+}
+
+@article{rel3,
+  title={The utilization of gimbal systems in unmanned aerial vehicles},
+  author={Villi, {\"O}zge and Yavuz, Hakan},
+  journal={Advanced UAV},
+  volume={4},
+  number={1},
+  pages={19--30},
+  year={2024}
+}
+
+@INPROCEEDINGS{rel4,
+  author={Son, Ji-Hwan and Kim, Deokyun and Cha, Jihun},
+  booktitle={2024 IEEE International Conference on Systems, Man, and Cybernetics (SMC)}, 
+  title={Autonomous Structural Inspection with an Octocopter UAV: Integration of 3D LiDAR and Gimbal-Mounted Camera}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={2034-2040},
+  keywords={Point cloud compression;Three-dimensional displays;Laser radar;Navigation;High-resolution imaging;Inspection;Autonomous aerial vehicles;Cameras;Safety;Surface treatment},
+  doi={10.1109/SMC54092.2024.10831954}}
+
+@Article{rel5,
+  AUTHOR = {Mao, Wenlong and Li, Zhanxiang and Huo, Mingen},
+  TITLE = {Landing control algorithm for gimbal-serviced UAVs based on field-of-view constraints},
+  JOURNAL = {Scientific Reports},
+  VOLUME = {15},
+  YEAR = {2025},
+  ISSN = {2045-2322},
+  ABSTRACT = {This paper presents a robust and adaptive visual servoing-based landing control method for unmanned aerial vehicles (UAVs) equipped with a three-axis gimbal camera. To address the limitations of fixed-camera configurations, the proposed approach integrates pixel-level field-of-view (FOV) constraints and leverages the gimbal’s agility for enhanced visual tracking. The landing task is formulated as a constrained image-based control problem, where tracking errors of image features are rigorously bounded using prescribed performance functions. A velocity observer is incorporated to estimate the time-varying motion of the landing platform in real time, enabling accurate autonomous landing without relying on external communication or infrastructure. Lyapunov-based stability analysis confirms the theoretical soundness of the control strategy. Simulation results validate the effectiveness and robustness of the proposed method, demonstrating improved accuracy, adaptability, and practical applicability in UAV landing scenarios.},
+  DOI = {10.1038/s41598-025-20044-3}
+}
+
+@Article{rel6,
+  AUTHOR = {Ma, Zhaowei and Yao, Wenchen and Niu, Yifeng and Lin, Bosen and Liu, Tianqing},
+  TITLE = {UAV low-altitude obstacle detection based on the fusion of LiDAR and camera},
+  JOURNAL = {Autonomous Intelligent Systems},
+  VOLUME = {1},
+  YEAR = {2021},
+  ISSN = {2730-616X},
+  ABSTRACT = {In this paper, aiming at the flying scene of the small unmanned aerial vehicle (UAV) in the low-altitude suburban environment, we choose the sensor configuration scheme of LiDAR and visible light camera, and design the static and dynamic obstacle detection algorithms based on sensor fusion. For static obstacles such as power lines and buildings in the low-altitude environment, the way that image-assisted verification of point clouds is used to fuse the contour information of the images and the depth information of the point clouds to obtain the location and size of static obstacles. For unknown dynamic obstacles such as rotary-wing UAVs, the IMM-UKF algorithm is designed to fuse the distance measurement information of point clouds and the high precision angle measurement information of image to achieve accurate estimation of the location and velocity of the dynamic obstacles. We build an experimental platform to verify the effectiveness of the obstacle detection algorithm in actual scenes and evaluate the relevant performance indexes.},
+  DOI = {10.1007/s43684-021-00014-y}
+}

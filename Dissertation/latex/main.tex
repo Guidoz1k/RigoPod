@@ -1,21 +1,30 @@
 \documentclass[ppgc, diss, english]{infufrgs}
 \usepackage[utf8]{inputenc}
-\usepackage{graphicx}
+
+% math pack
 \usepackage{amsmath}
 
+% enables hyphenation and helps with stupid warning
+\usepackage{microtype}
+
 % specify figures path
+\usepackage{graphicx}
 \graphicspath{ {imgs/} }
 
 % better way of making a glossary (check readme.md)
 \usepackage[acronym]{glossaries}
 \makeglossaries
 
+% suppresses 90% of this stupid warning
+\hbadness=10000
+
 \title{Outdoors Distance To Ground Object Measuring Pod for UAV's}
 \translatedtitle{Módulo Para Medição De Distancia Até Objeto Em Solo Para VANT's}
-
 \author{Madruga}{Rodrigo Daltoé}
 \advisor[Prof.~Dr.]{Pereira}{Carlos Eduardo}
 \date{2026}
+
+% if you forget to add a new empty line between date and keyword latex has a stroke because it is absolute garbage
 
 \keyword{Sensor fusion, Computer Vision, UAV's, Gimbal, Drone Pod, LiDAR, Parallax}
 \translatedkeyword{Fusão de Sensores, Visão Computacional, VANT's, Gimbal, Módulo para Drones, LiDAR, Paralaxe}
@@ -23,29 +32,31 @@
 \begin{document}
 
 \maketitle
-
 \input{xtras/front.tex}
 \input{xtras/abstract.tex}
-
 \tableofcontents
 \listoffigures
 \listoftables
+
+% \listofabbreviations manually done
 \input{xtras/abbreviations.tex}
 \printglossary[type=\acronymtype,title=List of Abbreviations]
 
-\input{chapters/0intro.tex}
-\input{chapters/1background.tex}
-\input{chapters/2relatedworks.tex}
-\input{chapters/3proposal.tex}
-\input{chapters/4methodology.tex}
-\input{chapters/5results.tex}
-\input{chapters/6conclusion.tex}
-\input{chapters/7futureworks.tex}
+% all chapter of the dissertation
+\input{chapters/1intro.tex}
+\input{chapters/2background.tex}
+\input{chapters/3relatedworks.tex}
+\input{chapters/4proposal.tex}
+\input{chapters/5methodology.tex}
+\input{chapters/6results.tex}
+\input{chapters/7conclusion.tex}
+\input{chapters/8futureworks.tex}
 
 %\input{xtras/appendix.tex}
 %\input{xtras/annex.tex}
 
 \bibliographystyle{abntex2-alf}
-\bibliography{biblio}
+% reference to multiple bib files
+\bibliography{bib/1-2,bib/3,bib/4,bib/5,bib/6,bib/7,bib/8}
 
 \end{document}
