@@ -49,15 +49,19 @@
   number={},
   pages={2034-2040},
   keywords={Point cloud compression;Three-dimensional displays;Laser radar;Navigation;High-resolution imaging;Inspection;Autonomous aerial vehicles;Cameras;Safety;Surface treatment},
-  doi={10.1109/SMC54092.2024.10831954}}
+  doi={10.1109/SMC54092.2024.10831954}
+}
 
 @Article{rel5,
   AUTHOR = {Mao, Wenlong and Li, Zhanxiang and Huo, Mingen},
   TITLE = {Landing control algorithm for gimbal-serviced UAVs based on field-of-view constraints},
   JOURNAL = {Scientific Reports},
   VOLUME = {15},
+  number={1},
+  pages={36013},
   YEAR = {2025},
   ISSN = {2045-2322},
+  publisher={Nature Publishing Group UK London},
   ABSTRACT = {This paper presents a robust and adaptive visual servoing-based landing control method for unmanned aerial vehicles (UAVs) equipped with a three-axis gimbal camera. To address the limitations of fixed-camera configurations, the proposed approach integrates pixel-level field-of-view (FOV) constraints and leverages the gimbal’s agility for enhanced visual tracking. The landing task is formulated as a constrained image-based control problem, where tracking errors of image features are rigorously bounded using prescribed performance functions. A velocity observer is incorporated to estimate the time-varying motion of the landing platform in real time, enabling accurate autonomous landing without relying on external communication or infrastructure. Lyapunov-based stability analysis confirms the theoretical soundness of the control strategy. Simulation results validate the effectiveness and robustness of the proposed method, demonstrating improved accuracy, adaptability, and practical applicability in UAV landing scenarios.},
   DOI = {10.1038/s41598-025-20044-3}
 }
@@ -67,8 +71,142 @@
   TITLE = {UAV low-altitude obstacle detection based on the fusion of LiDAR and camera},
   JOURNAL = {Autonomous Intelligent Systems},
   VOLUME = {1},
+  number={1},
+  pages={12},
   YEAR = {2021},
   ISSN = {2730-616X},
+  publisher={Springer},
   ABSTRACT = {In this paper, aiming at the flying scene of the small unmanned aerial vehicle (UAV) in the low-altitude suburban environment, we choose the sensor configuration scheme of LiDAR and visible light camera, and design the static and dynamic obstacle detection algorithms based on sensor fusion. For static obstacles such as power lines and buildings in the low-altitude environment, the way that image-assisted verification of point clouds is used to fuse the contour information of the images and the depth information of the point clouds to obtain the location and size of static obstacles. For unknown dynamic obstacles such as rotary-wing UAVs, the IMM-UKF algorithm is designed to fuse the distance measurement information of point clouds and the high precision angle measurement information of image to achieve accurate estimation of the location and velocity of the dynamic obstacles. We build an experimental platform to verify the effectiveness of the obstacle detection algorithm in actual scenes and evaluate the relevant performance indexes.},
   DOI = {10.1007/s43684-021-00014-y}
 }
+
+@Article{rel7,
+  AUTHOR = {Łuczak, Piotr and Granosik, Grzegorz},
+  TITLE = {Autonomous UAV Landing and Collision Avoidance System for Unknown Terrain Utilizing Depth Camera with Actively Actuated Gimbal},
+  JOURNAL = {Sensors},
+  VOLUME = {25},
+  YEAR = {2025},
+  NUMBER = {19},
+  ARTICLE-NUMBER = {6165},
+  URL = {https://www.mdpi.com/1424-8220/25/19/6165},
+  PubMedID = {41094989},
+  ISSN = {1424-8220},
+  ABSTRACT = {Autonomous landing capability is crucial for fully autonomous UAV flight. Currently, most solutions use either color imaging from a camera pointed down, lidar sensors, dedicated landing spots, beacons, or a combination of these approaches. Classical strategies can be limited by either no color data when lidar is used, limited obstacle perception when only color imaging is used, a low field of view from a single RGB-D sensor, or the requirement for the landing spot to be prepared in advance. In this paper, a new approach is proposed where an RGB-D camera mounted on a gimbal is used. The gimbal is actively actuated to counteract the limited field of view while color images and depth information are provided by the RGB-D camera. Furthermore, a combined UAV-and-gimbal-motion strategy is proposed to counteract the low maximum range of depth perception to provide static obstacle detection and avoidance, while preserving safe operating conditions for low-altitude flight, near potential obstacles. The system is developed using a PX4 flight stack, CubeOrange flight controller, and Jetson nano onboard computer. The system was flight-tested in simulation conditions and statically tested on a real vehicle. Results show the correctness of the system architecture and possibility of deployment in real conditions.},
+  DOI = {10.3390/s25196165}
+}
+
+@INPROCEEDINGS{rel8,
+  author={Chen, Huazhang and Xia, Kewei},
+  booktitle={2024 IEEE International Conference on Industrial Technology (ICIT)}, 
+  title={Robust Image-Based Visual Servo Target Tracking of UAV with Depth Camera}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-6},
+  keywords={Robust control;Visualization;Target tracking;Torque;Attitude control;Autonomous aerial vehicles;Cameras;unmanned aerial vehicle (UAV);image-based visual servo (IBVS);robust control;target tracking},
+  doi={10.1109/ICIT58233.2024.10540793}
+}
+
+@Article{rel9,
+  AUTHOR = {Seidaliyeva, Ulzhalgas and Ilipbayeva, Lyazzat and Utebayeva, Dana and Smailov, Nurzhigit and Matson, Eric T. and Tashtay, Yerlan and Turumbetov, Mukhit and Sabibolda, Akezhan},
+  TITLE = {LiDAR Technology for UAV Detection: From Fundamentals and Operational Principles to Advanced Detection and Classification Techniques},
+  JOURNAL = {Sensors},
+  VOLUME = {25},
+  YEAR = {2025},
+  NUMBER = {9},
+  ARTICLE-NUMBER = {2757},
+  URL = {https://www.mdpi.com/1424-8220/25/9/2757},
+  PubMedID = {40363196},
+  ISSN = {1424-8220},
+  ABSTRACT = {As unmanned aerial vehicles (UAVs) are increasingly employed across various industries, the demand for robust and accurate detection has become crucial. Light detection and ranging (LiDAR) has developed as a vital sensor technology due to its ability to provide rich 3D spatial information, particularly in applications such as security and airspace monitoring. This review systematically explores recent innovations in LiDAR-based drone detection, deeply focusing on the principles and components of LiDAR sensors, their classifications based on different parameters and scanning mechanisms, and the approaches for processing LiDAR data. The review briefly compares recent research works in LiDAR-based only and its fusion with other sensor modalities, the real-world applications of LiDAR with deep learning, as well as the major challenges in sensor fusion-based UAV detection.},
+  DOI = {10.3390/s25092757}
+}
+
+@phdthesis{rel10,
+  title={Scanning LiDAR for Telescope-based UAV Localization},
+  author={Zelinskyi, Daniil},
+  year={2025},
+  doi={10.34726/hss.2025.120145},
+  abstract={In recent years, technological advancements have made Unmanned Aerial Vehicles (UAVs) more versatile, affordable, and accessible. However, alongside these benefits, growing safety concerns have emerged due to incidents that highlight their potential risks. The number of drone-related accidents near high-risk areas such as airports and industrial facilities has notably increased. To mitigate these threats, advanced detection and tracking systems are crucial. This challenge is typically addressed by multispectral systems, which integrate multiple sensors into a single holistic platform, utilizing various detection principles to provide complementary information. These systems commonly include sensors such as radar, radio frequency, acoustic, and electro-optical devices. Precise 3D localization of a target is critical when countermeasures are required. For this purpose, Light Detection and Ranging (LiDAR) sensors are highly effective, providing exceptional accuracy over distances of several kilometers. Integrating LiDAR with large receiver apertures, like optical telescopes, extends its range while allowing the use of cost-effective, low-power laser sources such as laser diode.This thesis focuses on the development of a telescope-based scanning LiDAR system to precisely localize small UAVs. The LiDAR measurement principle is based on the Time of Flight (ToF) method. The transmitter side consists of a laser diode with a peak power of 125 W and custom-designed collimation optics, while a Fast Steering Mirror (FSM) is used for beam scanning. The receiver consists of an Avalanche Photodiode (APD) detector integrated with a wide Field of View (FoV) telescope featuring a 300 mm aperture. Both the transmitter and receiver are mounted on a high-speed pan-tilt unit, enabling 360° coverage.The feasibility of the proposed system is demonstrated through a series of experiments targeting both static and dynamic objects. The system successfully localized small static targets measuring 0.35 × 0.15 m at a range of 286 m, achieving a localization uncertainty of 0.6 m. Additionally, the system is used to perform a 3D scan of the Freihaus building in the center of Vienna, achieving ranges exceeding 300 m. The system also proved effective in detecting a DJI Mini 2 UAV, with a diagonal size of 0.3 m. Furthermore, the system’s ability to track moving targets was validated, achieving over 70% localization probability at a maximum lateral relative speed of 67 m/s.},
+  school={Technische Universit{\"a}t Wien}
+}
+
+@phdthesis{rel11,
+  title={Autonomous 3D LiDAR Mapping: Transforming 1D LiDAR to 3D LiDAR for Building Scanning with a Mobile Robot},
+  author={Hendawi, Rashid Sahem Nayef and AbuRehan, Mohammad Jafar Yousef},
+  year={2025},
+  school={An-Najah National University}
+}
+
+@article{rel12,
+	author = {Tommaselli, A. M. G. and Torres, F. M.},
+	journal = {ISPRS - International Archives of the Photogrammetry, Remote Sensing and Spatial Information Sciences},
+	doi = {10.5194/isprsarchives-xli-b1-711-2016},
+	issn = {2194-9034},
+	year = {2016},
+	month = {jun 6},
+	pages = {711--715},
+	publisher = {Copernicus GmbH},
+	title = {A light-weight laser scanner for UAV applications},
+	url = {http://dx.doi.org/10.5194/isprsarchives-XLI-B1-711-2016},
+	volume = {XLI-B1},
+}
+
+@inproceedings{rel13,
+  title={Point cloud acquisition techniques by using scanning LiDAR for 3D modelling and mobile measurement},
+  author={Altunta{\c{s}}, Cihan},
+  booktitle={XXIV Isprs Congress Imaging Today, Foreseeing Tomorrow, Commission Ii},
+  year={2022},
+  organization={Copernicus Gesellschaft Mbh}
+}
+
+@phdthesis{rel14,
+  title={A scanning LiDAR for long range detection and tracking of UAVs},
+  author={Quentel, Alain},
+  year={2021},
+  school={Normandie Universit{\'e}}
+}
+
+@article{rel15,
+  title={Affordable Robotic Mobile Mapping System Based on Lidar with Additional Rotating Planar Reflector},
+  author={B{\k{e}}dkowski, Janusz and Pe{\l}ka, Micha{\l}},
+  journal={Sensors},
+  volume={23},
+  number={3},
+  pages={1551},
+  year={2023},
+  publisher={MDPI}
+}
+
+@Article{rel16,
+AUTHOR = {Torresan, Chiara and Berton, Andrea and Carotenuto, Federico and Chiavetta, Ugo and Miglietta, Franco and Zaldei, Alessandro and Gioli, Beniamino},
+TITLE = {Development and Performance Assessment of a Low-Cost UAV Laser Scanner System (LasUAV)},
+JOURNAL = {Remote Sensing},
+VOLUME = {10},
+YEAR = {2018},
+NUMBER = {7},
+ARTICLE-NUMBER = {1094},
+URL = {https://www.mdpi.com/2072-4292/10/7/1094},
+ISSN = {2072-4292},
+ABSTRACT = {This study reports on a low-cost unmanned aerial vehicle (UAV)-borne light detection and ranging (LiDAR) system called LasUAV, from hardware selection and integration to the generation of three-dimensional point clouds, and an assessment of its performance. Measurement uncertainties were estimated in angular static, angular dynamic, and real flight conditions. The results of these experiments indicate that the point cloud elevation accuracy in the case of angular static acquisition was 3.8 cm, and increased to 3.9 cm in angular dynamic acquisition. In-flight data were acquired over a target surveyed by nine single passages in different flight directions and platform orientations. In this case, the uncertainty of elevation ranged between 5.1 cm and 9.8 cm for each single passage. The combined elevation uncertainty in the case of multiple passages (i.e., the combination of one to nine passages from the set of nine passages) ranged between 5 cm (one passage) and 16 cm (nine passages). The study demonstrates that the positioning device, i.e., the Global Navigation Satellite System real-time kinematic (GNSS RTK) receiver, is the sensor that mostly influences the system performance, followed by the attitude measurement device and the laser sensor. Consequently, strong efforts and greater economic investment should be devoted to GNSS RTK receivers in low-cost custom integrated systems.},
+DOI = {10.3390/rs10071094}
+}
+
+@article{rel17,
+title = {Airborne laser scanning—an introduction and overview},
+journal = {ISPRS Journal of Photogrammetry and Remote Sensing},
+volume = {54},
+number = {2},
+pages = {68-82},
+year = {1999},
+issn = {0924-2716},
+doi = {https://doi.org/10.1016/S0924-2716(99)00011-8},
+url = {https://www.sciencedirect.com/science/article/pii/S0924271699000118},
+author = {Aloysius Wehr and Uwe Lohr},
+keywords = {airborne laser scanning, pulse lasers, CW-lasers, laser ranging resolution and precision, laser scanning methods, position and orientation systems, airborne laser scanning (data processing chain)},
+abstract = {This tutorial paper gives an introduction and overview of various topics related to airborne laser scanning (ALS) as used to measure range to and reflectance of objects on the earth surface. After a short introduction, the basic principles of laser, the two main classes, i.e., pulse and continuous-wave lasers, and relations with respect to time-of-flight, range, resolution, and precision are presented. The main laser components and the role of the laser wavelength, including eye safety considerations, are explained. Different scanning mechanisms and the integration of laser with GPS and INS for position and orientation determination are presented. The data processing chain for producing digital terrain and surface models is outlined. Finally, a short overview of applications is given.}
+}
+
+
+
+
