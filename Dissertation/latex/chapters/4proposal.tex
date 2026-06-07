@@ -192,8 +192,8 @@ prototyping phase of the project.
 \subsection{Single-point ToF sensor}
 
 The chosen sensor to measure distance to objects from the pod is a ToFFuture Technology
-XT-S1 \gls{lidar} sensor \cite{xts1}. The XT-S1 is a compact single-point \gls{ir} laser sensor
-based on the \gls{tof} principle.
+XT-S1 \gls{lidar} sensor \cite{xts1}. The XT-S1 is a compact single-point \gls{ir} laser
+sensor based on the \gls{tof} principle.
 It weighs only 9 grams and consumes less than 0.5W.
 The sensor can operate in environments with intense lighting conditions of up to
 100klux, while measuring distance up to 24m distant objects of 10\% reflectivity.
@@ -225,30 +225,37 @@ external encoder, allowing the control system to minimize the error between the 
 and actual position. This enables accurate, repeatable, and dynamic movement of
 the sensor.
 
-Traditional servomotors are often based on brushed DC motors combined with a gearbox and
+Traditional servomotors are often based on \gls{bdc} motors combined with a gearbox and
 a position feedback element, such as a potentiometer. These systems are relatively simple
 and cost-effective, but they suffer from mechanical wear due to the brushes in the long
 term, limited precision from the feedback device, and backlash introduced by the gearbox.
 
-In contrast, modern servomotors based on brushless DC (BLDC) motors use electronic
+In contrast, modern servomotors based on \gls{bldc} motors use electronic
 commutation and typically incorporate high-resolution magnetic angle sensors for position
 feedback. These sensors provide precise, contactless measurement of the motor's shaft
-angle, eliminating wear and improving reliability. BLDC-based servos also offer smoother
+angle, eliminating wear and improving reliability. \gls{bldc}-based servos also offer
+smoother
 motion, higher efficiency, lower noise, and better dynamic response compared to brushed
-counterparts. The downsides of using BLDC motors in a servo system are a significant
+counterparts. The downsides of using \gls{bldc} motors in a servo system are a significant
 increase in complexity, price, and availability of components.
 
-The chosen type of motor for the prototype will initially be brushed DC servomotors, as
+The chosen type of motor for the prototype will initially be \gls{bdc} servomotors, as
 they are cheaper, easy to purchase, and easy to model and control, in contrast with their
-BLDC counterparts, which usually need customized control solutions and BLDC drivers. In
-order to compensate for the downsides of using brushed DC servomotors, high-torque,
+\gls{bldc} counterparts, which usually need customized control solutions and \gls{bldc}
+drivers. In
+order to compensate for the downsides of using \gls{bdc} servomotors, high-torque,
 robust servomotor models were used, for these have smaller mechanical tolerances, show
 less wear and tear due to improved quality on gears and more accurate digital feedback
 sensor systems.
 
 \subsection{Parallax compensation}
 
-WIP
+As mentioned in Chapter~\ref{cap:back}, vector algebra will be used to compensate parallax.
+Custom variable types will be created to standarize the vector data in the algorithm.
+Special functions will be written to execute both vector and scallar calculations.
+In order to measure the performance of the system, mathematical and geometrical data will
+be saved and so after each individual test section, a log will be generated to be post-
+processed, and metrics like accuracy and precision can be obtained and compared.
 
 \section{3D printing}
 

@@ -381,23 +381,23 @@ without any changes.
 The Pod system shall execute the following within certain time constraints:
 
 \begin{itemize}
-  \item Receive direction angles from Drone subsystem
-  \item Control gimbal to point \gls{lidar} sensor
-  \item Read data from \gls{lidar} sensor
-  \item Run parallax subroutine until error is small enough
-  \item Send distance data back to Drone subsystem
+  \item Receive direction angles from the Drone subsystem
+  \item Control the gimbal to point the \gls{lidar} sensor
+  \item Read data from the \gls{lidar} sensor
+  \item Run the parallax subroutine until error is small enough
+  \item Send distance data back to the Drone subsystem
 \end{itemize}
 
-The Drone subsystem will detect ground target and find its angles every frame of the video
-stream, as every new frame present new visual information for the computer vision algorithm.
-Every time \gls{opencv} finishes processing a new frame, a fresh direction data is available
+The Drone subsystem will detect a ground target and find its angles every frame of the video
+stream, as every new frame presents new visual information for the computer vision algorithm.
+Every time \gls{opencv} finishes processing a new frame, fresh direction data is available
 to be sent to the Pod subsystem. In order to make the system as agile as possible, one key
-requirement of the Pod subsystem is to be able to respond to every distance request by the
+requirement of the Pod subsystem is to be able to respond to every distance request from the
 Drone subsystem. The higher the refresh rate of the computer vision algorithm in the Drone
-subsystem (higher \gls{fps}) is, the lower period between calls will be. As it is desirable
-that the Pod subsystem responds to every call for new data, the \gls{fps} of the camera and
-computer vision algorithm drastically impacts how fast the Pod susbsytem will need to be.
+subsystem (higher \gls{fps}) is, the lower the period between calls will be. As it is
+desirable that the Pod subsystem respond to every call for new data, the \gls{fps} of the
+camera and the computer vision algorithm drastically impacts how fast the Pod subsystem
+will need to be.
 
-Some vector operations could be done via matrixes or other optimized mathematical processes.
-This chapter only focused on explaining the basic theory behind all processes.
-
+Some vector operations could be done via matrices or other optimized mathematical processes.
+This chapter only focuses on explaining the basic theory behind all processes.
