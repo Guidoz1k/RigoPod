@@ -4,67 +4,218 @@
 \chapter{Related Works}
 \label{cap:relworks}
 
+This chapter reviews the relevant literature and previous research related to the topic
+of this dissertation. The objective is to provide an overview of existing approaches,
+methodologies, and technologies, highlighting their contributions, limitations, and
+areas of application. By analyzing prior work, it is possible to identify current
+challenges, research gaps, and opportunities that motivate the development of the
+proposed solution. This review also establishes the theoretical and technical foundation
+upon which the present work is built. Each of the 20 analyzed papers work will be
+numbered so referencing their contents will be easier.
+
+\section{Vision-based tracking and precision landing}
+
+Gimbal mechanisms are primarily employed to decouple sensor orientation from the UAV's
+flight dynamics. Work \#1 "Active Object Detection and Tracking Using Gimbal Mechanisms
+for Autonomous Drone Applications" \cite{rel1} demonstrates that a 3-DoF gimbal
+significantly reduces motion blur and peripheral distortion, improving object pose
+estimation accuracy compared to passive mounts. This focus on visual stability is echoed
+in work \#8 "Robust Image-Based Visual Servo Target Tracking of UAV with Depth Camera"
+\cite{rel8}, which utilizes image-based visual
+servoing (IBVS) to minimize tracking deviations caused by attitude perturbations.
+In the context of autonomous landing, gimbals address field-of-view (FOV) limitations.
+Work \#5 "Landing Control algorithm for gimbal-serviced UAVs based on field-of-view
+constraints" \cite{rel5} proposes a visual servoing method that leverages gimbal agility
+to ensure target features
+remain within the pixel-level FOV during descent. Similarly, work \#7 "Autonomous UAV
+Landing and Collision Avoidance System for Unknown Terrain Utilizing Depth Camera with
+Actively Actuated Gimbal" \cite{rel7} uses an actively actuated gimbal to counteract the
+narrow FOV of an
+RGB-D camera, allowing the UAV to search for safe landing spots and detect obstacles
+simultaneously.
+
+\section{LiDAR integration and 3D mapping}
+
+The integration of LiDAR sensors on gimbals enhances mapping and inspection capabilities.
+Work \#4 "Autonomous Structural Inspection with an Octocopter UAV: Integration
+of 3D LiDAR and Gimbal-Mounted Camera" \cite{rel4} combines a rotating 3D LiDAR for
+environmental mapping with a gimballed camera for
+high-resolution structural assessment. For cost-sensitive applications, Work \#20
+"Designing a Compact Hexacopter with Gimballed Lidar
+and Powerful Onboard Linux Computer" \cite{rel20} details a custom-built 3D-printed
+gimbal designed
+to stabilize a 2D LiDAR, ensuring it scans horizontally regardless of the UAV's tilt.
+Several studies explore novel methods to reshape LiDAR FOV. Work \#15 "Affordable Robotic
+Mobile Mapping System Based on Lidar with Additional Rotating Planar Reflector"
+\cite{rel15} uses a custom
+rotating mirror to extend a conic-FOV solid-state LiDAR into a 360-degree scanner.
+Similarly, work \#11 "Autonomous 3D LiDAR Mapping: Transforming 1D
+LiDAR to 3D LiDAR for Building Scanning with a
+Mobile Robot" \cite{rel11} converts a 1D LiDAR into a 3D scanner using
+an orthogonal mirror system, providing a low-cost alternative to expensive multi-beam
+units. A broader overview of these technologies is provided in work \#13 "Point cloud
+acquisition techniques by using scanning lidar for 3d modelling and mobile measurement"
+\cite{rel13}, which
+classifies scanners into mechanical, solid-state (MEMS/OPA), and multi-beam categories.
+
+\section{Stability analysis and performance assessment}
+
+The impact of gimbals on surveying accuracy is a critical research area.
+Work \#2 "Gimbal Influence on the Stability of Exterior Orientation Parameters of UAV
+Acquired Images" \cite{rel2} provides a quantitative analysis showing that low-budget
+gimbals can improve orientation stability by up to 20 times in simulated conditions,
+which is essential for photogrammetry without ground control points.
+Work \#3 "The utilization of gimbal systems in unmanned aerial vehicles" \cite{rel3}
+reviews various control algorithms (PID, Fuzzy Logic, Adaptive) used to maintain this
+stability across military and civilian sectors.
+For specialized mapping, Work \#12 "A light-weight laser scanner for UAV applications"
+\cite{rel12} and work \#16 "Development and Performance Assessment of a Low-Cost
+UAV-Borne LiDAR System (LasUAV)" \cite{rel16} evaluate the integration of
+automotive-grade scanners (like IbeoLux) on UAVs. These studies conclude that the
+GNSS-RTK receiver often has the greatest influence on system performance,
+followed by the attitude measurement device.
+Work \#17 "Airborne laser scanning, an introduction and overview" \cite{rel17} provides
+the foundational context for these systems, detailing the pulse and phase-shift
+measurement principles.
+
+\section{Specialized applications and long-range detection}
+
+Gimbals also enable reactive flight behaviors. Work \#18 "Autonomous Quadrotor
+Terrain-Following with a Laser Rangefinder and Gimbal System" \cite{rel18} uses a gimbal
+to point a rangefinder ahead of the UAV based on its speed, allowing real-time altitude
+adjustments over uneven ground.
+For ground robots in rugged terrain, work \#19 "Terrain-Adaptive Planning of a Mobile
+Robot With a Multiaxis Gimbal System for Stable SLAM" \cite{rel19} introduces a unique
+gimbal with Z-axis translation to dampen vertical shocks that rotational gimbals cannot
+address. Finally, for counter-UAV applications, long-range detection is paramount.
+Work \#9 "LiDAR Technology for UAV Detection: From Fundamentals and Operational Principles
+to Advanced Detection and Classification Techniques" \cite{rel9} reviews ground-to-air
+detection mechanisms.
+Work \#14 "A scanning LiDAR for long range detection and tracking of UAVs" \cite{rel14}
+and work \#10 "Scanning LiDAR for Telescope-based UAV Localization" \cite{rel10} both
+optimize scanning patterns and optical architectures, such as using telescopes with laser
+diodes, to achieve target localization at ranges up to one kilometer.
+Work \#6 "UAV low-altitude obstacle detection based on the fusion of LiDAR and camera"
+\cite{rel6} complements these by using an IMM-UKF algorithm to fuse LiDAR distance and
+camera angle data for accurate dynamic obstacle tracking.
+
+\section{Related works summary}
+
+To facilitate the comparison of the reviewed studies, Table~\ref{table:relworks} summarizes
+the main characteristics, methodologies, and contributions of the related works discussed
+in this chapter. This overview highlights the similarities and differences among the
+existing approaches, providing a clearer understanding of the current state of the art
+and the research gap addressed by the proposed work. All works study the use of Computer
+Vision in unmanned vehicles, as well as the use of some form of sensor fusion to acquire
+depth data. The summary also serves to highlight how little the idea of gimballing a
+\gls{tof} sensor has been covered in recent works due to the preference given to 3D
+\gls{lidar}s. Table~\ref{table:relrefs} can be used for quick reference.
+
+\begin{table}[ht]
+  \centering
+  \caption{ Article numbers and references }
+  \label{table:relrefs}
+  \begin{tabular}{|| c c ||} 
+    \hline
+    Number & Reference \\ [0.5ex] 
+    \hline\hline
+    [1] & \cite{rel1} \\ 
+    \hline
+    [2] & \cite{rel2} \\ 
+    \hline
+    [3] & \cite{rel3} \\ 
+    \hline
+    [4] & \cite{rel4} \\ 
+    \hline
+    [5] & \cite{rel5} \\ 
+    \hline
+    [6] & \cite{rel6} \\ 
+    \hline
+    [7] & \cite{rel7} \\ 
+    \hline
+    [8] & \cite{rel8} \\ 
+    \hline
+    [9] & \cite{rel9} \\ 
+    \hline
+    [10] & \cite{rel10} \\ 
+    \hline
+    [11] & \cite{rel11} \\ 
+    \hline
+    [12] & \cite{rel12} \\ 
+    \hline
+    [13] & \cite{rel13} \\ 
+    \hline
+    [14] & \cite{rel14} \\ 
+    \hline
+    [15] & \cite{rel15} \\ 
+    \hline
+    [16] & \cite{rel16} \\ 
+    \hline
+    [17] & \cite{rel17} \\ 
+    \hline
+    [18] & \cite{rel18} \\ 
+    \hline
+    [19] & \cite{rel19} \\ 
+    \hline
+    [20] & \cite{rel20} \\ 
+    \hline
+  \end{tabular}
+\end{table}
+
 % extra symbols for the reference table
 \newcommand{\V}{ \checkmark }
 \newcommand{\X}{ \text{\sffamily X} }
 
-
-
-
-
 \begin{table}[ht]
-  \begin{center}
-  \label{tab:relworks}
+  \centering
   \caption{ Direct comparison between all the articles used as related works }
+  \label{table:relworks}
   \begin{tabular}{|| c c c c c ||} 
     \hline
-    Number & Reference and usage: & Gimbal & \gls{tof} & \gls{lidar} \\ [0.5ex] 
+    Number & Primary Sensors & Gimbal Type & Application & \begin{tabular}{@{}c@{}}Distance \\ sensor \\ on gimbal?\end{tabular} \\ [0.5ex] 
     \hline\hline
-    [1] & \cite{rel1} & \V & 2 & \X \\ 
+    [1] & Camera & 3-Axis & Active Tracking & ~ \\ 
     \hline
-    [2] & \cite{rel2} & 6 & 87837 & 787 \\ 
+    [2] & Camera & 2-Axis & Photogrammetry & ~ \\ 
     \hline
-    [3] & \cite{rel3} & 6 & 87837 & 787 \\ 
+    [3] & Camera & 3-Axis & Multi-sector Review & ~ \\ 
     \hline
-    [4] & \cite{rel4} & 6 & 87837 & 787 \\ 
+    [4] & 3D \gls{lidar} + Camera & 3-Axis & Infrastructure inspection & ~ \\ 
     \hline
-    [5] & \cite{rel5} & 6 & 87837 & 787 \\ 
+    [5] & Camera & 3-Axis & Autonomous Landing & ~ \\ 
     \hline
-    [6] & \cite{rel6} & 6 & 87837 & 787 \\ 
+    [6] & \gls{lidar} + Camera & \X & Obstacle Avoidance & ~ \\ 
     \hline
-    [7] & \cite{rel7} & 6 & 87837 & 787 \\ 
+    [7] & RGB-D Camera & 3-Axis & Landing/Avoidance & \V \\ 
     \hline
-    [8] & \cite{rel8} & 6 & 87837 & 787 \\ 
+    [8] & Camera & \X & Target Tracking & ~ \\ 
     \hline
-    [9] & \cite{rel9} & 6 & 87837 & 787 \\ 
+    [9] & \gls{lidar} & \X & Detection systems review & ~ \\ 
     \hline
-    [10] & \cite{rel10} & 6 & 87837 & 787 \\ 
+    [10] & \gls{lidar} & 2-Axis & UAV Localization & ~ \\ 
     \hline
-    [11] & \cite{rel11} & 6 & 87837 & 787 \\ 
+    [11] & \gls{tof} & 2-Axis & SLAM & ~ \\ 
     \hline
-    [12] & \cite{rel12} & 6 & 87837 & 787 \\ 
+    [12] & 3D \gls{lidar} & \X & Geospatial Data & ~ \\ 
     \hline
-    [13] & \cite{rel13} & 6 & 87837 & 787 \\ 
+    [13] & 3D \gls{lidar} & \X & Mapping review & ~ \\ 
     \hline
-    [14] & \cite{rel14} & 6 & 87837 & 787 \\ 
+    [14] & 3D \gls{lidar} & \X & UAV Detection & ~ \\ 
     \hline
-    [15] & \cite{rel15} & 6 & 87837 & 787 \\ 
+    [15] & 3D \gls{lidar} & 2-Axis & Mobile Mapping & ~ \\ 
     \hline
-    [16] & \cite{rel16} & 6 & 87837 & 787 \\ 
+    [16] & 3D \gls{lidar} & \X & Forest Monitoring & ~ \\ 
     \hline
-    [17] & \cite{rel17} & 6 & 87837 & 787 \\ 
+    [17] & 3D \gls{lidar} & \X & Topography & ~ \\ 
     \hline
-    [18] & \cite{rel18} & 6 & 87837 & 787 \\ 
+    [18] & \gls{tof} & 2-Axis & Terrain Following & \V \\ 
     \hline
-    [19] & \cite{rel19} & 6 & 87837 & 787 \\ 
+    [19] & \gls{lidar} + Camera & 2-Axis & SLAM & \V \\ 
     \hline
-    [20] & \cite{rel20} & 6 & 87837 & 787 \\ 
+    [20] & 2D \gls{lidar} + Camera & 3-Axis & Sensor-Fusion & \V \\ 
     \hline
   \end{tabular}
-  \end{center}
 \end{table}
-
-
 
 
 
