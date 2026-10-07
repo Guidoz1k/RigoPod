@@ -1,6 +1,9 @@
 \documentclass[ppgc, diss, english]{infufrgs}
 \usepackage[utf8]{inputenc}
 
+% needed to use \FloatBarrier to force images not to break lists and texts (section 2.4.2)
+\usepackage{placeins}
+
 % math pack
 \usepackage{amsmath}
 
@@ -18,8 +21,8 @@
 % suppresses 90% of this stupid warning
 \hbadness=10000
 
-\title{Outdoors Distance To Ground Object Measuring Pod for UAV's}
-\translatedtitle{Módulo Para Medição De Distancia Até Objeto Em Solo Para VANT's}
+\title{RigoDM Pod: Ranging Instrument for Ground Object Distance Measuring Pod}
+\translatedtitle{RigoDM Pod: Módulo Para Medição De Distancia Até Objeto Em Solo}
 \author{Madruga}{Rodrigo Daltoé}
 \advisor[Prof.~Dr.]{Pereira}{Carlos Eduardo}
 \date{2026}

@@ -19,40 +19,11 @@ distance measurements in drones are single-point or multi-point \gls{tof} sensor
 pod is to intended to be used as a standalone, and as flexible as possible as a drone
 component, it must be able to operate over any distance that a drone might need to measure
 for a ground object.
-Assuming that the drone will fly at an approximate maximum altitude of 120m, this means that
-the target will be at least 120m away from the drone, under ideal conditions,
-when it is directly below the sensor.
-As the target moves away from the point directly below the drone on the ground,
-the distance increases. This relationship between the position of the ground target and the
-distance to the drone can be better understood via the Figure~\ref{fig:3img1}. The final
-distance can be expressed either by the Equation~\ref{eq:dist_to_gnd1} or by the
-Equation~\ref{eq:dist_to_gnd2}:
 
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=0.55\textwidth]{4/img1}
-  \caption{Distance from drone to target as a function of target's position on ground in 2D}
-  \label{fig:3img1}
-\end{figure}
-
-\begin{equation}
-  \label{eq:dist_to_gnd1}
-  \scalebox{1.5}{$ d = \sqrt{ x^2 + h^2 } $}
-\end{equation}
-
-\begin{equation}
-  \label{eq:dist_to_gnd2}
-  \scalebox{1.5}{$ d = h \cdot sec\bigg( ~ tan^-1\Big( ~ \frac{x}{h} ~ \Big) ~ \bigg) $}
-\end{equation}
-
-%where:
-
-\begin{itemize}
-  \item $d$ is the distance to the object on the ground
-  \item $h$ is the height of the drone
-  \item $x$ is the position of the object on the ground
-\end{itemize}
-
+As mentioned in Chapter~\ref{cap:back}, the drone will operate under 120\,m of height but
+might need to measure distances greater than that due to the mathematics of the
+relationship of the target's distance to the drone's nadir (the point on the ground
+immediately below the drone) and the drone's height.
 With such large distances like that, flash \gls{lidar} becomes too expensive or
 difficult to source.
 As the pod will need to provide only the distance to a single target at a time,
@@ -101,7 +72,7 @@ a pin header for many different serial protocols to be used to communicate with 
 subsystem. The board is powered by a 5V/5A DC power supply via USB-C.
 The exact model can be seen in Figure~\ref{fig:4rasp}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \includegraphics[width=0.5\textwidth]{4/rasp}
   \caption{Raspberry Pi model 5}
@@ -175,7 +146,7 @@ The device features a wide range of peripherals, such as GPIO, SPI, I²C, UART, 
 and PWM, enabling flexible interfacing with sensors and external components.
 A board with the chosen microcontroller module can be seen in Figure~\ref{fig:4esp}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \includegraphics[width=0.5\textwidth]{4/esp}
   \caption{ESP32-S3 module on development board}
@@ -202,7 +173,7 @@ It's accuracy is $\pm$2\%, with a measurement frequency of 50Hz.
 The sensor was chosen for its easy availability, low price, small size and weight and
 good outdoor performance. The sensor module can be seen in Figure~\ref{fig:4xts1}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \includegraphics[width=0.5\textwidth]{4/xts1}
   \caption{XT-S1 sensor module and it's dimensions}

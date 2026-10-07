@@ -401,3 +401,143 @@ will need to be.
 
 Some vector operations could be done via matrices or other optimized mathematical processes.
 This chapter only focuses on explaining the basic theory behind all processes.
+
+\section{Static vs. dynamic target measurements}
+
+As seen in Chapter~\ref{cap:intro}), the target will be at least 120\,m away from the drone,
+being at 120\,m under ideal conditions,when it is directly below the sensor.
+As the target moves away from the point directly below the drone on the ground,
+the distance increases. This relationship between the position of the ground target and the
+distance to the drone can be better understood via Figure~\ref{fig:2img3}. The final
+distance can be expressed either by Equation~\ref{eq:dist_to_gnd1} or by
+Equation~\ref{eq:dist_to_gnd2}, which are equivalent when $h > 0$:
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.55\textwidth]{2/img3}
+  \caption{Distance from drone to target as a function of target's position on ground in 2D}
+  \label{fig:2img3}
+\end{figure}
+
+\begin{equation}
+  \label{eq:dist_to_gnd1}
+  \scalebox{1.5}{$ d = \sqrt{ x^2 + h^2 } $}
+\end{equation}
+
+\begin{equation}
+  \label{eq:dist_to_gnd2}
+  \scalebox{1.5}{$ d = h \cdot \sec\bigg( ~ \tan^{-1}\Big( ~ \frac{x}{h} ~ \Big) ~ \bigg) $}
+\end{equation}
+
+where:
+
+\begin{itemize}
+  \item $d$ is the distance to the object on the ground
+  \item $h$ is the height of the drone
+  \item $x$ is the position of the object on the ground
+\end{itemize}
+
+\subsection{Static measurement}
+
+For the distance measurements of a static target, the only two critical parameters are
+height and angle. These two parameters combined with environmental variables can be used
+to evaluate the pod's range of operation:
+
+\begin{itemize}
+  \item Maximum distance measurable
+  \item Maximum angle for correct operation
+  \item Maximum sun brightness on target
+\end{itemize}
+
+Both the maximum distance measurable and the maximum sun brightness on target are
+mainly determined by the \gls{tof} sensor used, as well as by the angle of
+measurement.
+With the sensor defined, the only factor to be taken into account is the angle.
+Different angles between the target vector and sun vector will result in different
+sunlight intensities hitting the sensor. Sunlight should never exceed the sensor
+rating for environment light, otherwise the measurements will be compromised.
+
+Both the maximum distance measurable and maximum angle for correct operation are
+material dependent. Different target materials have different reflectivity indexes.
+The closer the material is to an ideal reflective mirror, the more reflected light
+and the less diffuse light will be present as result. The opposite is true for very
+diffuse (Lambertian) surfaces \cite{otica}. Figure~\ref{fig:2img4} shows a diagram
+with both diffuse and reflected light being generated after an incident beam of
+light hits a partially reflective surface. The amount of both diffuse and reflected
+light is defined by how reflective the surface is.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.55\textwidth]{2/img4}
+  \caption{Reflected and Diffused light from incident light on surface}
+  \label{fig:2img4}
+\end{figure}
+
+For applications in which drones measure distances to ground surfaces
+through the use of infrared laser, the more diffuse the surface the better, because
+the target's material will always reflect some light back to the sensor,
+regardless of the angle of incidence, guaranteeing correct measurements.
+
+\subsection{Dynamic measurement}
+
+All critical parameters found when executing static measurements also apply for dynamic
+measurements. As seen previously in this section, the distance measurement is affected
+by both height to ground and angle to target, described by both
+Equation~\ref{eq:dist_to_gnd1} and Equation~\ref{eq:dist_to_gnd2}. 
+The curve of measured distance as a function of measurement angle for a drone measuring
+a small target over a flat surface with the drone at a height of 1\,m can be seen
+in Figure~\ref{fig:2img6}, with the
+distance in red and its derivative in green.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.75\textwidth]{2/img6}
+  \caption{Distance by angle with derivative}
+  \label{fig:2img6}
+\end{figure}
+
+The curve seen in Figure~\ref{fig:2img6} shows how the measured distance varies with
+angle for a static target,
+but the scenario is not so simple if the target is moving on the ground between two frames
+of measurement as seen in Figure~\ref{fig:2img5}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.75\textwidth]{2/img5}
+  \caption{Geometry of moving target}
+  \label{fig:2img5}
+\end{figure}
+
+\FloatBarrier
+where:
+
+\begin{itemize}
+  \item $\delta_1$ is the angle to target in frame 1
+  \item $\delta_2$ is the angle to target in frame 2
+  \item $d_1$ is the distance to target in frame 1
+  \item $d_2$ is the distance to target in frame 2
+  \item $p_1$ is the position of the target in frame 1
+  \item $p_2$ is the position of the target in frame 2
+  \item $v$ is the velocity of the target
+\end{itemize}
+
+Now, the sensor's gimbal needs to track the target, with angles provided by the drone's
+computer vision system. With varying angles, the distance-measuring pod needs
+to deal with the angular speed of the gimbal, as well as with the time it takes for the
+distance sensor to finish one measurement.
+
+The \gls{tof} sensor must execute one measurement with the target always within its
+laser beam, otherwise the sensor could have conflicting readings, since the surface could
+change during one single measurement. Either the sensor must be fast enough for the target
+to remain in front of the beam, or the distance between the target and the ground must be
+negligible compared to the height at which the drone is hovering.
+
+As the distance sensor has limited range of operation, so does the gimbal. Regardless
+of the type of motors used, the gimbal will have a maximum angular speed. The pod system
+then needs to guarantee that the gimbal is fast enough, or, if it cannot keep the target
+in the \gls{tof} sensor's beam, inform the drone system that
+the pod now needs more time to process the measurement. The maximum angular speed is
+directly
+tied to the motor used. With bigger reduction gears on the servo motor, for example,
+the servo gets stronger but slower. Servos are also open loop from the pods perspective,
+ which needs to be taken into account when making a gimbal using this type of motor.
