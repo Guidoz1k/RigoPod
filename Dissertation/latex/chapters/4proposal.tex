@@ -228,6 +228,16 @@ In order to measure the performance of the system, mathematical and geometrical 
 be saved and so after each individual test section, a log will be generated to be post-
 processed, and metrics like accuracy and precision can be obtained and compared.
 
+\subsection{Gimbal's maximum angular speed}
+
+As mentioned in Chapter~\ref{cap:back}, a gimbal will have a limited traverse, with both
+servo motors and brushless motors. As servos will initially be used, the maximum turning
+rate from the datasheet of the chosen servo motor will be hard-coded in the pod's firmware.
+The pod will then constantly report to the drone system whether the target is moving too
+fast for tracking to be maintained. The output for the gimbal
+will be filtered as well, to reduce wear on the motors and the chance of noise-induced
+oscillations.
+
 \section{3D printing}
 
 Additive manufacturing, specifically 3D printing, is employed in the development of the
@@ -270,4 +280,4 @@ following parts in the proposed assembly:
   \includegraphics[width=0.6\textwidth]{4/img2.png}
   \caption{Proposed prototype assembled}
   \label{fig:4img2}
-\end{figure} 
+\end{figure}
