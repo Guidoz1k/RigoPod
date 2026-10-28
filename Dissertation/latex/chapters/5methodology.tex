@@ -10,6 +10,9 @@ were executed in order to evaluate the pod system's performance.
 
 \section{The prototype}
 
+A detailed connection diagram of the whole test device can be seen in
+Figure~\ref{fig:5ckt}.
+
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{5/img1}
@@ -17,30 +20,37 @@ were executed in order to evaluate the pod system's performance.
   \label{fig:5ckt}
 \end{figure}
 
-WIP por menores tecnicos como procolo de comunicacao, algoritmos e pa
-  modbus
+Both communication buses from the ESP32-S3 to the Raspberry Pi 5 and the XT-S1
+use \gls{uart} communication. For the XT-S1 sensor, Modbus \cite{modbus}
+is implemented on top of \gls{uart}, for a safe, reliable connection.
+The protocol used to set the servos in position is simple \gls{pwm}.
+The 5V rail from the Raspberry Pi is used to supply power to the ESP32-S3 and the
+XT-S1 sensor.
+A separate 5V \gls{psu} unit is used for the servos alone, as they draw high
+currents during startup and when moving the main axis, which would not be supported
+by the 5V supply from the Raspberry Pi.
 
 \subsection{Prototype's evolution}
 
-evolucao dos 3d print e servos melhores
-raspberry pi 5 do caralho de merda
-  pwoer suppli
-  cooler
+The prototype 3D case was designed over many different iterations.
+The final version of the case can be seen by the end of Chapter~\ref{cap:prop}.
+The specific \gls{pn} of the servo was selected after the most common
+TowerPro SG90 (9g Servo) showed unacceptable backlash and slack.
 
-\subsection{Technical details}
+The Raspberry pi 5 also took some efforts to operate reliably.
+Without officialy recommended peripherals, the \gls{sbc} showed problems with:
 
-sensor ta em modbus via uart
-os servos tao em pwm
+\begin{itemize}
+  \item Power supply instability.
+  \item Thermal management.\end{itemize}
 
-mostrar conexao
+Without warning, the \gls{sbc} would stop properly working or even shut down.
+The Raspberry Pi operated without any issues only when equipped with the official
+heat sink and \gls{psu}.
 
-pi e sistema vai ser uart tbm?
+\subsection{Raspberry Pi's test UI}
 
-ae tem a placa do pi tendo conexoes tbm nessa merda
-
-\subsubsection{Raspberry Pi's test UI}
-
-coisas incluidas no drone system para facilitar os testes
+ W I P
 
 \section{The tests}
 

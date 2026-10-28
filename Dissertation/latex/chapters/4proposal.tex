@@ -69,7 +69,7 @@ VideoCore VII GPU,
 8GB LPDDR4X-4267 SDRAM,
 and many interfaces and connectors, including 4-lane MIPI connectors for the camera and
 a pin header for many different serial protocols to be used to communicate with the pod
-subsystem. The board is powered by a 5V/5A DC power supply via USB-C.
+subsystem. The board is powered by a 5V/5A DC \gls{psu} via USB-C.
 The exact model can be seen in Figure~\ref{fig:4rasp}.
 
 \begin{figure}[ht]
@@ -174,7 +174,10 @@ while the receiver's half-angle \gls{fov} is 1$^\circ$. That makes a total emiss
 cone of 4$^\circ$ and a total recepction cone of 2$^\circ$.
 
 The sensor was chosen for its easy availability, low price, small size and weight and
-good outdoor performance. The sensor module can be seen in Figure~\ref{fig:4xts1}.
+good outdoor performance. Another key feature of the sensor is the communication
+protocols that can be used to connect the sensor to other devices, including
+\gls{i2c} and \gls{uart}.
+The sensor module can be seen in Figure~\ref{fig:4xts1}.
 
 \begin{figure}[ht]
   \centering
@@ -283,7 +286,7 @@ may evolve rapidly.
 
 This subsection presents a 3D model of the assembled prototype, illustrating the
 integration of its main components. The model includes the 3D-printed structural parts,
-sensors, servo motors, electronic boards, and power supply elements, providing an
+sensors, servo motors, and electronic boards and \gls{psu} compartments, providing an
 overview of the system's physical architecture and component arrangement.
 The 3D model of the prototype can be seen in Figure~\ref{fig:4img2} and shows the
 following parts in the proposed assembly:
