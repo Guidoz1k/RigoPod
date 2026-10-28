@@ -74,7 +74,7 @@ The exact model can be seen in Figure~\ref{fig:4rasp}.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.5\textwidth]{4/rasp}
+  \includegraphics[width=0.7\textwidth]{4/rasp}
   \caption{Raspberry Pi model 5}
   \label{fig:4rasp}
 \end{figure}
@@ -148,7 +148,7 @@ A board with the chosen microcontroller module can be seen in Figure~\ref{fig:4e
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.5\textwidth]{4/esp}
+  \includegraphics[width=0.7\textwidth]{4/esp}
   \caption{ESP32-S3 module on development board}
   \label{fig:4esp}
 \end{figure}
@@ -168,14 +168,17 @@ sensor based on the \gls{tof} principle.
 It weighs only 9 grams and consumes less than 0.5W.
 The sensor can operate in environments with intense lighting conditions of up to
 100klux, while measuring distance up to 24m distant objects of 10\% reflectivity.
-It's accuracy is $\pm$2\%, with a measurement frequency of 50Hz.
+It's accuracy is $\pm$2\%, with a measurement frequency of 50Hz. The wavelength used
+by the sensor is 940\,nm. The sensor's emmiter's half-angle \gls{fov} is 2$^\circ$,
+while the receiver's half-angle \gls{fov} is 1$^\circ$. That makes a total emission
+cone of 4$^\circ$ and a total recepction cone of 2$^\circ$.
 
 The sensor was chosen for its easy availability, low price, small size and weight and
 good outdoor performance. The sensor module can be seen in Figure~\ref{fig:4xts1}.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.5\textwidth]{4/xts1}
+  \includegraphics[width=0.7\textwidth]{4/xts1}
   \caption{XT-S1 sensor module and it's dimensions}
   \label{fig:4xts1}
 \end{figure} 
@@ -218,6 +221,24 @@ order to compensate for the downsides of using \gls{bdc} servomotors, high-torqu
 robust servomotor models were used, for these have smaller mechanical tolerances, show
 less wear and tear due to improved quality on gears and more accurate digital feedback
 sensor systems.
+
+The chosen servomotor part is the DSServo DS3235 \cite{servo1}\cite{servo2}.
+The DSServo DS3235 is a high-torque, waterproof, full-metal digital servo motor widely
+used in model vehicles and robots. It has a stall torque of up to 35\,kg·cm at 7.4V
+(ranges from ~23\,kg·cm at 5V up to 45\,kg·cm depending on the exact model), and
+operating speed of 0.13\,sec/60° at 7.4V (down to 0.11\,sec/60° at 8.4V for
+high-voltage models). It features stainless steel gears with double ball bearings, and
+water resistance rating of IP66. This specific model weighs around 60g, measures
+40 x 20 x 38.5\,mm and has a rotation angle of 180$^\circ$ 
+(via PWM 500 $\sim$ 2500\,µsec control signal).
+The servo module can be seen in Figure~\ref{fig:4servo}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{4/servo}
+  \caption{DS3235 and it's compatible accessories}
+  \label{fig:4servo}
+\end{figure} 
 
 \subsection{Parallax compensation}
 
