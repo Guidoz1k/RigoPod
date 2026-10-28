@@ -22,7 +22,7 @@
 #include "randomness.h"
 #include "xts1.h"
 #include "servo.h"
-// #include "customserial.h"
+#include "customserial.h"
 
 #include "demos/demo_servo.c"
 #include "demos/demo_led.c"

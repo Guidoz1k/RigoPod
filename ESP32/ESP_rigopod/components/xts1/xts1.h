@@ -30,9 +30,9 @@
 #define CRC_INIT        0xFFFF
 #define CRC_POLY        0xA001
 
-#define UART_BAUD_RATE  115200
-#define UART_TX_PIN     4
-#define UART_RX_PIN     5
+#define UART_2_BAUD_RATE  115200
+#define UART_2_TX_PIN     4
+#define UART_2_RX_PIN     5
 
 #define MODBUS_DEVICE_ID        0x01
 #define MODBUS_FRAME_SIZE_WRITE 8

@@ -1,4 +1,6 @@
-/* DEPRECATED SERIAL LIBRARY
+/*
+    Serial port UART_NUM_1, used for the communication with the Rasp
+*/
 
 #include "customserial.h"
 
@@ -16,7 +18,7 @@ static uint8_t read_timeout = pdMS_TO_TICKS(10);    // UART reading timeout
 
 void serial_setup(){
     uart_config_t configs = {
-        .baud_rate = 115200,
+        .baud_rate = UART_1_BAUD_RATE,
         .data_bits = UART_DATA_8_BITS,
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
@@ -25,9 +27,9 @@ void serial_setup(){
         .source_clk = UART_SCLK_DEFAULT,
     };
 
-    ESP_ERROR_CHECK( uart_set_pin( UART_NUM_0, 43, 44, -1, -1 ) );
-    ESP_ERROR_CHECK( uart_param_config( UART_NUM_0, &configs ) );
-    ESP_ERROR_CHECK( uart_driver_install( UART_NUM_0, 2048, 0, 0, NULL, 0 ) );
+    ESP_ERROR_CHECK( uart_set_pin( UART_NUM_1, UART_1_TX_PIN, UART_1_RX_PIN, -1, -1 ) );
+    ESP_ERROR_CHECK( uart_param_config( UART_NUM_1, &configs ) );
+    ESP_ERROR_CHECK( uart_driver_install( UART_NUM_1, 2048, 0, 0, NULL, 0 ) );
 
     ESP_LOGI( TAG, "Serial  initialized" );
 }
@@ -38,11 +40,11 @@ void serial_write_word( int16_t number, bool newline ){
     bool number_detect = false;
 
     if( number < 0 ){
-        uart_write_bytes( UART_NUM_0, "-", 1 );
+        uart_write_bytes( UART_NUM_1, "-", 1 );
         number *= -1;
     }
     else
-        uart_write_bytes( UART_NUM_0, "+", 1 );
+        uart_write_bytes( UART_NUM_1, "+", 1 );
 
     for( i = 0; i < 5; i++ ){
         buffer[ 4 - i ] = ( number % 10 ) + 48;
@@ -57,7 +59,7 @@ void serial_write_word( int16_t number, bool newline ){
         i++;
     }
 
-    uart_write_bytes( UART_NUM_0, buffer, 5 );
+    uart_write_bytes( UART_NUM_1, buffer, 5 );
 
     if( newline == true )
         serial_new_line();
@@ -104,7 +106,7 @@ void serial_write_byte( uint8_t number, base_t base, bool newline ){
     }
 
     if( size != 0 ){
-        uart_write_bytes( UART_NUM_0, buffer, size );
+        uart_write_bytes( UART_NUM_1, buffer, size );
         if( newline == true )
             serial_new_line();
     }
@@ -116,7 +118,7 @@ void serial_write_char( uint8_t character, bool numerical, bool newline ){
     if( numerical == true )
         buffer[ 0 ] += 48;
 
-    uart_write_bytes( UART_NUM_0, buffer, 1 );
+    uart_write_bytes( UART_NUM_1, buffer, 1 );
     if( newline == true )
         serial_new_line();
 }
@@ -124,7 +126,7 @@ void serial_write_char( uint8_t character, bool numerical, bool newline ){
 void serial_new_line(){
     char buffer = '\n';
 
-    uart_write_bytes( UART_NUM_0, &buffer, 1 );
+    uart_write_bytes( UART_NUM_1, &buffer, 1 );
 }
 
 void serial_write_string( const char *pointer, bool newline ){
@@ -138,14 +140,14 @@ void serial_write_string( const char *pointer, bool newline ){
     else
         counter--;
 
-    uart_write_bytes( UART_NUM_0, buffer, counter + 1 );
+    uart_write_bytes( UART_NUM_1, buffer, counter + 1 );
 }
 
 uint8_t serial_read_chars( char *buffer, uint8_t size ){
     uint8_t chars_read = 0;
 
     if( size <= MAXSIZE )
-        chars_read = uart_read_bytes( UART_NUM_0, buffer, size, read_timeout );
+        chars_read = uart_read_bytes( UART_NUM_1, buffer, size, read_timeout );
 
     return chars_read;
 }
@@ -153,7 +155,7 @@ uint8_t serial_read_chars( char *buffer, uint8_t size ){
 char serial_read_singlechar(){
     char uto = 0;
 
-    uart_read_bytes( UART_NUM_0, &uto, 1, read_timeout );
+    uart_read_bytes( UART_NUM_1, &uto, 1, read_timeout );
 
     return uto;
 }
@@ -162,13 +164,12 @@ uint8_t serial_read_size(){
     size_t size_IDF = 0;
     uint8_t size = 0;
 
-    uart_get_buffered_data_len( UART_NUM_0, &size_IDF );
+    uart_get_buffered_data_len( UART_NUM_1, &size_IDF );
     size = ( uint8_t )size_IDF;
 
     return size;
 }
 
 void serial_flush(){
-    uart_flush( UART_NUM_0 );
+    uart_flush( UART_NUM_1 );
 }
-*/

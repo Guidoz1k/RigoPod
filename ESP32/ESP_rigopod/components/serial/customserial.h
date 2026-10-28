@@ -8,13 +8,16 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define UART_1_BAUD_RATE  115200
+#define UART_1_TX_PIN     17
+#define UART_1_RX_PIN     18
+
 typedef enum {
     BIN = 2,
     DEC = 10,
     HEX = 16,
 } base_t;
 
-/* DEPRECATED SERIAL LIBRARY
 void serial_setup();
 
 void serial_write_word( int16_t number, bool newline );
@@ -34,6 +37,5 @@ char serial_read_singlechar();
 uint8_t serial_read_size();
 
 void serial_flush();
-*/
 
 #endif /* __CUSTOMSERIAL_H */

@@ -1,7 +1,11 @@
-/* IMPORTANT MENUCONFIG SETTINGS
+/* IMPORTANT SETTINGS
 
-    CONFIG_FREERTOS_HZ = 1000
-    I²C, UART functions ==> IRAM safe
+    MENUCONFIG:
+        CONFIG_FREERTOS_HZ = 1000
+        I²C, UART functions ==> IRAM safe
+
+    SDK CONFIG:
+        Channel for console output: from UART0 to USB Serial/JTAG Controller
 */
 
 #include "main.h"
@@ -32,9 +36,10 @@ servo_return_pwm_min( servo );
 }
 
 void main_task(){
+    const uint8_t brightness = 20;
+    led_color( randomness(brightness), randomness(brightness), randomness(brightness) );
+    delay_milli(100);
 /*
-led_color( red, green, blue );
-
 sensor = xts1_measure_distance( &current );
 char *distance_diag[ 13 ] = {
     "ERROR -13: overexposure",
@@ -203,17 +208,17 @@ void core1Task( void* parameter ){
  // RUNS ON CORE 0
 void app_main(){
     delay_milli( 1000 );
-    //serial_setup(); DEPRECATED
+    serial_setup(); // used for the UART1 with Rasp
     led_setup();
     if( ( program == NO_DEMO ) || ( program == DEMO_LIDAR ) ){
-        xts1_setup();
+        //xts1_setup(); /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
     servo_setup();
- 
+
     //timer_core0_setup(); CORE 0 TIMER INTERRUPT DISABLED
 
     printf("\nInitialization complete!\n\n");
-    //fflush(stdout);
+    fflush(stdout);
 
     // core 1 task creation
     xTaskCreatePinnedToCore( core1Task, "timer1Creator", 10000, NULL, 1, NULL, 1 );

@@ -250,7 +250,7 @@ measurement_output_t xts1_measure_distance(int16_t *distance){
 
 void xts1_setup(){
     uart_config_t configs = {
-        .baud_rate = UART_BAUD_RATE,
+        .baud_rate = UART_2_BAUD_RATE,
         .data_bits = UART_DATA_8_BITS,
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
@@ -259,7 +259,7 @@ void xts1_setup(){
         .source_clk = UART_SCLK_DEFAULT,
     };
 
-    ESP_ERROR_CHECK( uart_set_pin( UART_NUM_2, UART_TX_PIN, UART_RX_PIN, -1, -1 ) );
+    ESP_ERROR_CHECK( uart_set_pin( UART_NUM_2, UART_2_TX_PIN, UART_2_RX_PIN, -1, -1 ) );
     ESP_ERROR_CHECK( uart_param_config( UART_NUM_2, &configs ) );
     ESP_ERROR_CHECK( uart_driver_install( UART_NUM_2, 2048, 0, 0, NULL, 0 ) );
 

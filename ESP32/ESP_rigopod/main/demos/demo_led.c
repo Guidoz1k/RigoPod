@@ -56,7 +56,8 @@ void led_demo(){
     double angle_red = 0, angle_green = 0, angle_blue = 0, angle_inc = M_PI / 200;
     char aux = 0;
 
-    printf( "\n\n Send any character to start. " );
+    led_color( 0, 0, 0 );
+    printf( "\n\n Send any character to start. \n" );
     while( scanf("%c", &aux) != 1 )
         delay_tick();
 
