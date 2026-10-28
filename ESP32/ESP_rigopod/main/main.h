@@ -27,6 +27,7 @@
 #include "demos/demo_servo.c"
 #include "demos/demo_led.c"
 #include "demos/demo_lidar.c"
+#include "dissertation/program.c"
 
 // ========== DEFINITIONS ==========
 
