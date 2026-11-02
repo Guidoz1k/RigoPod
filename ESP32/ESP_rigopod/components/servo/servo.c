@@ -109,7 +109,7 @@ void update_servos(){
 
 // adjusts the min value of the PWM range
 void servo_set_pwm_min( int16_t new_pwm_min, servo_t servo ){
-    if( ( new_pwm_min >= PWM_MIN ) && ( new_pwm_min <= 0 ) ){
+    if( ( new_pwm_min <= PWM_MAX ) && ( new_pwm_min >= 0 ) ){
         switch( servo ){
             case SERVO_PITCH:
                 pitch_servo.pwm_min = new_pwm_min;

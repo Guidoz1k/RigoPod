@@ -5,17 +5,26 @@
     The ToF will throw an error in case it's not connected
 */
 
+// ========== DEFINITIONS ==========
+
+#define PITCH_SERVO_CALIB_BIAS  -200
+#define ROLL_SERVO_CALIB_MIN    2100
+#define ROLL_SERVO_CALIB_MAX    10100
+
+// ============ FUNCTIONS ============
+
+void inverse_kinematics( int16_t pitch, int16_t roll ){
+    int16_t set_pitch = -pitch;
+    int16_t set_roll = -roll;
+
+    servo_set_angle( set_pitch, SERVO_PITCH );
+    servo_set_angle( set_roll, SERVO_ROLL );
+}
+
 void servo_calib(){
-/*
-servo_set_angle( value, servo );
-servo_move_pwm( value, servo );
-servo_wide_pwm( value, servo );
-servo_set_pwm_max( value, servo );
-servo_set_pwm_min( value, servo );
-servo_return_angle( servo );
-servo_return_pwm_max( servo );
-servo_return_pwm_min( servo );
-*/
+    servo_move_pwm( PITCH_SERVO_CALIB_BIAS, SERVO_PITCH );
+    servo_set_pwm_min( ROLL_SERVO_CALIB_MIN, SERVO_ROLL );
+    servo_set_pwm_max( ROLL_SERVO_CALIB_MAX, SERVO_ROLL );
 }
 
 void main_task(){

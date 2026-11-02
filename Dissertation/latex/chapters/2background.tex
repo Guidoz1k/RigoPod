@@ -478,6 +478,77 @@ through the use of infrared laser, the more diffuse the surface the better, beca
 the target's material will always reflect some light back to the sensor,
 regardless of the angle of incidence, guaranteeing correct measurements.
 
+\subsubsection{Angular inacuracy impact on measurement}
+
+The Figure~\ref{fig:2img3} and Equation~\ref{eq:dist_to_gnd1} and
+Equation~\ref{eq:dist_to_gnd2} in this section shows the relationship
+between the position of a ground \gls{poi} relative to a drone's nadir,
+the drone's height and the resulting distance from the drone to the \gls{poi}.
+The relationship between the drone's height, angle to the \gls{poi}, and
+the distance to the \gls{poi}, is shown in Figure~\ref{fig:2img7}, can be
+described by Equation~\ref{eq:dist_to_gnd3} and has a curve like
+Figure~\ref{fig:2img8}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.55\textwidth]{2/img7}
+  \caption{Distance from drone to target as a function of angle}
+  \label{fig:2img7}
+\end{figure}
+
+\begin{equation}
+  \label{eq:dist_to_gnd3}
+  \scalebox{1.5}{$ d = h \cdot \sec( ~ \alpha ~ ) $}
+\end{equation}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{2/img8}
+  \caption{Distance's function curve}
+  \label{fig:2img8}
+\end{figure}
+
+As explained previously in this section, for small angles relative to the
+drone's nadir, there is little change from the absolute drone height.
+It shown in Figure~\ref{fig:2img8} that up until approximately
+$^{\pi}/_{4}$ (45°), the distance
+measured remains close to the value of height (1\,m).
+After this approximate angle, the distance values measured grow much more
+aggressively.
+
+
+To simulate the impact of an error of 1° (which is ), we can calculate the absolute
+value of the original distance subtracted from the distance with said error,
+with height equals to 100\,m,
+like in Equation~\ref{eq:asb_error}, with a curve like Figure~\ref{fig:2img9}
+
+\begin{equation}
+  \label{eq:asb_error}
+  \scalebox{1.5}{$ e = | ~ 100 \cdot \sec( ~ \alpha ~ ) - 100 \cdot \sec( ~ \alpha + 1^\circ ~ ) ~ | $}
+\end{equation}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{2/img9}
+  \caption{Distance's function error}
+  \label{fig:2img9}
+\end{figure}
+
+\clearpage %forces images to be in order with the text
+
+For an error of 1\% (1\,m), the maximum angle would be approximately 26°,
+for an error of 5\% (5\,m), the maximum angle would be approximately 56°,
+and for an error of 10\% (10\,m), the maximum angle would be approximately 66°,
+This, nonetheless, does not describe the error in the \gls{poi}'s position,
+only the error in the measured distance.
+
+As the system is designed to help the drone system measure distance of \gls{poi}
+close to the drone's nadir (usually the focus of drone's gimbals),
+the pod system will be able to deliver
+reliable measurements even with a inacurate and uncalibrated gimbal.
+More accurate gimbals could be investigated in future works in order to design
+a more reliable system even for critical and unusual angles.
+
 \subsection{Dynamic measurement}
 
 All critical parameters found when executing static measurements also apply for dynamic

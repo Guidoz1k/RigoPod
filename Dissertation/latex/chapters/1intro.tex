@@ -61,13 +61,24 @@ In addition to this resolution, the \gls{anac} defines that any drone that flies
 feet must be registered and licensed \cite{dronealturaANAC}. This is, of course, the maximum allowed
 operating altitude, and not necessarily the altitude at which the drone will, in fact, operate.
 
+The second important paramenter is the usual angles expected for the measurements.
+In unmanned aerial systems (UAS) payload design, the primary operational axis for
+imaging and sensing equipment is predominantly oriented near the drone's nadir
+(The point immediately below the drone relative to the center of Earth).
+Maintaining a stable, downward-looking perspective minimizes geometric distortion
+and ensures consistent spatial resolution across photogrammetry, aerial mapping,
+and environmental monitoring tasks. Consequently, stabilization gimbals are
+architected to deliver highest precision and disturbance rejection primarily
+within a narrow angular envelope centered around the nadir vector, effectively
+isolating the sensor payload from high-frequency platform attitude dynamics while
+keeping the optical boresight closely aligned with the local vertical.
+
 \section{System architecture}
 
 This target location system will consist of a target-to-drone distance measuring system.
 The pod should first receive orientation from the drone system. Then measure the
 distance to the target on ground. To obtain the correct distance of the target to
 the drone, the pod system should make some corrections necessary for the difference in point-of-view.
-
 
 \section{Different technologies for target location}
 
