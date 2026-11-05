@@ -42,13 +42,54 @@ Without officialy recommended peripherals, the \gls{sbc} showed problems with:
 
 \begin{itemize}
   \item Power supply instability.
-  \item Thermal management.\end{itemize}
+  \item Thermal management.
+\end{itemize}
 
 Without warning, the \gls{sbc} would stop properly working or even shut down.
 The Raspberry Pi operated reliably only when using the official
-heat sink and \gls{psu}.
+heat sink and \gls{psu}. The prototype includes a fan powered by internal 5V
+\gls{psu} so there is always a constant air flow inside the 3D printed case.
 
 \subsection{Raspberry Pi's test UI}
+
+ W I P
+
+\subsection{Raspberry Pi's OpenCV algorithm}
+
+The \gls{opencv} role in the drone system is to simply identify an object meant
+to be a test target. The drone system will then provide the direction of the
+\gls{poi} to the pod system, receive the distance information, and log it.
+
+The entire drone system relies on \gls{opencv}'s capabilities of identifying
+a designated \gls{poi}. The algorithm developed for the tests is the most
+basic logic for identifying a basic object on a contrasted landscape.
+
+The selected target is a green laser pointer, for it's ease to set static
+and dynamic tests in very large surfaces without the need of motors or
+complex automation. To identify a simple green bright dot on a wall or ground,
+a Python algorithm executes these simple steps:
+
+\begin{enumerate}
+  \item Capture of a single camera frame.
+  \item Filter the entire frame for given hue, saturation and brightness.
+  \item Use the filtered image to generate a mask.
+  \item Use the generated mask to search for the biggest shape.
+  \item Find the center of the biggest shape.
+\end{enumerate}
+
+With this algorithm, the drone system will search for a green dot of defined
+hue, saturation and brightness ranges, and point at the center of the biggest
+compatible shape. This basic algorithm will be used for all three tests
+described in the next section. This simple of a setup allows for precise
+static tests, with single or multiple points, and dynamic tests.
+All three different tests will point the \gls{poi}'s direction to the pod
+system, then log the distances informed, and calculate all the metrics.
+
+\subsection{Intermodule communication}
+
+ W I P
+
+\subsection{Parallax compensation algorithm}
 
  W I P
 
