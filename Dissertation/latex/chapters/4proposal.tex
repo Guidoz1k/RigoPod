@@ -81,7 +81,7 @@ The exact model can be seen in Figure~\ref{fig:4rasp}.
 
 The \gls{sbc} will run on Raspberry Pi OS, an OS made specifically for the Raspberry Pi
 hardware. Raspberry Pi OS, known as Raspbian, is a port of Debian Trixie. Debian
-itself is a Linux distribuition, which makes Raspbian also a Linux distribuition.
+itself is a Linux distribution, which makes Raspbian also a Linux distribution.
 
 The chosen camera to be connected to the Raspberry Pi 5 was the Camera Module 3, an
 official camera module for the Raspberry Pi \gls{sbc} family \cite{raspcam}. The camera
@@ -99,13 +99,14 @@ OpenCV is the most widely used computer vision library in the world \cite{opencv
 It has functions to perform every part of the computer vision pipeline involved in
 the project, from image acquisition to feature detection.
 This library will be used to obtain simple feature detection capabilities,
-allowing the project to be tested with tasks such identifying a dot on the
+allowing the project to be tested with tasks such as identifying a dot on the
 wall, or a circle of certain color.
-This will make testing the whole system a lot easier by being able to print targets
-on paper and fixed them on many different surfaces.
+This will make testing the whole system a lot easier than by printing targets
+on paper and fixing them on different surfaces.
 
 The chosen programming language to be used in the drone subsystem is Python, due to
-it ease of learning, use, and test many different algorithms, including \gls{opencv}.
+its ease of learning and use, and of testing many different algorithms,
+including \gls{opencv}.
 The Python code will make calls to Raspbian to receive images from the camera, and to
 send messages to the pod subsystem via the communication pin header.
 
@@ -167,11 +168,11 @@ XT-S1 \gls{lidar} sensor \cite{xts1}. The XT-S1 is a compact single-point \gls{i
 sensor based on the \gls{tof} principle.
 It weighs only 9 grams and consumes less than 0.5W.
 The sensor can operate in environments with intense lighting conditions of up to
-100klux, while measuring distance up to 24m distant objects of 10\% reflectivity.
-It's accuracy is $\pm$2\%, with a measurement frequency of 50Hz. The wavelength used
-by the sensor is 940\,nm. The sensor's emmiter's half-angle \gls{fov} is 2$^\circ$,
+100klux, while measuring the distance of objects of 10\% reflectivity up to 24m away.
+Its accuracy is $\pm$2\%, with a measurement frequency of 50Hz. The wavelength used
+by the sensor is 940\,nm. The sensor's emitter's half-angle \gls{fov} is 2$^\circ$,
 while the receiver's half-angle \gls{fov} is 1$^\circ$. That makes a total emission
-cone of 4$^\circ$ and a total recepction cone of 2$^\circ$.
+cone of 4$^\circ$ and a total reception cone of 2$^\circ$.
 
 The sensor was chosen for its easy availability, low price, small size and weight and
 good outdoor performance. Another key feature of the sensor is the communication
@@ -182,7 +183,7 @@ The sensor module can be seen in Figure~\ref{fig:4xts1}.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.7\textwidth]{4/xts1}
-  \caption{XT-S1 sensor module and it's dimensions}
+  \caption{XT-S1 sensor module and its dimensions}
   \label{fig:4xts1}
 \end{figure} 
 
@@ -239,17 +240,18 @@ The servo module can be seen in Figure~\ref{fig:4servo}.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.7\textwidth]{4/servo}
-  \caption{DS3235 and it's compatible accessories}
+  \caption{DS3235 and its compatible accessories}
   \label{fig:4servo}
 \end{figure} 
 
 \subsection{Parallax compensation}
 
 As mentioned in Chapter~\ref{cap:back}, vector algebra will be used to compensate parallax.
-Custom variable types will be created to standarize the vector data in the algorithm.
-Special functions will be written to execute both vector and scallar calculations.
+Custom variable types will be created to standardize the vector data in the algorithm.
+Special functions will be written to execute both vector and scalar calculations.
 In order to measure the performance of the system, mathematical and geometrical data will
-be saved and so after each individual test section, a log will be generated to be post-
+be saved and so after each individual test section, a log will be generated to be post-%
+% new line with no space
 processed, and metrics like accuracy and precision can be obtained and compared.
 
 \subsection{Gimbal's maximum angular speed}

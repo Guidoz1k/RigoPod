@@ -6,9 +6,9 @@
 
 This chapter presents the theoretical concepts that support the development of the proposed
 system. The system consists of a drone payload, or pod. The test prototype will consist of
-two system and a communication channel: The drone payload and a drone system, that will serve
+two systems and a communication channel: The drone payload and a drone system, that will serve
 to test the payload's performance. The drone itself will consist of a small embedded computer
-that will using a computer vision subsystem to identify a ground target. Then, the drone
+that will use a computer vision subsystem to identify a ground target. Then, the drone
 system will send the direction angles to the drone payload for it to execute the measurement
 and error correction routines. The resulting values are then sent back to the drone system
 for logging.
@@ -57,7 +57,7 @@ pipeline consists of several stages \cite{cv1}:
 \subsubsection{Image acquisition}
 
 Image acquisition consists of capturing an image from an image sensor, like a camera.
-cameras have many different parameters, but the basic ones are \cite{photo}:
+Cameras have many different parameters, but the basic ones are \cite{photo}:
 
 \begin{itemize}
   \item \gls{fov}
@@ -174,7 +174,7 @@ travel of the light signal.
 \gls{tof} sensors offer several advantages compared to other distance measurement
 techniques \cite{tof2}. They can operate independently of ambient lighting conditions,
 provide relatively fast measurements, and offer good accuracy over short to medium
-distances. However, several factors may affect measurement accuracy , including:
+distances. However, several factors may affect measurement accuracy, including:
 
 \begin{itemize}
   \item Surface reflectivity of the target
@@ -294,7 +294,7 @@ The vector G is subtracted from the vector V1, G being the position of the gimba
 relative to the camera. This new position is used to calculate the vector V2, which is the
 first position with any form of parallax compensation, simply removing the distance between
 the camera and the gimbal from the initial position and assuming a constant distance between
-the target and the drone.The second step with a large error can be seen in
+the target and the drone. The second step with a large error can be seen in
 Figure~\ref{fig:2graph2}.
 
 \begin{figure}[ht]
@@ -320,7 +320,7 @@ iteratively reduce the parallax error. This method can be seen in Figure~\ref{fi
 Even with an example presenting a very exaggerated error, it is clear in
 Figure~\ref{fig:2graph3} that with a few iterations, the direction the gimbal is pointing,
 and subsequently its measurements, get more and more precise, using only linear algebra.
-If necesserary, steps 2 and 3 can be repeated until the error goes below a certain
+If necessary, steps 2 and 3 can be repeated until the error goes below a certain
 threshold.
 
 \subsubsection{Linear algebra concepts required for the parallax compensation}
@@ -405,7 +405,7 @@ This chapter only focuses on explaining the basic theory behind all processes.
 \section{Static vs. dynamic target measurements}
 
 As seen in Chapter~\ref{cap:intro}, the target will be at least 120\,m away from the drone,
-being at 120\,m under ideal conditions,when it is directly below the sensor.
+being at 120\,m under ideal conditions, when it is directly below the sensor.
 As the target moves away from the point directly below the drone on the ground,
 the distance increases. This relationship between the position of the ground target and the
 distance to the drone can be better understood via Figure~\ref{fig:2img3}. The final
@@ -478,7 +478,7 @@ through the use of infrared laser, the more diffuse the surface the better, beca
 the target's material will always reflect some light back to the sensor,
 regardless of the angle of incidence, guaranteeing correct measurements.
 
-\subsubsection{Angular inacuracy impact on measurement}
+\subsubsection{Angular inaccuracy impact on measurement}
 
 The Figure~\ref{fig:2img3} and Equation~\ref{eq:dist_to_gnd1} and
 Equation~\ref{eq:dist_to_gnd2} in this section shows the relationship
@@ -510,14 +510,16 @@ Figure~\ref{fig:2img8}.
 
 As explained previously in this section, for small angles relative to the
 drone's nadir, there is little change from the absolute drone height.
-It shown in Figure~\ref{fig:2img8} that up until approximately
+It is shown in Figure~\ref{fig:2img8} that up until approximately
 $^{\pi}/_{4}$ (45°), the distance
 measured remains close to the value of height (1\,m).
 After this approximate angle, the distance values measured grow much more
 aggressively.
 
 
-To simulate the impact of an error of 1° (which is ), we can calculate the absolute
+To simulate the impact of an error of 1° (which is very inaccurate for image
+stabilizing gimbals, even being less than 0.3\% of a full rotation),
+we can calculate the absolute
 value of the original distance subtracted from the distance with said error,
 with height equals to 100\,m,
 like in Equation~\ref{eq:asb_error}, with a curve like Figure~\ref{fig:2img9}
@@ -538,14 +540,14 @@ like in Equation~\ref{eq:asb_error}, with a curve like Figure~\ref{fig:2img9}
 
 For an error of 1\% (1\,m), the maximum angle would be approximately 26°,
 for an error of 5\% (5\,m), the maximum angle would be approximately 56°,
-and for an error of 10\% (10\,m), the maximum angle would be approximately 66°,
+and for an error of 10\% (10\,m), the maximum angle would be approximately 66°.
 This, nonetheless, does not describe the error in the \gls{poi}'s position,
 only the error in the measured distance.
 
 As the system is designed to help the drone system measure distance of \gls{poi}
 close to the drone's nadir (usually the focus of drone's gimbals),
 the pod system will be able to deliver
-reliable measurements even with a inacurate and uncalibrated gimbal.
+reliable measurements even with an inaccurate and uncalibrated gimbal.
 More accurate gimbals could be investigated in future works in order to design
 a more reliable system even for critical and unusual angles.
 

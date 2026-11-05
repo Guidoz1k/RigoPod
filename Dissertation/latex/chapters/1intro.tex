@@ -6,7 +6,7 @@
 
 \section{The initial problem}
 
-In order to navigate the real world, autonomous drones (also reffered to as \gls{uav}'s)
+In order to navigate the real world, autonomous drones (also refered to as \gls{uav}s)
 need to estimate their position
 with reference to the world, with a certain precision \cite{introLivro1}. When used in
 rural areas, drones are often used to disperse seeds, pesticides, or survey the field.
@@ -26,7 +26,7 @@ quick and precise relative positioning between the drone and the ground target i
 the drone can either approach it or avoid it.
 
 The purpose of this dissertation is to investigate the feasibility of a sensor fusion system
-for precise ground target localization, comprising of one distance-measuring pod, to be attached
+for precise ground target localization, comprising one distance-measuring pod, to be attached
 to the drone as payload. The drone system itself is outside of the scope of this work.
 
 \section{Mission scope}
@@ -61,7 +61,7 @@ In addition to this resolution, the \gls{anac} defines that any drone that flies
 feet must be registered and licensed \cite{dronealturaANAC}. This is, of course, the maximum allowed
 operating altitude, and not necessarily the altitude at which the drone will, in fact, operate.
 
-The second important paramenter is the usual angles expected for the measurements.
+The second important parameter is the range of angles expected for the measurements.
 In unmanned aerial systems (UAS) payload design, the primary operational axis for
 imaging and sensing equipment is predominantly oriented near the drone's nadir
 (The point immediately below the drone relative to the center of Earth).
@@ -131,15 +131,15 @@ autonomous robots for their simplicity, size, and wide range of specifications \
 \subsubsection{Single point ToF vs. multi-point LiDAR}
 
 A \gls{tof} sensor will measure the distance between the sensor light pulse transmitter and receiver.
-As the transmitter and receiver are pointed in the same direction, an object must be place in front of
+As the transmitter and receiver are pointed in the same direction, an object must be placed in front of
 the sensor to bounce the light pulse transmitted back to the receiver. The measurement consists of measuring
 the time this pulse takes to be detected by the receiver after the transmitter was activated, and the distance
 is divided by two, for the light pulse traversed the distance measured twice \cite{lidar2}.
 
-A \gls{lidar} sensor will make multipledistance measurements from different points in space \cite{lidar1}. This
+A \gls{lidar} sensor will make multiple distance measurements from different points in space \cite{lidar1}. This
 can be done by moving a \gls{tof} sensor in a circular motion (sometimes called scanning \gls{lidar}) or using
 a multipoint solid-state \gls{tof} sensor (sometimes called flash \gls{lidar}). Multipoint \gls{tof} sensors
-consist on a \gls{tof} sensor that generates multiple light beams, in a line or in a matrix, in order to measure
+consist of a \gls{tof} sensor that generates multiple light beams, in a line or in a matrix, in order to measure
 distances from multiple points in a 3D space.
 
 While \gls{lidar} sensors can be very practical, they are bulkier and consume more power for the rotating
@@ -175,8 +175,8 @@ computational resources, which may complicate the drone's design.
 
 \section{Target location}
 
-Of all types of sensors analyzed in this work, optical ranging sensors are the mort capable and
-precise considering weight, volume, price and energy consuption. Light-based sensors, such as
+Of all types of sensors analyzed in this work, optical ranging sensors are the most capable and
+precise considering weight, volume, price and energy consumption. Light-based sensors, such as
 \gls{ir} or laser rangefinders, fit well within the technical constraints of the design. Radar
 is too complex, bulky, and expensive. Ultrasonic sensors are simply not precise enough.
 

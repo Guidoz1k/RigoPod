@@ -4,14 +4,18 @@
 \chapter{Implementation}
 \label{cap:impl}
 
-The following sections will detail how the chosen modules were assembled, connected,
-what kind of algorithms were programmed in the two subsystems and what kind of tests
+The following sections will detail how the chosen modules were assembled,
+connected,
+what kind of algorithms were programmed in the two subsystems and what
+kind of tests
 were executed in order to evaluate the pod system's performance.
 
 \section{The prototype}
 
 A detailed connection diagram of the whole test device can be seen in
-Figure~\ref{fig:5ckt}.
+Figure~\ref{fig:5ckt}. The ground connections of the \gls{psu}s
+were omitted in some cases
+to avoid cluttering the diagram. All devices share common ground.
 
 \begin{figure}[ht]
   \centering
@@ -24,11 +28,11 @@ Both communication buses from the ESP32-S3 to the Raspberry Pi 5 and the XT-S1
 use \gls{uart} communication. For the XT-S1 sensor, Modbus \cite{modbus}
 is implemented on top of \gls{uart}, for a safe, reliable connection.
 The protocol used to set the servos in position is simple \gls{pwm}.
-The 5V rail from the Raspberry Pi is used to supply power to the ESP32-S3 and the
-XT-S1 sensor.
+The 5V rail from the Raspberry Pi is used to supply power to the ESP32-S3 and
+the XT-S1 sensor.
 A separate 5V \gls{psu} unit is used for the servos alone, as they draw high
-currents during startup and when moving the main axis, which would not be supported
-by the 5V supply from the Raspberry Pi.
+currents during startup and when moving the main axis, which would not
+be supported by the 5V supply from the Raspberry Pi.
 
 \subsection{Prototype's evolution}
 
@@ -37,7 +41,7 @@ The final version of the case can be seen by the end of Chapter~\ref{cap:prop}.
 The specific \gls{pn} of the servo was selected after the most common
 TowerPro SG90 (9g Servo) showed unacceptable backlash and slack.
 
-The Raspberry pi 5 also took some efforts to operate reliably.
+The Raspberry Pi 5 also took some efforts to operate reliably.
 Without officialy recommended peripherals, the \gls{sbc} showed problems with:
 
 \begin{itemize}
@@ -50,9 +54,21 @@ The Raspberry Pi operated reliably only when using the official
 heat sink and \gls{psu}. The prototype includes a fan powered by internal 5V
 \gls{psu} so there is always a constant air flow inside the 3D printed case.
 
-\subsection{Raspberry Pi's test UI}
+\subsection{Prototype's test UI}
 
- W I P
+The UI of the whole system, drone system and pod system together, consists
+of one clickable encoder, to trigger each different test, and a simple
+0.96-inches 128x64 display, to show test options and feedback,
+connected to the Raspberry Pi's \gls{gpio} header.
+A simple menu allows the user to select each test and see results and/or
+error messages.
+The encoder needs its respective GPIO pins to have their pull-up resistors
+enabled.
+The display utilizes \gls{i2c} connection.
+
+The ESP32-S3 module has a built-in \gls{rgb} \gls{led}, that will signal
+when messages are received, if the requested data is ready, and when the
+test starts and finishes.
 
 \subsection{Raspberry Pi's OpenCV algorithm}
 
@@ -64,7 +80,7 @@ The entire drone system relies on \gls{opencv}'s capabilities of identifying
 a designated \gls{poi}. The algorithm developed for the tests is the most
 basic logic for identifying a basic object on a contrasted landscape.
 
-The selected target is a green laser pointer, for it's ease to set static
+The selected target is a green laser pointer, for its ease to set static
 and dynamic tests in very large surfaces without the need of motors or
 complex automation. To identify a simple green bright dot on a wall or ground,
 a Python algorithm executes these simple steps:
@@ -95,7 +111,7 @@ system, then log the distances informed, and calculate all the metrics.
 
 \section{The tests}
 
-The following sections will exaplain in details the three tests:
+The following sections will explain in detail the three tests:
 
 \begin{itemize}
   \item Static single-point test.
@@ -158,18 +174,19 @@ An important point in this test is that, even though \emph{trueness} can be adju
 by a calibration process in firmware after the tests, to improve accuracy,
 the \emph{precision}
 of the overall system is mainly determined by the precision of the sensor, which in
-this system's case, comes pre-calibrated from the manufacturer. The standard
-deviation of the distances measured will be mainly a product of the chosen sensor,
-luminous noise at the target and distance, as the chosen sensor presents optimal
-ranges for the measurements, and becomes less accurate when measuring very close
-distances. So in the end, the overall error can be minimized by compensating any
+this system's case, comes pre-calibrated from the manufacturer.
+The standard deviation of the measured distances will mainly depend on
+the chosen sensor, the luminous noise at the target, and the distance,
+since the sensor has an optimal measuring range and becomes less accurate
+at very close distances.
+So in the end, the overall error can be minimized by compensating any
 error in the trueness of the measurements.
 
 \subsubsection{Servos}
 
 The servos, just as the laser rangefinder, will need to have their trueness
-calibrated. Just as with the rangefinder, the precision is a product of the the
-manufacturer specifications, which can be found in the part's datasheet.
+calibrated. Just as with the rangefinder, the precision is a product of the
+manufacturer's specifications, which can be found in the part's datasheet.
 What can be done regarding the servos is using a bias value to compensate for
 any drift on the control circuit and any imprecision on the 3D parts that, with
 the servo, compose the gimbal.
