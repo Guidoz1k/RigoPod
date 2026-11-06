@@ -123,7 +123,8 @@ To test a device that calculates distances based on a laser rangefinder
 mounted on a gimbal, first
 it is important to assess how accurate and precise the laser rangefinder is. For
 that, a static single-point test can be executed, measuring the distance to a
-known, easy to acquire target. After the rangefinder is tested, the gimbal
+known, easy to acquire target.
+After the rangefinder is tested, the gimbal
 must be tested as well. A static multi-point test can check if the angles
 requested by the drone system are being correctly set by the motors. The target
 can be any planar surface. Multiple points are requested as targets and any
@@ -134,6 +135,9 @@ to measure the angular performance of the system can assess if the system can
 keep track and measurement of a target moving within the system's limits.
 
 \subsection{Static single-point test}
+
+For this test, the target-tracking function on the drone system can even be
+disabled, for the gimbal can be manually pointed at a wall of known distance.
 
 The single-point static test characterizes the accuracy and precision of the
 range estimation module under controlled, time-invariant conditions. A flat
@@ -182,16 +186,10 @@ at very close distances.
 So in the end, the overall error can be minimized by compensating any
 error in the trueness of the measurements.
 
-\subsubsection{Servos}
-
-The servos, just as the laser rangefinder, will need to have their trueness
-calibrated. Just as with the rangefinder, the precision is a product of the
-manufacturer's specifications, which can be found in the part's datasheet.
-What can be done regarding the servos is using a bias value to compensate for
-any drift on the control circuit and any imprecision on the 3D parts that, with
-the servo, compose the gimbal.
-
 \subsection{Static multi-point test}
+
+This is another test that doesn't need target tracking for the drone system, as
+it's another test meant to evaluate the system's accuracy.
 
 The multipoint test evaluates the three-dimensional performance of the module
 over its field of view (FoV). A planar target of known flatness, larger than
@@ -223,7 +221,19 @@ radial bias or edge-of-FoV degradation. The test is repeated for several
 distances and target tilt angles to assess the dependence of the error on
 incidence angle, and, where relevant, for several surface reflectances.
 
+\subsubsection{Servos}
+
+The servos, just as the laser rangefinder, will need to have their trueness
+calibrated. Just as with the rangefinder, the precision is a product of the
+manufacturer's specifications, which can be found in the part's datasheet.
+What can be done regarding the servos is using a bias value to compensate for
+any drift on the control circuit and any imprecision on the 3D parts that, with
+the servo, compose the gimbal.
+
 \section{Dynamic test}
+
+This is the test that will need the target tracking functionality of the
+drone system, as it will test dynamic characteristics of the whole prototype.
 
 The dynamic test assesses the ability of the module to follow a moving target
 and characterizes its temporal behavior, which static tests cannot capture. The
