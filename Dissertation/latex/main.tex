@@ -18,8 +18,22 @@
 \usepackage[acronym]{glossaries}
 \makeglossaries
 
-% suppresses 90% of this stupid warning
+% Required for creating custom lists, for a list of equations in this case
+\usepackage{tocloft}
+\newcommand{\addequationtoentry}[1]{%
+  \addcontentsline{loe}{myequations}{\protect\numberline{\theequation}#1}%
+}\newcommand{\listequationname}{List of Equations}
+\newlistof{myequations}{loe}{} 
+\makeatletter
+\newcommand{\listofequations}{%
+  \chapter*{\listequationname}%
+  \@starttoc{loe}%
+}
+\makeatother
+
+% suppresses stupid warning
 \hbadness=10000
+\raggedbottom
 
 \title{RigoDM Pod: Ranging Instrument for Ground Object Distance Measuring Pod}
 \translatedtitle{RigoDM Pod: Módulo Para Medição De Distancia Até Objeto Em Solo}
