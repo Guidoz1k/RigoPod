@@ -41,8 +41,8 @@ The final version of the case can be seen by the end of Chapter~\ref{cap:prop}.
 The specific \gls{pn} of the servo was selected after the most common
 TowerPro SG90 (9g Servo) showed unacceptable backlash and slack.
 
-The Raspberry Pi 5 also took some efforts to operate reliably.
-Without officialy recommended peripherals, the \gls{sbc} showed problems with:
+The Raspberry Pi 5 also took some effort to operate reliably.
+Without officially recommended peripherals, the \gls{sbc} showed problems with:
 
 \begin{itemize}
   \item Power supply instability.
@@ -58,7 +58,7 @@ heat sink and \gls{psu}. The prototype includes a fan powered by internal 5V
 
 The UI of the whole system, drone system and pod system together, consists
 of one clickable encoder, to trigger each different test, and a simple
-0.96-inches 128x64 display, to show test options and feedback,
+0.96-inch 128x64 display, to show test options and feedback,
 connected to the Raspberry Pi's \gls{gpio} header.
 A simple menu allows the user to select each test and see results and/or
 error messages.
@@ -111,7 +111,7 @@ system, then log the distances informed, and calculate all the metrics.
 
 o gimbal auto centra quando em idle 
 
-\subsection{Parallax compensation algorithm}
+\subsubsection{Parallax compensation algorithm}
 
  W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -138,9 +138,9 @@ can be any planar surface. Multiple points are requested as targets and any
 error in this test will propagate into the reconstructed 3D geometry.
 With both the rangefinder and
 gimbal tested, the system must be tested against a moving target. A dynamic test
-to measure the angular performance of the system can assess how fast can the
-system acquire the target and if the system can
-keep track a moving target while while measuring its distance.
+to measure the angular performance of the system can assess how fast the system
+can acquire the target and if the system can
+keep track of a moving target while measuring its distance.
 
 \subsection{Accuracy}
 
@@ -182,7 +182,7 @@ Precision can be mathematically expressed as both variance ($s^2$)
 and standard deviation (s).
 Variance is used in analyses that have multiple sources of
 error, allowing for the multiple errors to be added together to compound
-the total error of the system. As this project focus on the distance
+the total error of the system. As this project focuses on the distance
 range-finder, standard deviation is more appropriate.
 Both are defined as:
 
@@ -200,7 +200,7 @@ The single-point static test characterizes the accuracy of the
 range estimation module under controlled, time-invariant conditions. A flat
 target of known reflectance is mounted perpendicular to the optical axis of the
 sensor on a rigid fixture, and its distance is established by an independent
-reference instrument of substantially lower uncertainty than prototype,
+reference instrument of substantially lower uncertainty than the prototype's,
 such as a calibrated laser distance meter or a precision linear
 stage with a traceable encoder.
 
@@ -208,7 +208,7 @@ Multiple measurements are executed, and the standard deviation
 and arithmetic mean are logged, spanning the specified operating range of
 distances that the module is capable of measuring, 
 to ensure the device's accuracy won't drastically
-change withing its range of operation. 
+change within its range of operation. 
 For this test specifically, the target-tracking function on the drone system
 can be
 disabled, for the gimbal can be manually pointed at a wall of known distance.
@@ -255,7 +255,7 @@ frequency from both the target designator (green laser) and the \gls{tof}
 sensor (\gls{ir} laser), to avoid interference.
 After that, the test is repeated, but with the parallax-compensating algorithm
 enabled. Now, there should be no parallax observed between both red and green
-laser points in the wall. Each point will have it's performance analyzed
+laser points in the wall. Each point will have its performance analyzed
 multiple times, so enough data can be logged to analyze the gimbal's accuracy.
 
 \subsection{Dynamic test}
@@ -281,8 +281,8 @@ To test the impact of the target-tracking loop's latency over the measurements,
 different scans can be executed over a simple wall. The system can scan the same
 wall at commanded rates from about 10\% to 200\% of the servo's maximum, in steps.
 For each run, the system records the cloud of points and then calculates
-in post-process a plane-fit
-(a plane that would better align with the points), the residual (
+in post-processing a plane-fit
+(a plane that would best align with the points), the residual (% no space
 the average error from all the 3D points to the regression plane), and
 the normal-vector error (the angle between the fitted normal and the true one,
 from the reference wall-target).
@@ -290,6 +290,6 @@ from the reference wall-target).
 With a target performing a very fast step in angle over a wall, the system can
 log the response and later analyze the settling time, overshoot, and ringing.
 For more information about the response of the system, a target moving on a
-sinosoidal pattern can shed more light on the dynamic characteristics of the
-system. Amplitude and frequency of the sinosoid can be changed, and multiple
-combinations can be executed to map the systems behaviour.
+sinusoidal pattern can shed more light on the dynamic characteristics of the
+system. Amplitude and frequency of the sinusoid can be changed, and multiple
+combinations can be executed to map the system's behaviour.
