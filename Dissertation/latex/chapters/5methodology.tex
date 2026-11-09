@@ -41,8 +41,8 @@ The final version of the case can be seen by the end of Chapter~\ref{cap:prop}.
 The specific \gls{pn} of the servo was selected after the most common
 TowerPro SG90 (9g Servo) showed unacceptable backlash and slack.
 
-The Raspberry Pi 5 also took some efforts to operate reliably.
-Without officialy recommended peripherals, the \gls{sbc} showed problems with:
+The Raspberry Pi 5 also took some effort to operate reliably.
+Without officially recommended peripherals, the \gls{sbc} showed problems with:
 
 \begin{itemize}
   \item Power supply instability.
@@ -58,7 +58,7 @@ heat sink and \gls{psu}. The prototype includes a fan powered by internal 5V
 
 The UI of the whole system, drone system and pod system together, consists
 of one clickable encoder, to trigger each different test, and a simple
-0.96-inches 128x64 display, to show test options and feedback,
+0.96-inch 128x64 display, to show test options and feedback,
 connected to the Raspberry Pi's \gls{gpio} header.
 A simple menu allows the user to select each test and see results and/or
 error messages.
@@ -103,11 +103,23 @@ system, then log the distances informed, and calculate all the metrics.
 
 \subsection{Intermodule communication}
 
- W I P
+W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Parallax compensation algorithm}
+\subsection{Pod's general algorithm}
 
- W I P
+W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+o gimbal auto centra quando em idle 
+
+\subsubsection{Parallax compensation algorithm}
+
+W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Assembled prototype}
+
+W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+fotos do prototipo final, descricoes e pa 
 
 \section{The tests}
 
@@ -121,54 +133,92 @@ The following sections will explain in detail the three tests:
 
 To test a device that calculates distances based on a laser rangefinder
 mounted on a gimbal, first
-it is important to assess how accurate and precise the laser rangefinder is. For
+it is important to assess how accurate the laser rangefinder is. For
 that, a static single-point test can be executed, measuring the distance to a
-known, easy to acquire target. After the rangefinder is tested, the gimbal
+known, easy to acquire target.
+After the rangefinder is tested, the gimbal
 must be tested as well. A static multi-point test can check if the angles
-requested by the drone system are being correctly set by the motors. The target
+requested by the drone system are being correctly set by the motors.
+The target
 can be any planar surface. Multiple points are requested as targets and any
 error in this test will propagate into the reconstructed 3D geometry.
 With both the rangefinder and
 gimbal tested, the system must be tested against a moving target. A dynamic test
-to measure the angular performance of the system can assess if the system can
-keep track and measurement of a target moving within the system's limits.
+to measure the angular performance of the system can assess how fast the system
+can acquire the target and if the system can
+keep track of a moving target while measuring its distance.
+
+\subsection{Accuracy}
+
+Following the terminology of ISO~5725 \cite{iso5725}, accuracy is decomposed into
+\emph{trueness} and \emph{precision}, as can be seen in Figure~\ref{fig:5acc}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{5/img2}
+  \caption{Accuracy: Trueness and precision}
+  \label{fig:5acc}
+\end{figure}
+
+According to ISO 5725-1, the general term "accuracy" is used to describe the
+closeness of a measurement to the true value. When the term is applied to
+sets of measurements of the same measurand, it involves a component of random
+error (\emph{precision}) and a component of systematic error
+(\emph{trueness}, also called bias).
+In this case, precision is the closeness of agreement among a set of results,
+and trueness is the closeness of the mean of a set of measurement
+results to the actual (true) value.
+
+The mathematical definitions are very simple. For a given test,
+$N$ consecutive measurements $\hat{d}_{i}$ are
+acquired, with
+ambient illumination, target reflectance, and temperature recorded throughout.
+Trueness (B, for sample bias) is a simple difference between the
+arithmetic mean value and the accepted reference value:
+
+\begin{equation}
+  % title for equation list
+  \addequationtoentry{Definition of trueness}
+  \label{eq:true}
+  \bar{d} = \frac{1}{N}\sum_{i=1}^{N}\hat{d}_{i}, \qquad
+  B = \bar{d} - d_{\mathrm{ref}}
+\end{equation}
+
+Precision can be mathematically expressed as both variance ($s^2$)
+and standard deviation (s).
+Variance is used in analyses that have multiple sources of
+error, allowing for the multiple errors to be added together to compound
+the total error of the system. As this project focuses on the distance
+range-finder, standard deviation is more appropriate.
+Both are defined as:
+
+\begin{equation}
+  % title for equation list
+  \addequationtoentry{Definitions of precision}
+  \label{eq:precise}
+  s^2 = \frac{1}{n-1} \sum_{i=1}^{n} (d_i - \bar{d})^2, \qquad
+  s = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (d_i - \bar{d})^2}
+\end{equation}
 
 \subsection{Static single-point test}
 
-The single-point static test characterizes the accuracy and precision of the
+The single-point static test characterizes the accuracy of the
 range estimation module under controlled, time-invariant conditions. A flat
 target of known reflectance is mounted perpendicular to the optical axis of the
 sensor on a rigid fixture, and its distance is established by an independent
-reference instrument of substantially lower uncertainty than the device under
-test (DUT), such as a calibrated laser distance meter or a precision linear
-stage with a traceable encoder. The test is repeated at $K$ nominal distances
-$d_{\mathrm{ref},k}$, $k=1,\dots,K$, spanning the specified operating range of
-the module. At each distance, $N$ consecutive measurements $\hat{d}_{k,i}$ are
-acquired after a thermal stabilization period of X\,min, with
-ambient illumination, target reflectance, and temperature recorded throughout.
+reference instrument of substantially lower uncertainty than the prototype's,
+such as a calibrated laser distance meter or a precision linear
+stage with a traceable encoder.
 
-Following the terminology of ISO~5725 \cite{iso5725}, accuracy is decomposed into
-\emph{trueness} and \emph{precision}. For each distance, the sample mean and
-the bias are computed as
-\begin{equation}
-  \bar{d}_k = \frac{1}{N}\sum_{i=1}^{N}\hat{d}_{k,i}, \qquad
-  b_k = \bar{d}_k - d_{\mathrm{ref},k},
-\end{equation}
-while precision is quantified by the sample standard deviation
-\begin{equation}
-  \sigma_k = \sqrt{\frac{1}{N-1}\sum_{i=1}^{N}\left(\hat{d}_{k,i}-\bar{d}_k\right)^2}.
-\end{equation}
-The overall error is summarized by the root-mean-square error,
-\begin{equation}
-  \mathrm{RMSE}_k = \sqrt{b_k^2 + \sigma_k^2 \,\frac{N-1}{N}},
-\end{equation}
-which combines systematic and random contributions. To expose range-dependent
-behavior, the bias $b_k$ is regressed against $d_{\mathrm{ref},k}$ to separate
-a constant offset from a scale (gain) error, and $\sigma_k$ is examined as a
-function of distance and signal amplitude. Measurement uncertainty is reported
-according to the Guide to the Expression of Uncertainty in Measurement
-(JCGM~100:2008) \cite{jcgm100}, combining the DUT repeatability with the reference
-instrument uncertainty and the target alignment error.
+Multiple measurements are executed, and the standard deviation
+and arithmetic mean are logged, spanning the specified operating range of
+distances that the module is capable of measuring, 
+to ensure the device's accuracy won't drastically
+change within its range of operation. 
+For this test specifically, the target-tracking function on the drone system
+can be
+disabled, for the gimbal can be manually pointed at a wall of known distance.
+The other tests will need target tracking.
 
 An important point in this test is that, even though \emph{trueness} can be adjusted
 by a calibration process in firmware after the tests, to improve accuracy,
@@ -182,77 +232,70 @@ at very close distances.
 So in the end, the overall error can be minimized by compensating any
 error in the trueness of the measurements.
 
-\subsubsection{Servos}
-
-The servos, just as the laser rangefinder, will need to have their trueness
-calibrated. Just as with the rangefinder, the precision is a product of the
-manufacturer's specifications, which can be found in the part's datasheet.
-What can be done regarding the servos is using a bias value to compensate for
-any drift on the control circuit and any imprecision on the 3D parts that, with
-the servo, compose the gimbal.
-
-\subsection{Static multi-point test}
-
-The multipoint test evaluates the three-dimensional performance of the module
-over its field of view (FoV). A planar target of known flatness, larger than
-the footprint of the FoV at the test distance, is positioned at a nominal
-distance $d_0$ and its pose relative to the sensor frame is established with
-the reference instrument. For a sensor that outputs $M$ measurement points
-(zones or pixels), each point is converted to Cartesian coordinates
-$\mathbf{p}_j=(x_j,y_j,z_j)^\top$ using the sensor's intrinsic angular
-calibration, with $N$ frames averaged or retained per point as appropriate.
-
-The reference plane is described by $\mathbf{n}^\top\mathbf{p}=\rho$, with unit
-normal $\mathbf{n}$ and offset $\rho$. The measured points are fitted to a plane
-by total least squares, with the normal obtained as the singular vector
-associated with the smallest singular value of the centered point matrix. The
-point-to-plane residuals are
-\begin{equation}
-  r_j = \mathbf{n}^\top\mathbf{p}_j - \rho, \qquad
-  \mathrm{RMS}_{\mathrm{plane}} = \sqrt{\frac{1}{M}\sum_{j=1}^{M} r_j^2},
-\end{equation}
-and quantify the overall three-dimensional consistency of the measurement,
-including per-zone bias, lens distortion residuals, and inter-zone crosstalk.
-In addition, the angular deviation between the fitted and reference normals,
-\begin{equation}
-  \Delta\theta = \arccos\left(\mathbf{n}_{\mathrm{fit}}^\top \mathbf{n}_{\mathrm{ref}}\right),
-\end{equation}
-and the per-zone range error with respect to the reference plane are reported,
-the latter as a spatial error map revealing systematic patterns such as
-radial bias or edge-of-FoV degradation. The test is repeated for several
+The test is repeated for several
 distances and target tilt angles to assess the dependence of the error on
 incidence angle, and, where relevant, for several surface reflectances.
 
-\section{Dynamic test}
+\subsection{Static multi-point test}
+
+The gimbal, just as the laser rangefinder, will need to have its trueness
+calibrated, and precision measured.
+Just as with the rangefinder, the precision is a product of the
+manufacturer's specifications, which can be found in the \gls{pn}'s datasheet.
+What can be done regarding the servos is using a bias value to compensate for
+any drift on the control circuit and any imprecision on the 3D parts that, with
+the servo, compose the gimbal.
+The point of the static multi-point test is to test the accuracy of the gimbal,
+as well as the accuracy of the parallax-compensating algorithm.
+
+The multipoint test evaluates the three-dimensional performance of the module
+over its \gls{fov}. A planar target of known flatness, larger than
+the footprint of the FoV at the test distance, is the ideal target.
+First, the parallax-compensating algorithm is disabled, and a parallax-induced
+error is expected. Different points are designated as targets in the wall, and
+with a laser pointer coupled in the gimbal, the distance between the designated
+target and the new point on the wall can be measured, to make sure that only
+the parallax is affecting the pointing system.
+The laser unit (red laser) attached to the gimbal is of a completely different
+frequency from both the target designator (green laser) and the \gls{tof}
+sensor (\gls{ir} laser), to avoid interference.
+After that, the test is repeated, but with the parallax-compensating algorithm
+enabled. Now, there should be no parallax observed between both red and green
+laser points in the wall. Each point will have its performance analyzed
+multiple times, so enough data can be logged to analyze the gimbal's accuracy.
+
+\subsection{Dynamic test}
 
 The dynamic test assesses the ability of the module to follow a moving target
-and characterizes its temporal behavior, which static tests cannot capture. The
-target is mounted on a motorized linear stage whose position $d_{\mathrm{ref}}(t)$
-is recorded by an encoder (or other reference instrument) with a sampling rate
-well above that of the DUT. The reference and DUT data streams are
-synchronized through a common trigger or hardware timestamp, and residual clock
-offset is estimated and removed in post-processing. Three motion profiles are
-considered: (i)~constant-velocity ramps at several speeds $v$, to evaluate
-velocity-dependent error; (ii)~a step displacement, to evaluate the transient
-response and settling time; and (iii)~sinusoidal motion at increasing
-frequencies, to estimate the effective measurement bandwidth.
+and characterizes its temporal behavior, which static tests cannot capture.
+Many characteristics of the system can be evaluated on this test:
 
-The tracking error is defined as
-\begin{equation}
-  e(t_i) = \hat{d}(t_i) - d_{\mathrm{ref}}(t_i),
-\end{equation}
-from which the RMSE, the maximum absolute error, and the error as a function of
-target velocity are computed. The effective latency $\tau$ of the module is
-estimated as the lag that maximizes the cross-correlation between the measured
-and reference signals,
-\begin{equation}
-  \tau = \arg\max_{\delta}\sum_i \hat{d}(t_i)\,d_{\mathrm{ref}}(t_i-\delta),
-\end{equation}
-and the error is subsequently reported both with and without latency
-compensation, separating the delay contribution from the intrinsic measurement
-error. Further metrics include the effective output rate, the percentage of
-invalid or dropped samples, the step-response settling time to within
-X\,\% of the final value, and the $-3\,\mathrm{dB}$ bandwidth
-obtained from the sinusoidal sweep. Together, these metrics determine the
-maximum target speed and dynamics for which the module satisfies the
-accuracy requirements of the intended application.
+\begin{itemize}
+  \item Delay between target movement and pod movement.
+  \item Distance measurement error induced by delay.
+  \item Gimbal step response.
+\end{itemize}
+
+To test the latency between target movement and pod movement,
+a designated target can be projected on a wall that has a sharp edge.
+The prototype scans at several angular speeds, in both directions. If the angle
+and range samples are misaligned in time, the apparent edge position shifts with
+speed, and flips sign when the direction is reversed. The size of the shift
+divided by the speed equals the latency, which can be corrected in software.
+
+To test the impact of the target-tracking loop's latency over the measurements,
+different scans can be executed over a simple wall. The system can scan the same
+wall at commanded rates from about 10\% to 200\% of the servo's maximum, in steps.
+For each run, the system records the cloud of points and then calculates
+in post-processing a plane-fit
+(a plane that would best align with the points), the residual (% no space
+the average error from all the 3D points to the regression plane), and
+the normal-vector error (the angle between the fitted normal and the true one,
+from the reference wall-target).
+
+With a target performing a very fast step in angle over a wall, the system can
+log the response and later analyze the settling time, overshoot, and ringing.
+For more information about the response of the system, a target moving on a
+sinusoidal pattern can shed more light on the dynamic characteristics of the
+system. Amplitude and frequency of the sinusoid can be changed, and multiple
+combinations can be executed to map the system's behaviour.
