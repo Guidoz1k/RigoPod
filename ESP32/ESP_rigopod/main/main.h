@@ -29,9 +29,4 @@
 #include "demos/demo_lidar.c"
 #include "dissertation/program.c"
 
-// ========== DEFINITIONS ==========
-
-#define PERIOD1     1000 // interrupt period in µs
-#define SYNCPIN1    3     // interruption 1 work pin
-
 #endif /* __MAIN_H */

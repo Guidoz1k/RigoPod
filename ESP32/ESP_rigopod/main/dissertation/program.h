@@ -22,5 +22,6 @@
 #include "xts1.h"
 #include "servo.h"
 #include "customserial.h"
+#include "randomness.h"
 
 #endif /* __PROGRAM_H */

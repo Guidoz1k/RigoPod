@@ -3,4 +3,5 @@ idf_component_register(SRCS
                         "demos/demo_led.c"
                         "demos/demo_lidar.c"
                         "demos/demo_servo.c"
+                        "dissertation/program.c"
                     INCLUDE_DIRS ".")

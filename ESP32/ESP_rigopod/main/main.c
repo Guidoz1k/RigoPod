@@ -10,6 +10,11 @@
 
 #include "main.h"
 
+// ========== DEFINITIONS ==========
+
+#define PERIOD1     1000 // interrupt period in µs
+#define SYNCPIN1    3     // interruption 1 work pin
+
 // ========== GLOBAL VARIABLES ==========
 
 uint32_t time_counter = 0;  // global timer

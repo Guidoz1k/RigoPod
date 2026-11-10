@@ -69,7 +69,7 @@ The display connects to the Raspberry Pi via \gls{i2c} protocol.
 This diagram does not show the camera module connected to the Raspberry Pi.
 The camera comes with a CSI 22-way FPC cable, which connects to the CSI
 connector on the Raspberry Pi. As mentioned in Chapter~\ref{cap:prop}, the
-camera's diagonal \gls{fov} is 75°, with a resolution of 2304 $\times$ 1296
+camera's diagonal \gls{fov} is 75°, with a resolution of 2304\,$\times$\,1296
 pixels. That resolution has a standard ratio of 16:9. This means that the
 vertical \gls{fov} is of $\approx$ 36.77°. The vertical \gls{fov} of the
 prototype, on a 45° inclinated \gls{los}
@@ -82,6 +82,10 @@ the Figure~\ref{fig:fov}:
   \caption{Prototype's FOV}
   \label{fig:fov}
 \end{figure}
+
+The chosen resolution of the camera is 2304\,$\times$\,1296 in order to
+make sure the system is running at constant 30Hz. Using the camera's full
+resolution of 4608\,$\times$\,2592 proved to be too processing intensive.
 
 \subsubsection{UI's flow}
 
@@ -127,10 +131,6 @@ board, there is no test interface on the pod system. The \gls{led} will
 signal when messages are received, if the requested data is ready, and when
 the test starts and finishes.
 
-\subsubsection{Intermodule communication}
-
-W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \subsubsection{Pod's general algorithm}
 
 W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -138,6 +138,12 @@ W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 o gimbal auto centra quando em idle 
 
 \subsubsection{Parallax compensation algorithm}
+
+W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Intermodule communication}
+
+a freq do pi eh 30hz, logo 30hz foda c
 
 W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
