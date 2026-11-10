@@ -54,23 +54,40 @@ The Raspberry Pi operated reliably only when using the official
 heat sink and \gls{psu}. The prototype includes a fan powered by internal 5V
 \gls{psu} so there is always a constant air flow inside the 3D printed case.
 
-\subsection{Prototype's test UI}
+\subsection{Drone system}
 
-The UI of the whole system, drone system and pod system together, consists
-of one clickable encoder, to trigger each different test, and a simple
-0.96-inch 128x64 display, to show test options and feedback,
+As shown in Figure~\ref{fig:5ckt}, the drone system's hardware consists of
+a Raspberry Pi 5, a 0.96-inch 128x64 display and a clickable rotary encoder.
+Both the encoder and the display will integrate the \gls{ui} and are
 connected to the Raspberry Pi's \gls{gpio} header.
 A simple menu allows the user to select each test and see results and/or
 error messages.
 The encoder needs its respective GPIO pins to have their pull-up resistors
 enabled.
-The display utilizes \gls{i2c} connection.
+The display connects to the Raspberry Pi via \gls{i2c} protocol.
 
-The ESP32-S3 module has a built-in \gls{rgb} \gls{led}, that will signal
-when messages are received, if the requested data is ready, and when the
-test starts and finishes.
+This diagram does not show the camera module connected to the Raspberry Pi.
+The camera comes with a CSI 22-way FPC cable, which connects to the CSI
+connector on the Raspberry Pi. As mentioned in Chapter~\ref{cap:prop}, the
+camera's diagonal \gls{fov} is 75°, with a resolution of 2304 $\times$ 1296
+pixels. That resolution has a standard ratio of 16:9. This means that the
+vertical \gls{fov} is of $\approx$ 36.77°. The vertical \gls{fov} of the
+prototype, on a 45° inclinated \gls{los}
+in reference to horizontal and vertical planes can be seen from the side in
+the Figure~\ref{fig:fov}:
 
-\subsection{Raspberry Pi's OpenCV algorithm}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{5/img6}
+  \caption{Prototype's FOV}
+  \label{fig:fov}
+\end{figure}
+
+\subsubsection{UI's flow}
+
+W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Raspberry Pi's OpenCV algorithm}
 
 The \gls{opencv} role in the drone system is to simply identify an object meant
 to be a test target. The drone system will then provide the direction of the
@@ -101,11 +118,20 @@ static tests, with single or multiple points, and dynamic tests.
 All three different tests will point the \gls{poi}'s direction to the pod
 system, then log the distances informed, and calculate all the metrics.
 
-\subsection{Intermodule communication}
+\subsection{Pod system}
+
+As shown in Figure~\ref{fig:5ckt}, the pod system's hardware consists of an
+ESP32-S3 as a central \gls{mcu}, a XT-S1 \gls{tof} sensor, two servo motors,
+and their \gls{psu}s. Apart from the \gls{rgb} \gls{led} built in the ESP32's
+board, there is no test interface on the pod system. The \gls{led} will
+signal when messages are received, if the requested data is ready, and when
+the test starts and finishes.
+
+\subsubsection{Intermodule communication}
 
 W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Pod's general algorithm}
+\subsubsection{Pod's general algorithm}
 
 W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -117,9 +143,42 @@ W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Assembled prototype}
 
-W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The final prototype can be seen in the following pictures.
+Figure~\ref{fig:pic1} shows the front of the prototype, with the camera
+tilted upwards 45°, the Raspberry Pi's \gls{ui} circuit with its encoder and
+screen, the gimbal on top of the prototype's body and the ESP32-S3
+further back. Figure~\ref{fig:pic2} shows the back of the prototype. From
+this angle it is possible to also see the power connector for the servo
+motors, the small opening in the front for the Raspberry Pi's \gls{psu} and
+the fan used to cool the \gls{sbc}.
 
-fotos do prototipo final, descricoes e pa 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{5/img3}
+  \caption{Front of the prototype}
+  \label{fig:pic1}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{5/img4}
+  \caption{Back of the prototype}
+  \label{fig:pic2}
+\end{figure}
+
+Figure~\ref{fig:pic3} shows the interior of the prototype. It shows the two
+internal \gls{psu}s, one for the fan and the other for the servo motors,
+and the Raspberry Pi itself, sitting in an elevated position to allow air
+circulation around both sides of the board.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{5/img5}
+  \caption{Prototype's interior}
+  \label{fig:pic3}
+\end{figure}
+
+\clearpage
 
 \section{The tests}
 

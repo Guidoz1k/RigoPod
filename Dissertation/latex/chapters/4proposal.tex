@@ -114,7 +114,7 @@ send messages to the pod subsystem via the communication pin header.
 
 The second subsystem in the prototype, and the main focus of this work, the distance
 measuring pod will consist mainly of a distance measuring sensor, a gimbal to aim the
-sensor according to a specific direction, a microcontroller to control everything,
+sensor according to a specific direction, a \gls{mcu} to control everything,
 process the data and send it back to the drone subsystem.
 The full cycle of the measuring routine would consist of:
 
@@ -127,25 +127,25 @@ The full cycle of the measuring routine would consist of:
 \end{itemize}
 
 In order to perform all these tasks, a digital, programmable system will be used. The
-hardware chosen for this task is a microcontroller. A microcontroller is a compact
+hardware chosen for this task is a \gls{mcu}. A \gls{mcu} is a compact
 integrated circuit designed to perform specific control tasks within an embedded system.
 It combines a processor core, memory (such as RAM and flash), and input/output
 peripherals on a single chip.
-Unlike general-purpose computers, microcontrollers are optimized for
+Unlike general-purpose computers, \gls{mcu}s are optimized for
 interacting with hardware, allowing them to read sensors, process data, and control
 actuators in real time.
 
 \subsection{Microcontroller and framework}
 
-The chosen microcontroller for the pod subsystem is the ESP32-S3 \cite{esp32s3}.
-The ESP32-S3 is a low-power microcontroller developed by Espressif Systems.
+The chosen \gls{mcu} for the pod subsystem is the ESP32-S3 \cite{esp32s3}.
+The ESP32-S3 is a low-power \gls{mcu} developed by Espressif Systems.
 It is the successor of the well known ESP32. The ESP32-S3 features
 a dual-core XTensa LX7 processor architecture, running at 240MHz,
 512kB of SRAM,
 and 384 KB ROM.
 The device features a wide range of peripherals, such as GPIO, SPI, I²C, UART, ADC,
 and PWM, enabling flexible interfacing with sensors and external components.
-A board with the chosen microcontroller module can be seen in Figure~\ref{fig:4esp}.
+A board with the chosen \gls{mcu} module can be seen in Figure~\ref{fig:4esp}.
 
 \begin{figure}[ht]
   \centering
@@ -154,10 +154,10 @@ A board with the chosen microcontroller module can be seen in Figure~\ref{fig:4e
   \label{fig:4esp}
 \end{figure}
 
-The microcontroller was chosen for its availability, flexibility, price point and also
+The \gls{mcu} was chosen for its availability, flexibility, price point and also
 the development environment. Espressif Systems developed a framework called ESP-IDF
 \cite{espidf}. This framework includes a \gls{hal}, which gives the embedded developer
-a fast and reliable way of accessing the hardware controlled by the microcontroller.
+a fast and reliable way of accessing the hardware controlled by the \gls{mcu}.
 This shortens development time and system bring-up tests, which helps with the rapid
 prototyping phase of the project.
 
@@ -284,7 +284,7 @@ as structural integrity, weight distribution, or accessibility. This flexibility
 especially valuable during the early stages of development, where design requirements
 may evolve rapidly. 
 
-\subsection{Assembled prototype}
+\subsection{Mechanical aspects of the prototype}
 
 This subsection presents a 3D model of the assembled prototype, illustrating the
 integration of its main components. The model includes the 3D-printed structural parts,
