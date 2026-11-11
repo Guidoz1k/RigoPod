@@ -1,0 +1,41 @@
+Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,Source Arrow,Destination Arrow,Status,Text Area 1,Text Area 2,Comments,Notes,Shape ID
+1,Document,,,,,,,,,Draft,pod state,,,,1e2b6668-e6d4-41a1-b234-f6355ee25103
+2,Page,,,,,,,,,,Page 1,,,,0_0
+3,Connector,Flowchart Shapes/Containers,2,,,,,,,,0,,,,LAqLOlLU7.8q
+4,Class,UML,2,,,,,,,,MODE_IDLE,"​- gimbal → ( 0, 0, 0 )
+- LED → blue",,,8BqLQx1OjMjo
+5,Class,UML,2,,,,,,,,MODE_WAITING,"​- gimbal → stopped
+- LED → red
+- UART → nothing ",,,dDqLTRPgIxqI
+6,Class,UML,2,,,,,,,,MODE_SERVO_ERROR,"​- gimbal → active
+- LED → orange
+- UART → ""servo out of range""",,,eDqLIKvTyb-9
+7,Class,UML,2,,,,,,,,MODE_ACTIVE,"​- gimbal → active
+- LED → green
+- UART → ""ok""",,,gDqLPO6V.IYM
+8,Class,UML,2,,,,,,,,MODE_COMM_ERROR,"​- gimbal → stopped
+- LED → cyan",,,kDqLLotzCSoO
+9,Class,UML,2,,,,,,,,MODE_TOF_ERROR,"​- gimbal → active
+- LED → magenta
+- UART → ""sensor unavailable""",,,nDqL4vDQQmbF
+10,Predefined process,Flowchart Shapes/Containers,2,,,,,,,,invalid comms,,,,rTqLb8xZub1_
+11,Line,,2,,,3,4,None,Arrow,,waiting comms,,,,sBqLBT3rdYkM
+12,Line,,2,,,4,7,None,Arrow,,"Receives
+coordinates",,,,~IqL9ZIkA2yB
+13,Line,,2,,,10,8,None,Arrow,,,,,,tNqL1dM1Id7P
+14,Line,,2,,,8,4,None,Arrow,,WAIT_TIME,,,,FNqL4HfekyTs
+15,Line,,2,,,7,5,None,Arrow,,lost comms,,,,BOqL5B6IUSS2
+16,Line,,2,,,5,4,None,Arrow,,WAIT_TIME,,,,gPqLYZXUBjrf
+17,Line,,2,,,5,7,None,Arrow,,"comms
+reestablished",,,,BPqLZP_HyO~D
+18,Line,,2,,,7,6,None,Arrow,,"coordinates outside
+of servo range",,,,NQqL9CypQQgI
+19,Line,,2,,,6,7,None,Arrow,,"coordinates within
+servo range",,,,jRqLziy6DrtP
+20,Line,,2,,,8,7,None,Arrow,,comms reestablished,,,,pSqLbotBQS-3
+21,Line,,2,,,7,9,None,Arrow,,"ToF sensor
+error",,,,​-UqLJiiM-IcV
+22,Line,,2,,,9,7,None,Arrow,,"ToF sensor
+valid response",,,,8YqLfkZB1zN_
+23,Line,,2,,,7,4,None,Arrow,,"Task
+Completed",,,,cOrLca0r1wp0

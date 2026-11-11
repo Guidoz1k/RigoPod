@@ -131,8 +131,6 @@ void modbus_read_buffer( uint8_t *buffer, uint8_t size ){
     uart_read_bytes( UART_NUM_2, buffer, size, read_timeout );
 }
 
-// ============ EXTERNAL FUNCTIONS ============
-
 esp_err_t xts1_write_register( uint16_t address_index, uint16_t value ){
     esp_err_t operation = ESP_OK;
     uint8_t wait = 0;
@@ -202,6 +200,8 @@ esp_err_t xts1_sys_error( uint32_t *value ){
 
     return operation;
 }
+
+// ============ EXTERNAL FUNCTIONS ============
 
 /* Will return distance in mm or error code:
     -13: overexposure

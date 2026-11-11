@@ -1,0 +1,38 @@
+Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,Source Arrow,Destination Arrow,Status,Text Area 1,Comments,Notes,Shape ID
+1,Document,,,,,,,,,Draft,Sequence diagram,,,98586002-d8bc-42f2-b740-9e98ec9bb69d
+2,Page,,,,,,,,,,Page 1,,,0_0
+3,Activation,UML,2,,,,,,,,,,,MqcVewxU1dYZ
+4,Activation,UML,2,,,,,,,,,,,MqcVM0QZbrUZ
+5,Class,UML,2,,,,,,,,Pod system,,,MqcVmMyL1~ta
+6,Class,UML,2,,,,,,,,Drone system,,,MqcV3wVYVeiN
+7,Activation,UML,2,,,,,,,,,,,L-qLXMsGOWt.
+8,Activation,UML,2,,,,,,,,,,,x_qLK-q~RlnT
+9,Activation,UML,2,,,,,,,,,,,x_qLKbQS59N3
+10,Class,UML,2,,,,,,,,Pod system,,,x_qLY0UVXcrQ
+11,Class,UML,2,,,,,,,,Drone system,,,x_qL6wW6oHSL
+12,Activation,UML,2,,,,,,,,,,,x_qLPNme-vVE
+13,Deletion,UML,2,,,,,,,,,,,k.qLwx1fFypq
+14,Activation,UML,2,,,,,,,,,,,r~qLRx2ZQE.4
+15,Activation,UML,2,,,,,,,,,,,ccrL.hnkjnZf
+16,Line,,2,,,6,,None,None,,,,,MqcVzrL-7rmi
+17,Line,,2,,,5,,None,None,,,,,MqcVlcxoSIf4
+18,Line,,2,,,4,3,None,Arrow,,"Direction
+override",,,MqcVYmNKQI35
+19,Line,,2,,,3,4,None,Arrow,,ok,,,K8qL9.1JhS-O
+20,Line,,2,,,4,,None,Arrow,,ToF reading,,,y9qLDkEd7Jjr
+21,Line,,2,,,,4,None,Arrow,,value,,,L9qLvc6Ac0OP
+22,Line,,2,,,11,,None,None,,,,,x_qLR.LWWYaN
+23,Line,,2,,,10,,None,None,,,,,x_qL-WCIOd-8
+24,Line,,2,,,9,8,None,Arrow,,"Direction
+override",,,x_qLWZMcJ75C
+25,Line,,2,,,8,9,None,Arrow,,,,,x_qLyilSyL4k
+26,Line,,2,,,9,,None,Arrow,,ToF reading,,,x_qLTRoAh9NR
+27,Line,,2,,,,9,None,Arrow,,"""sensor unavailable""",,,x_qLksDg5CiM
+28,Line,,2,,,,,None,Arrow,,Tracking,,,r~qLfNSRHyEf
+29,Line,,2,,,,,None,Arrow,,value,,,r~qLoJ0ph.xT
+30,Line,,2,,,14,4,None,Arrow,,timeout,,,1brL8ZnXj4MC
+31,Line,,2,,,9,15,None,Arrow,,Tracking,,,hcrLkzcOGocw
+32,Line,,2,,,15,9,None,Arrow,,"servo out
+of range",,,7crLx~q0O7CJ
+33,Line,,2,,,9,15,None,Arrow,,Tracking,,,DdrLd.q.-u0Q
+34,Line,,2,,,15,9,None,Arrow,,value,,,JdrLt0~AkQeB
