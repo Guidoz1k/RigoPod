@@ -13,9 +13,10 @@
 #define UART_1_RX_PIN     18
 
 typedef enum {
-    BIN = 2,
-    DEC = 10,
-    HEX = 16,
+    SYMBOL_RAW = 1,
+    SYMBOL_BIN = 2,
+    SYMBOL_DEC = 10,
+    SYMBOL_HEX = 16,
 } base_t;
 
 void serial_setup();
@@ -29,6 +30,8 @@ void serial_write_char( uint8_t character, bool numerical, bool newline );
 void serial_new_line();
 
 void serial_write_string( const char *pointer, bool newline );
+
+void serial_write_bytes( uint8_t *buffer, uint8_t size );
 
 uint8_t serial_read_chars( char *buffer, uint8_t size );
 

@@ -12,7 +12,7 @@ Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,So
 - UART → ""servo out of range""",,,eDqLIKvTyb-9
 7,Class,UML,2,,,,,,,,MODE_ACTIVE,"​- gimbal → active
 - LED → green
-- UART → ""ok""",,,gDqLPO6V.IYM
+- UART → ToF sensor value",,,gDqLPO6V.IYM
 8,Class,UML,2,,,,,,,,MODE_COMM_ERROR,"​- gimbal → stopped
 - LED → cyan",,,kDqLLotzCSoO
 9,Class,UML,2,,,,,,,,MODE_TOF_ERROR,"​- gimbal → active
@@ -39,3 +39,5 @@ error",,,,​-UqLJiiM-IcV
 valid response",,,,8YqLfkZB1zN_
 23,Line,,2,,,7,4,None,Arrow,,"Task
 Completed",,,,cOrLca0r1wp0
+24,Line,,2,,,7,7,None,Arrow,,"ToF sensor
+valid response",,,,HmMLpMwLvbNd

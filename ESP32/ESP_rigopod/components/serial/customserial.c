@@ -71,7 +71,11 @@ void serial_write_byte( uint8_t number, base_t base, bool newline ){
     char buffer[ 9 ];
 
     switch( base ){
-    case BIN:
+    case SYMBOL_RAW:
+        buffer[ 0 ] = number;
+        size = 1;
+        break;
+    case SYMBOL_BIN:
         for( i = 0; i < 8; i++ ){
             buffer[ 7 - i ] = number % 2 + 48;
             number /= 2;
@@ -82,14 +86,14 @@ void serial_write_byte( uint8_t number, base_t base, bool newline ){
 
         size = 9;
         break;
-    case DEC:
+    case SYMBOL_DEC:
         buffer[ 0 ] = ( ( number / 100 ) % 10 ) + 48;
         buffer[ 1 ] = ( ( number / 10 ) % 10 ) + 48;
         buffer[ 2 ] = ( number % 10 ) + 48;
 
         size = 3;
         break;
-    case HEX:
+    case SYMBOL_HEX:
         buffer[ 0 ] = '0';
         buffer[ 1 ] = 'x';
         buffer[ 2 ] = ( ( number >> 4 ) & 0x0F ) + 48;
@@ -141,6 +145,10 @@ void serial_write_string( const char *pointer, bool newline ){
         counter--;
 
     uart_write_bytes( UART_NUM_1, buffer, counter + 1 );
+}
+
+void serial_write_bytes( uint8_t *buffer, uint8_t size ){
+    uart_write_bytes( UART_NUM_1, buffer, size );
 }
 
 uint8_t serial_read_chars( char *buffer, uint8_t size ){

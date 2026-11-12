@@ -71,7 +71,9 @@ The camera comes with a CSI 22-way FPC cable, which connects to the CSI
 connector on the Raspberry Pi. As mentioned in Chapter~\ref{cap:prop}, the
 camera's diagonal \gls{fov} is 75°, with a resolution of 2304\,$\times$\,1296
 pixels. That resolution has a standard ratio of 16:9. This means that the
-vertical \gls{fov} is of $\approx$ 36.77°. The vertical \gls{fov} of the
+vertical \gls{fov} is of $\approx$ 36.77° and the horizontal \gls{fov} is of
+$\approx$ 65.37°.
+The vertical \gls{fov} of the
 prototype, on a 45° inclinated \gls{los}
 in reference to horizontal and vertical planes can be seen from the side in
 the Figure~\ref{fig:fov}:
@@ -79,13 +81,26 @@ the Figure~\ref{fig:fov}:
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.7\textwidth]{5/img6}
-  \caption{Prototype's FOV}
+  \caption{Prototype's vertical FOV}
   \label{fig:fov}
 \end{figure}
 
 The chosen resolution of the camera is 2304\,$\times$\,1296 in order to
 make sure the system is running at constant 30Hz. Using the camera's full
 resolution of 4608\,$\times$\,2592 proved to be too processing intensive.
+
+As seen in Chapter~\ref{cap:prop}, the servo motor's maximum angular speed
+is $\approx$\,461.54\,°/s (from the 0.13\,sec/60° provided in the
+\gls{pn}'s datasheet). As the Drone system will run it's main loop at 30Hz,
+that's $\approx$\,15.38\,° for every system iteration ($^1/_{30}$\,s $\approx$ 33.3\,ms). A 15.38° radius
+circle over the camera's \gls{fov} can be seen in Figure~\ref{fig:fov2}:
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{5/img7}
+  \caption{Prototype's FOV with gimbal maximum angular performance}
+  \label{fig:fov2}
+\end{figure}
 
 \subsubsection{UI's flow}
 
@@ -142,6 +157,13 @@ o gimbal auto centra quando em idle \gls{fsm}
   \includegraphics[width=1\textwidth]{5/pod_state}
   \caption{Basic version of the Pod system's state machine}
   \label{fig:pod_state}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{5/pod_fsm}
+  \caption{FSM flowchart}
+  \label{fig:pod_fsm}
 \end{figure}
 
 \subsubsection{Parallax compensation algorithm}
