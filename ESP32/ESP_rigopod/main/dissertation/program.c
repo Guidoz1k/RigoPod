@@ -39,6 +39,8 @@ int16_t current_distance = 0;                   // [cents fixed point] ToF senso
 int16_t current_pitch = 0, current_roll = 0;    // [cents fixed point] gimbal control data for the FSM events
 int16_t command_pitch = 0, command_roll = 0;    // [cents fixed point] gimbal control data from UART input
 
+// ========== DATA-DRIVEN OUTPUT VARIABLES ==========
+
 // data-driven led rgb combination by mode
 const struct _led_color_{
     uint8_t red;
@@ -78,6 +80,8 @@ uint8_t uart_response[ 8 ][ 3 ] = {
     { 'R',   1,   1 }, // MODE_TOF          (green)
 };
 
+// ========== EVENT VARIABLES ==========
+
 // serial request event type (includes gimbal event as well)
 enum _uart_in_t{
     SERIAL_IN_EMPTY = 0,
@@ -110,23 +114,6 @@ void servo_calib(){
     servo_set_pwm_min( ROLL_SERVO_CALIB_MIN, SERVO_ROLL );
 }
 
-// PERIPHERAL ToF sensor: report all erros as one, else reports distance value
-void rangefinding(){
-    int16_t response = 0;
-
-    if( xts1_measure_distance( &response ) < 0 ){
-        response = 0;
-        tof_event = TOF_INVALID;
-    }
-    else
-        tof_event = TOF_VALID;
-
-    uart_response[ MODE_ACTIVE ][ 1 ] = response >> 8;
-    uart_response[ MODE_TOF ][ 1 ] = response >> 8;
-    uart_response[ MODE_ACTIVE ][ 0 ] = response && 0xFF;
-    uart_response[ MODE_TOF ][ 0 ] = response && 0xFF;
-}
-
 // checks for the gimbal's angular maximum traverse
 bool gimbal_range(){
     float x_coord = command_roll - current_roll;          // x component of change vector
@@ -145,6 +132,23 @@ bool gimbal_range(){
     }
 
     return return_value;
+}
+
+// PERIPHERAL ToF sensor: report all erros as one, else reports distance value
+void rangefinding(){
+    int16_t response = 0;
+
+    if( xts1_measure_distance( &response ) < 0 ){
+        response = 0;
+        tof_event = TOF_INVALID;
+    }
+    else
+        tof_event = TOF_VALID;
+
+    uart_response[ MODE_ACTIVE ][ 1 ] = response >> 8;
+    uart_response[ MODE_TOF ][ 1 ] = response >> 8;
+    uart_response[ MODE_ACTIVE ][ 0 ] = response && 0xFF;
+    uart_response[ MODE_TOF ][ 0 ] = response && 0xFF;
 }
 
 // PERIPHERAL UART: check for messages from drone system
@@ -182,7 +186,7 @@ void uart_request(){
     uart_event = value;
 }
 
-// ============  FUNCTIONS ============
+// ============  FSM FUNCTIONS ============
 
 // function to set the RGB led according to current mode
 void mode_transition( system_mode_t next_mode ){
@@ -247,20 +251,12 @@ void main_task(){
     case MODE_WAITING:
         // @@@@@@ needs timeout and serial parsing
         break;
-    case MODE_SERVO_ERROR:
-        mode_transition( MODE_IDLE ); // ACTIVE or GIMBAL modes, SERVO_ERROR sends back to idle
-        break;
-    case MODE_TOF_ERROR:
-        mode_transition( MODE_IDLE ); // ACTIVE or TOF modes, TOF_ERROR sends back to idle
-        break;
     case MODE_COMM_ERROR:
         // @@@@@@ needs timeout and serial parsing
         break;
     case MODE_ACTIVE:
         switch(uart_event){
         case SERIAL_IN_GIMBAL:
-            mode_transition( MODE_IDLE ); // drone system would not make this request
-            break;
         case SERIAL_IN_TOF:
             mode_transition( MODE_IDLE ); // drone system would not make this request
             break;
@@ -281,10 +277,10 @@ void main_task(){
             break;
         }
         break;
-    case MODE_GIMBAL:
-        mode_transition( MODE_IDLE ); // executes once and back to idle
-        break;
-    case MODE_TOF:
+    case MODE_SERVO_ERROR:  // ACTIVE or GIMBAL modes, SERVO_ERROR sends back to idle
+    case MODE_TOF_ERROR:    // ACTIVE or TOF modes, TOF_ERROR sends back to idle
+    case MODE_GIMBAL:       // executes once and back to idle
+    case MODE_TOF:          // executes once and back to idle
         mode_transition( MODE_IDLE ); // executes once and back to idle
         break;
     default:

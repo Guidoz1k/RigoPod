@@ -92,8 +92,10 @@ resolution of 4608\,$\times$\,2592 proved to be too processing intensive.
 As seen in Chapter~\ref{cap:prop}, the servo motor's maximum angular speed
 is $\approx$\,461.54\,°/s (from the 0.13\,sec/60° provided in the
 \gls{pn}'s datasheet). As the Drone system will run it's main loop at 30Hz,
-that's $\approx$\,15.38\,° for every system iteration ($^1/_{30}$\,s $\approx$ 33.3\,ms). A 15.38° radius
-circle over the camera's \gls{fov} can be seen in Figure~\ref{fig:fov2}:
+that's $\approx$\,15.38\,° for every system iteration
+($^1/_{30}$\,s $\approx$ 33.3\,ms).
+A 15.38° radius circle over the camera's \gls{fov} can be
+seen in Figure~\ref{fig:fov2}:
 
 \begin{figure}[ht]
   \centering
@@ -151,6 +153,8 @@ the test starts and finishes.
 W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 o gimbal auto centra quando em idle \gls{fsm}
+o sistema roda em fixed point 
+limites do servo sao hardcoded
 
 \begin{figure}[ht]
   \centering
@@ -300,6 +304,20 @@ Both are defined as:
   s^2 = \frac{1}{n-1} \sum_{i=1}^{n} (d_i - \bar{d})^2, \qquad
   s = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (d_i - \bar{d})^2}
 \end{equation}
+
+\subsection{Reference instrument}
+
+The reference instrument for the tests is a Stanley Stht77802-la \cite{stanlaser}.
+It is a industrial laser distance measuring device with a minimum measuring
+distance of 5\,cm and a maximum range of
+60\,m. The device has a specified measurement accuracy of ±1.5 mm at 10 m.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{5/img8}
+  \caption{Stanley Stht77802}
+  \label{fig:stanley}
+\end{figure}
 
 \subsection{Static single-point test}
 
