@@ -70,14 +70,14 @@ const struct _led_color_{
     bytes with '1' are written over by rangefinding function
 */
 uint8_t uart_response[ 8 ][ 3 ] = {
-    {   0,   0,   0 }, // MODE_IDLE         (blue)
-    {   0,   0,   0 }, // MODE_WAITING      (red)
-    { 'S',   0,   0 }, // MODE_SERVO_ERROR  (orange)
-    { 'T',   0,   0 }, // MODE_TOF_ERROR    (magenta)
-    { 'E',   0,   0 }, // MODE_COMM_ERROR   (cyan)
-    { 'A',   1,   1 }, // MODE_ACTIVE       (green)
-    { 'G',   0,   0 }, // MODE_GIMBAL       (green)
-    { 'R',   1,   1 }, // MODE_TOF          (green)
+    {   0,   0,   0 }, // MODE_IDLE
+    {   0,   0,   0 }, // MODE_WAITING
+    { 'S',   0,   0 }, // MODE_SERVO_ERROR
+    { 'T',   0,   0 }, // MODE_TOF_ERROR
+    { 'E',   0,   0 }, // MODE_COMM_ERROR
+    { 'A',   1,   1 }, // MODE_ACTIVE
+    { 'G',   0,   0 }, // MODE_GIMBAL
+    { 'R',   1,   1 }, // MODE_TOF
 };
 
 // ========== EVENT VARIABLES ==========
@@ -188,29 +188,30 @@ void uart_request(){
 
 // ============  FSM FUNCTIONS ============
 
+// function to detect if the drone system went idle
+bool timeout_check( bool reset ){
+    static uint32_t time_start = 0;
+    bool counter_detect = false;
+
+    if( reset == true )
+        time_start = time_counter;
+    else{
+        if( ( time_counter - time_start ) >= WAIT_TIME) // 1s waiting
+            counter_detect = true;
+    }
+
+    return counter_detect;
+}
+
 // function to set the RGB led according to current mode
 void mode_transition( system_mode_t next_mode ){
     led_color( rgb_pattern[ next_mode ].red, rgb_pattern[ next_mode ].green, rgb_pattern[ next_mode ].blue );
     serial_write_bytes( uart_response[ next_mode ], 3 );
     inverse_kinematics( command_pitch, command_roll );
     system_mode = next_mode;
-}
 
-// function to detect if the drone system went idle
-bool timeout_check( bool reset ){
-    static uint32_t time_start = 0;
-    uint32_t current_time = 0;
-    bool counter_detect = false;
-
-    if( reset == true )
-        time_start = time_counter;
-    else{
-        current_time = time_counter - time_start;
-        if( current_time >= WAIT_TIME) // 3s waiting
-            counter_detect = true;
-    }
-
-    return counter_detect;
+    if( next_mode == MODE_WAITING )
+        timeout_check( true );
 }
 
 // ============ MAIN FUNCTIONS ============
@@ -220,7 +221,7 @@ void main_task(){
     rangefinding();
 
     switch( system_mode ){
-    case MODE_IDLE:
+    case MODE_IDLE: // waiting for any request
         switch(uart_event){
         case SERIAL_IN_GIMBAL:
             mode_transition( MODE_GIMBAL );
@@ -248,13 +249,7 @@ void main_task(){
             break;
         }
         break;
-    case MODE_WAITING:
-        // @@@@@@ needs timeout and serial parsing
-        break;
-    case MODE_COMM_ERROR:
-        // @@@@@@ needs timeout and serial parsing
-        break;
-    case MODE_ACTIVE:
+    case MODE_WAITING: // mode exclusive for ACTIVE_MODE waiting loop
         switch(uart_event){
         case SERIAL_IN_GIMBAL:
         case SERIAL_IN_TOF:
@@ -273,7 +268,35 @@ void main_task(){
             mode_transition( MODE_SERVO_ERROR );
             break;
         case SERIAL_IN_EMPTY:
-            // @@@@@@ needs timeout
+            if( timeout_check( false ) == true ) // timeout occurred
+                mode_transition( MODE_IDLE );
+            // else, just keeps waiting
+            break;
+        }
+        break;
+    case MODE_COMM_ERROR:   // invalid command
+        mode_transition( MODE_IDLE ); // executes once and back to idle
+        break;
+    case MODE_ACTIVE: // chained measurements
+        switch(uart_event){
+        case SERIAL_IN_GIMBAL:
+        case SERIAL_IN_TOF:
+            mode_transition( MODE_IDLE ); // drone system would not make this request
+            break;
+        case SERIAL_IN_ACTIVE:
+            if( tof_event == TOF_VALID )
+                mode_transition( MODE_ACTIVE );
+            else
+                mode_transition( MODE_TOF_ERROR );
+            break;
+        case SERIAL_IN_ERROR:
+            mode_transition( MODE_COMM_ERROR );
+            break;
+        case SERIAL_IN_GIMBAL_ERROR:
+            mode_transition( MODE_SERVO_ERROR );
+            break;
+        case SERIAL_IN_EMPTY:
+            mode_transition( MODE_WAITING );
             break;
         }
         break;
