@@ -35,7 +35,7 @@ system_mode_t system_mode = MODE_IDLE;  // current FSM state
 extern uint32_t time_counter;           // global timer updated in core 2 every 1µs (main.c)
 
 const int16_t max_angle = 1500;         // [cents fixed point] servo does 0.13s per 60deg @5V → 15.38deg per cycle @30Hz
-int16_t current_distance = 0;                   // [cents fixed point] ToF sensor input data for the FSM events
+int16_t distance_measured = 0;
 int16_t current_pitch = 0, current_roll = 0;    // [cents fixed point] gimbal control data for the FSM events
 int16_t command_pitch = 0, command_roll = 0;    // [cents fixed point] gimbal control data from UART input
 
@@ -70,8 +70,8 @@ const struct _led_color_{
     bytes with '1' are written over by rangefinding function
 */
 uint8_t uart_response[ 8 ][ 3 ] = {
-    {   0,   0,   0 }, // MODE_IDLE
-    {   0,   0,   0 }, // MODE_WAITING
+    { '0',   0,   0 }, // MODE_IDLE
+    { 'W',   0,   0 }, // MODE_WAITING
     { 'S',   0,   0 }, // MODE_SERVO_ERROR
     { 'T',   0,   0 }, // MODE_TOF_ERROR
     { 'E',   0,   0 }, // MODE_COMM_ERROR
@@ -127,8 +127,10 @@ bool gimbal_range(){
         current_roll = command_roll;
     }
     else{
-        current_roll = (int16_t)( max_angle * ( x_coord / vector_mag ) ); // maximum magnitude multiplied by normalized vector
-        current_pitch = (int16_t)( max_angle * ( y_coord / vector_mag ) ); // maximum magnitude multiplied by normalized vector
+        // maximum magnitude multiplied by normalized vector gives you a max vector with the requested direction
+        // this vector is added to the current coordinates, to respect the limit of the gimbal
+        current_roll += (int16_t)( max_angle * ( x_coord / vector_mag ) );
+        current_pitch += (int16_t)( max_angle * ( y_coord / vector_mag ) );
     }
 
     return return_value;
@@ -145,10 +147,11 @@ void rangefinding(){
     else
         tof_event = TOF_VALID;
 
-    uart_response[ MODE_ACTIVE ][ 1 ] = response >> 8;
-    uart_response[ MODE_TOF ][ 1 ] = response >> 8;
-    uart_response[ MODE_ACTIVE ][ 0 ] = response && 0xFF;
-    uart_response[ MODE_TOF ][ 0 ] = response && 0xFF;
+    distance_measured = response;
+    uart_response[ MODE_ACTIVE ][ 1 ] = (uint8_t)(response >> 8);
+    uart_response[ MODE_ACTIVE ][ 2 ] = (uint8_t)(response & 0xFF);
+    uart_response[ MODE_TOF ][ 1 ] = (uint8_t)(response >> 8);
+    uart_response[ MODE_TOF ][ 2 ] = (uint8_t)(response & 0xFF);
 }
 
 // PERIPHERAL UART: check for messages from drone system
@@ -156,6 +159,9 @@ void uart_request(){
     uint8_t value = SERIAL_IN_EMPTY;
     uint8_t packet = 0;
     uint8_t value_byte[ 2 ] = { 0 };
+
+    command_pitch = 0;
+    command_roll = 0;
 
     if( serial_read_size() != 0 ){          // byte available at UART
         packet = serial_read_singlechar();
@@ -167,7 +173,6 @@ void uart_request(){
                     command_pitch = ( value_byte[ 0 ] << 8 ) + value_byte[ 1 ];
                     if( serial_read_chars( (char*)value_byte, 2 ) == 2 ){
                         command_roll = ( value_byte[ 0 ] << 8 ) + value_byte[ 1 ];
-
                         if( gimbal_range() == true )
                             value = packet;
                         else
@@ -208,10 +213,17 @@ void mode_transition( system_mode_t next_mode ){
     led_color( rgb_pattern[ next_mode ].red, rgb_pattern[ next_mode ].green, rgb_pattern[ next_mode ].blue );
     serial_write_bytes( uart_response[ next_mode ], 3 );
     inverse_kinematics( command_pitch, command_roll );
-    system_mode = next_mode;
 
     if( next_mode == MODE_WAITING )
         timeout_check( true );
+
+    if( system_mode != next_mode ){
+        printf("MODE: ");
+        printf( "%c\n", uart_response[ next_mode ][ 0 ] );
+        fflush(stdout);
+    }
+
+    system_mode = next_mode;
 }
 
 // ============ MAIN FUNCTIONS ============
@@ -301,9 +313,15 @@ void main_task(){
         }
         break;
     case MODE_SERVO_ERROR:  // ACTIVE or GIMBAL modes, SERVO_ERROR sends back to idle
+        mode_transition( MODE_IDLE ); // executes once and back to idle
+        break;
     case MODE_TOF_ERROR:    // ACTIVE or TOF modes, TOF_ERROR sends back to idle
-    case MODE_GIMBAL:       // executes once and back to idle
-    case MODE_TOF:          // executes once and back to idle
+        mode_transition( MODE_IDLE ); // executes once and back to idle
+        break;
+    case MODE_GIMBAL:
+        mode_transition( MODE_IDLE ); // executes once and back to idle
+        break;
+    case MODE_TOF:
         mode_transition( MODE_IDLE ); // executes once and back to idle
         break;
     default:
@@ -319,7 +337,7 @@ void test_routine(){
 
     while( 1 ){
         main_task();
-        delay_milli( 10 );
+        delay_milli( 30 );
         //delay_tick();
     }
 }
