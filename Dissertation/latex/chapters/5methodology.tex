@@ -106,7 +106,21 @@ seen in Figure~\ref{fig:fov2}:
 
 \subsubsection{UI's flow}
 
-W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The drone system's algorithm is very simple. It shows the user three options:
+
+\begin{itemize}
+  \item Gimbal setup.
+  \item ToF sensor reading.
+  \item Active continuous tracking.
+\end{itemize}
+
+The three options can be used for the three test scenarios proposed in this
+work. The gimbal setup will request a gimbal position for the pod system.
+The second option will acquire a configurable amount of readings
+from \gls{tof} sensor, and calculate averages and deviations.
+The third is the active tracking with parallax compensation. This is the
+only option that will not display all the results, but save the log
+of the test in a file to be analysed after the test.
 
 \subsubsection{Raspberry Pi's OpenCV algorithm}
 
@@ -146,22 +160,44 @@ ESP32-S3 as a central \gls{mcu}, a XT-S1 \gls{tof} sensor, two servo motors,
 and their \gls{psu}s. Apart from the \gls{rgb} \gls{led} built in the ESP32's
 board, there is no test interface on the pod system. The \gls{led} will
 signal when messages are received, if the requested data is ready, and when
-the test starts and finishes.
+the test starts and finishes. The gimbal is free to rotate each axis the
+servo's entire range, 180\,°, even though the drone system will not request
+any direction outside the camera's \gls{fov}.
+Pod system will use fixed point arithmetic for the angles, as it is simple
+and easy to implement in 16 bit integer variables.
 
 \subsubsection{Pod's general algorithm}
 
-W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Figure~\ref{fig:pod_fsm} shows the basic working of the pod system's \gls{fsm}.
+First, event producers check the the peripherals for different updates, from
+\gls{uart} to the \gls{tof} sensor. The events produced are stored so the
+main \gls{fsm} core can decide what mode can better treat the events.
+A transition function is used to update the outputs, as \gls{uart} responses
+and the gimbal's position, and to transition the \gls{fsm} to its next mode.
+The output data is data-driven, being set dynamically by the peripheral
+control functions.
 
-o gimbal auto centra quando em idle \gls{fsm}
-o sistema roda em fixed point 
-limites do servo sao hardcoded
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=1\textwidth]{5/pod_state}
-  \caption{Basic version of the Pod system's state machine}
-  \label{fig:pod_state}
-\end{figure}
+With the \gls{fsm} implemented, a resumed diagram of the basic modes of the
+pod system can be seen in Figure~\ref{fig:pod_state}.
+The system starts in \emph{idle mode}. Both gimbal set request and \gls{tof}
+read request set the system in \emph{active mode}.
+In \emph{idle mode}, the gimbal is always centered at origin.
+If the requested gimbal angle exceeds the maximum angular rate of the servos,
+the system enters \emph{servo error mode}. This limits the gimbal's position
+to the maximum value allowed in the timeframe, and messages drone system back
+that the requested angle was not obtained.
+If the \gls{tof} sensor reports an error message, which can happen in non
+critical situations, the system enters \emph{tof error mode}. It reports
+to the drone system that the sensor is unavailable and another reading
+should be requested.
+A third type of error is a non-valid message in the \gls{uart} connecting
+the drone system to the pod system. This error makes the \gls{fsm} enter
+\emph{comm error mode}. The pod system will then report that the request
+message received was invalid.
+\emph{Waiting mode} is for when the pod system gets requested continuous
+readings (for example, testing the tracking system in the dynamic test).
+The system will enter \emph{waiting mode} after every single individual
+request.
 
 \begin{figure}[ht]
   \centering
@@ -170,22 +206,50 @@ limites do servo sao hardcoded
   \label{fig:pod_fsm}
 \end{figure}
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{5/pod_state}
+  \caption{Basic version of the Pod system's state machine}
+  \label{fig:pod_state}
+\end{figure}
+
+\clearpage
+
 \subsubsection{Parallax compensation algorithm}
 
 W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Intermodule communication}
 
-a freq do pi eh 30hz, logo 30hz foda c
+Figure~\ref{fig:pod_fsm} shows a sequence diagram with the expected
+behaviour of the three main test functions. On the left, the three
+request messages were received and answered. On the right, an error
+occurred.
+Last interaction on the left sequence diagram shows a continuous
+readings request being active. The drone system will continuously
+request for \gls{tof} readings, and the pod system will use this
+stream of data to also filter the values to suppress noise.
+The sequence diagram on the right shows the three different errors
+that can occur in the \gls{uart} communication channel  between
+the two modules in the prototype.
+The first is a communication channel error. The message either was
+invalid, corrupted or unanswered.
+The second error occurs when the \gls{tof} sensor is unavailable at
+the time of the reading.
+The third error is when the requested gimbal movement is wider than
+the range of motion of the gimbal.
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{5/pod_flow}
-  \caption{Communication between the two systems}
+  \caption{Communication scenarios between the two systems}
   \label{fig:pod_flow}
 \end{figure}
 
-W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+As the drone system refreshes the camera's frame at 30\,Hz, the fastest
+request message rate between the modules is also 30\,Hz.
+
+\clearpage
 
 \subsection{Assembled prototype}
 
@@ -196,7 +260,8 @@ screen, the gimbal on top of the prototype's body and the ESP32-S3
 further back. Figure~\ref{fig:pic2} shows the back of the prototype. From
 this angle it is possible to also see the power connector for the servo
 motors, the small opening in the front for the Raspberry Pi's \gls{psu} and
-the fan used to cool the \gls{sbc}.
+the fan used to cool the \gls{sbc}. On the \gls{tof} sensor's support, there
+is a rail used to attach a laser pointer for some testings.
 
 \begin{figure}[ht]
   \centering
