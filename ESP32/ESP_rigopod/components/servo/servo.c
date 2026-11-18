@@ -18,7 +18,7 @@ servo_data_t pitch_servo = {
     .pwm_min = PWM_MIN_STD,
     .pwm_max = PMW_MAX_STD,
 };
-servo_data_t roll_servo = {
+servo_data_t yaw_servo = {
     .angle = 0,
     .pwm_min = PWM_MIN_STD,
     .pwm_max = PMW_MAX_STD,
@@ -51,7 +51,7 @@ void servo_setup(){
         .clk_cfg          = LEDC_AUTO_CLK
     };
     ledc_channel_config_t ledc_channel_2 = {
-        .gpio_num       = SERVO_ROLL,
+        .gpio_num       = SERVO_YAW,
         .speed_mode     = LEDC_LOW_SPEED_MODE,
         .channel        = LEDC_CHANNEL_1,
         .intr_type      = LEDC_INTR_DISABLE,
@@ -65,7 +65,7 @@ void servo_setup(){
     ESP_ERROR_CHECK( ledc_timer_config( &ledc_timer_2 ) );
     ESP_ERROR_CHECK( ledc_channel_config( &ledc_channel_2 ) );
     servo_set_angle( 0, SERVO_PITCH );
-    servo_set_angle( 0, SERVO_ROLL);
+    servo_set_angle( 0, SERVO_YAW);
     ESP_LOGI( TAG, "Servos Initialized" );
 }
 
@@ -87,10 +87,10 @@ void servo_set_angle( int16_t angle, servo_t servo ){
             ledc_set_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, pos );
             ledc_update_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0 );
             break;
-        case SERVO_ROLL:
-            roll_servo.angle = angle;
-            pos = ( ( ( roll_servo.pwm_max - roll_servo.pwm_min ) * angle ) / FULL_ANGLE ); // angular coefficient
-            pos += ( roll_servo.pwm_max + roll_servo.pwm_min ) / 2; // linear coefficient
+        case SERVO_YAW:
+            yaw_servo.angle = angle;
+            pos = ( ( ( yaw_servo.pwm_max - yaw_servo.pwm_min ) * angle ) / FULL_ANGLE ); // angular coefficient
+            pos += ( yaw_servo.pwm_max + yaw_servo.pwm_min ) / 2; // linear coefficient
 
             ledc_set_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, pos );
             ledc_update_duty( LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1 );
@@ -104,7 +104,7 @@ void servo_set_angle( int16_t angle, servo_t servo ){
 // update servo pos calculation after range adjustments
 void update_servos(){
     servo_set_angle( pitch_servo.angle, SERVO_PITCH );
-    servo_set_angle( roll_servo.angle, SERVO_ROLL );
+    servo_set_angle( yaw_servo.angle, SERVO_YAW );
 }
 
 // adjusts the min value of the PWM range
@@ -114,8 +114,8 @@ void servo_set_pwm_min( int16_t new_pwm_min, servo_t servo ){
             case SERVO_PITCH:
                 pitch_servo.pwm_min = new_pwm_min;
                 break;
-            case SERVO_ROLL:
-                roll_servo.pwm_min = new_pwm_min;
+            case SERVO_YAW:
+                yaw_servo.pwm_min = new_pwm_min;
                 break;
             default:
                 break;
@@ -131,8 +131,8 @@ void servo_set_pwm_max( int16_t new_pwm_max, servo_t servo ){
             case SERVO_PITCH:
                 pitch_servo.pwm_max = new_pwm_max;
                 break;
-            case SERVO_ROLL:
-                roll_servo.pwm_max = new_pwm_max;
+            case SERVO_YAW:
+                yaw_servo.pwm_max = new_pwm_max;
                 break;
             default:
                 break;
@@ -149,9 +149,9 @@ void servo_move_pwm( int16_t pwm_bias, servo_t servo ){
                 pitch_servo.pwm_max += pwm_bias;
                 pitch_servo.pwm_min += pwm_bias;
                 break;
-            case SERVO_ROLL:
-                roll_servo.pwm_max += pwm_bias;
-                roll_servo.pwm_min += pwm_bias;
+            case SERVO_YAW:
+                yaw_servo.pwm_max += pwm_bias;
+                yaw_servo.pwm_min += pwm_bias;
                 break;
             default:
                 break;
@@ -168,9 +168,9 @@ void servo_wide_pwm( int16_t pwm_bias, servo_t servo ){
                 pitch_servo.pwm_max += pwm_bias;
                 pitch_servo.pwm_min -= pwm_bias;
                 break;
-            case SERVO_ROLL:
-                roll_servo.pwm_max += pwm_bias;
-                roll_servo.pwm_min -= pwm_bias;
+            case SERVO_YAW:
+                yaw_servo.pwm_max += pwm_bias;
+                yaw_servo.pwm_min -= pwm_bias;
                 break;
             default:
                 break;
@@ -187,8 +187,8 @@ int16_t servo_return_angle( servo_t servo ){
     case SERVO_PITCH:
         value = pitch_servo.angle;
         break;
-    case SERVO_ROLL:
-        value = roll_servo.angle;
+    case SERVO_YAW:
+        value = yaw_servo.angle;
         break;
     default:
         break;
@@ -205,8 +205,8 @@ uint16_t servo_return_pwm_max( servo_t servo ){
     case SERVO_PITCH:
         value = pitch_servo.pwm_max;
         break;
-    case SERVO_ROLL:
-        value = roll_servo.pwm_max;
+    case SERVO_YAW:
+        value = yaw_servo.pwm_max;
         break;
     default:
         break;
@@ -223,8 +223,8 @@ uint16_t servo_return_pwm_min( servo_t servo ){
     case SERVO_PITCH:
         value = pitch_servo.pwm_min;
         break;
-    case SERVO_ROLL:
-        value = roll_servo.pwm_min;
+    case SERVO_YAW:
+        value = yaw_servo.pwm_min;
         break;
     default:
         break;

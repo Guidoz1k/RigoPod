@@ -140,7 +140,9 @@ bool gimbal_range(){
 void rangefinding(){
     int16_t response = 0;
 
-    if( xts1_measure_distance( &response ) < 0 ){
+    //    if( xts1_measure_distance( &response ) < 0 ){
+    response = xts1_measure_distance_V2();
+    if( response < 0 ){
         response = 0;
         tof_event = TOF_INVALID;
     }

@@ -158,10 +158,10 @@ the relation~\ref{eq:distance}:
 \begin{equation}
   \label{eq:distance}
   \addequationtoentry{Distance as a factor of time and speed of light} % title for equation list
-  d = \frac{c \cdot t}{2}
+  \scalebox{2}{$ d = \frac{c \cdot t}{2} $}
 \end{equation}
 
-%where:
+where:
 
 \begin{itemize}
   \item $d$ is the distance to the object
@@ -318,13 +318,13 @@ iteratively reduce the parallax error. This method can be seen in Figure~\ref{fi
   \label{fig:2graph3}
 \end{figure}
 
-\clearpage
-
 Even with an example presenting a very exaggerated error, it is clear in
 Figure~\ref{fig:2graph3} that with a few iterations, the direction the gimbal is pointing,
 and subsequently its measurements, get more and more precise, using only linear algebra.
 If necessary, steps 2 and 3 can be repeated until the error goes below a certain
 threshold.
+
+\clearpage
 
 \subsubsection{Linear algebra concepts required for the parallax compensation}
 
@@ -333,20 +333,65 @@ In order to perform simple algebra corrections of the previous section, the Pod 
  camera is the origin of the simulated 3D space) \cite{algebra}:
 
 \begin{itemize}
-  \item Store multiple vector 3D positions
-  \item Create vectors from 3D positions
-  \item Vector addition and subtraction
-  \item Calculate vector magnitudes
-  \item Calculate the angle between vectors
-  \item Calculate the scalar product of two vectors (AKA dot product)
-  \item Calculate the vector product of two vectors (AKA cross product)
+  \item Store multiple vector 3D positions.
+  \item Create vectors from 3D positions.
+  \item Vector addition and subtraction.
+  \item Calculate vector magnitudes.
+  \item Calculate the scalar product of two vectors (AKA dot product).
+  \item Calculate the vector product of two vectors (AKA cross product).
+  \item Calculate the angle between vectors.
+  \item Calculate the projetion of a vector unto another.
 \end{itemize}
+
+Storing vector positions is a matter of creating a vector variable type.
+The variable can either store cardinal coordinates (i.e. x, y, and z) or
+one of the many polar coordinates formats (i.e. magnitude, azimuth, zenith).
+Vector addition, subtraction, magnitude calculation and scaling can all be simple
+to implement functions with simple mathematical functions included in any
+programming language (including it's standard mathematical libraries).
+
+The scalar product between two vectors \emph{u} and \emph{v} consists of simple
+addition and subtraction. It can be seen in relation~\ref{eq:dot_p}:
+
+\begin{equation}
+  \label{eq:dot_p}
+  \addequationtoentry{The scalar product between two vectors} % title for equation list
+  \scalebox{1.5}{$ \mathbf{ d = u~\cdot~v } = x1x2 + y1y2 + z1z2 $}
+\end{equation}
+
+The vector product between two vectors \emph{u} and \emph{v} is similar to the
+scalar product, but it results in another vector as it can be seen in
+relation~\ref{eq:dot_v}:
+
+\begin{equation}
+  \label{eq:dot_v}
+  \addequationtoentry{The vector product between two vectors} % title for equation list
+  \scalebox{1.5}{$
+    \begin{gathered}
+      \mathbf{ C = u \times v } \\
+      C_x = y1z2 - z1y2 \\
+      C_y = z1x2 - x1z2 \\
+      C_z = x1y2 - y1z2
+    \end{gathered}
+   $}
+\end{equation}
+
+To calculate the angle $\gamma$ between two vectors \emph{u} and \emph{v},
+first the scalar and vector products must be calculated. Then, the magnitude of the
+vector product is calculated. The magnitude vector product and scalar product are then
+both used in a two-argument arctangent as it can be seen in relation~\ref{eq:angle}:
+
+\begin{equation}
+  \label{eq:angle}
+  \addequationtoentry{Angle between two vectors} % title for equation list
+  \scalebox{1.5}{$ \gamma = atan2(~ || u \times v || ~,~ u~\cdot~v ~) $}
+\end{equation}
 
 Vector magnitudes can be used to normalize a vector. Calculating the angle between vectors
 can be used to send direction commands to the drone's Pod system. The scalar product can be
 used to calculate the projection of a vector on another vector. This projection can be used
 to calculate the distance vector between a 3D point and a direction vector. To obtain the
-projection of a vector "u" onto a vector "a", use the relation~\ref{eq:projection}
+projection of a vector "u" onto a vector "a", use the Relation~\ref{eq:projection}
 \cite{algebra}:
 
 \begin{equation}
@@ -387,11 +432,11 @@ without any changes.
 The Pod system shall execute the following within certain time constraints:
 
 \begin{itemize}
-  \item Receive direction angles from the Drone subsystem
-  \item Control the gimbal to point the \gls{lidar} sensor
-  \item Read data from the \gls{lidar} sensor
-  \item Run the parallax subroutine until error is small enough
-  \item Send distance data back to the Drone subsystem
+  \item Receive direction angles from the Drone subsystem.
+  \item Control the gimbal to point the \gls{lidar} sensor.
+  \item Read data from the \gls{lidar} sensor.
+  \item Run the parallax subroutine until error is small enough.
+  \item Send distance data back to the Drone subsystem.
 \end{itemize}
 
 The Drone subsystem will detect a ground target and find its angles every frame of the video

@@ -137,4 +137,6 @@ void xts1_setup();
 
 measurement_output_t xts1_measure_distance(int16_t *distance);
 
+int16_t xts1_measure_distance_V2();
+
 #endif /* __XTS1_H */

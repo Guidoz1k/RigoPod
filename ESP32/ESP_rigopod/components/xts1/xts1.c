@@ -248,6 +248,24 @@ measurement_output_t xts1_measure_distance(int16_t *distance){
     return output;
 }
 
+/* Why the V2 version?
+    Current function throws some ESP exceptions when polled for too long
+    I made this shorter, raw function to try to understand the problem
+    This functions blocks for 20ms, and I gonna find out if this works
+*/
+int16_t xts1_measure_distance_V2(){
+    int16_t value = 0;
+    uint8_t buffer[ MODBUS_FRAME_SIZE_READ ] = {0};
+
+    //ESP_ERROR_CHECK( xts1_read_register( XTS1_RREG_DIST_INF, (uint16_t *)( &value ) ) );
+    modbus_read_register_command( XTS1_RREG_DIST_INF, 1, MODBUS_FC_READ_INPUT );
+    vTaskDelay( 20 );
+    modbus_read_buffer( buffer, MODBUS_FRAME_SIZE_READ );
+    value = ( buffer[ 3 ] << 8 ) + buffer[  4 ];
+
+    return value;
+}
+
 void xts1_setup(){
     uart_config_t configs = {
         .baud_rate = UART_2_BAUD_RATE,

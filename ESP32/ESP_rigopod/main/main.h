@@ -24,6 +24,8 @@
 #include "servo.h"
 #include "customserial.h"
 
+#include "vectors.h"
+
 #include "demos/demo_servo.c"
 #include "demos/demo_led.c"
 #include "demos/demo_lidar.c"

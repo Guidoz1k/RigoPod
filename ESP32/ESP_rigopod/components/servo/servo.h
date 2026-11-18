@@ -29,7 +29,7 @@
 // pin definition
 typedef enum {
     SERVO_PITCH = 13,
-    SERVO_ROLL = 14,
+    SERVO_YAW = 14,
 } servo_t;
 
 // ============ EXTERNAL FUNCTIONS ============

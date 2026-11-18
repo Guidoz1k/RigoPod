@@ -219,6 +219,14 @@ request.
 
 W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+cordenadas polares em graus, distancias em mm
+variaveis tem os dois
+o modelo polar eh magnitude, yaw, pitch
+
+ESQUECI DE DETALHAR COMO O PROTOCOLE DE COMM ESPECIFICA ANGULO
+
+W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Intermodule communication}
 
 Figure~\ref{fig:pod_fsm} shows a sequence diagram with the expected
@@ -290,6 +298,15 @@ circulation around both sides of the board.
 \end{figure}
 
 \clearpage
+
+\subsection{Final performance}
+
+W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+2.alguma coisa tem processing requirements
+medir o tempo pra fazer todo o calhamaço de calculo vetorial nao otimizado
+
+W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{The tests}
 
@@ -455,9 +472,9 @@ and characterizes its temporal behavior, which static tests cannot capture.
 Many characteristics of the system can be evaluated on this test:
 
 \begin{itemize}
-  \item Delay between target movement and pod movement.
-  \item Distance measurement error induced by delay.
-  \item Gimbal step response.
+  \item Delay between target movement and pod movement
+  \item Distance measurement error induced by delay
+  \item Gimbal step response
 \end{itemize}
 
 To test the latency between target movement and pod movement,
