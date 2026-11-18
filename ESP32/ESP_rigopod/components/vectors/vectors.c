@@ -117,6 +117,17 @@ vector_t vector_point_to_vector( vector_t vector_a, vector_t vector_b ){
     return vector_sub(vector_a, vector_projection( vector_a, vector_b ) );
 }
 
+// converts int16_t centesimal fixed point degrees to float radians
+float vector_deg_to_rad( int16_t degrees ){
+    // optimized ( ( (float)( degrees / 100 ) / 180 ) * M_PI ) for resolution
+    return (float)( (float)( degrees * M_PI ) / ( 180 * 100 ) );
+}
+
+// converts from float radians back to int16_t centesimal fixed point degrees
+int16_t vector_rad_to_deg( float radians ){
+    return (int16_t)( ( radians * 180 * 100 ) / M_PI );
+}
+
 // calculates the gimbal's origin from cartesian coordinates
 void vector_init(){
     tof_origin = vector_new_car( TOF_ZERO_X, TOF_ZERO_Y, TOF_ZERO_Z);
