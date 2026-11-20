@@ -1,0 +1,18 @@
+Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,Source Arrow,Destination Arrow,Status,Text Area 1,Comments,Notes,Shape ID
+1,Document,,,,,,,,,Draft,Untitled,,,50ba2563-3809-4f84-a5d8-f8a74654aec9
+2,Page,,,,,,,,,,Page 1,,,0_0
+3,Terminator,Flowchart Shapes/Containers,2,,,,,,,,Start,,,bGaO4ojnz5tF
+4,Process,Flowchart Shapes/Containers,2,,,,,,,,Acquire ToF data,,,bGaOwnKYTrqO
+5,Process,Flowchart Shapes/Containers,2,,,,,,,,Create vector with acquired data,,,bGaOgwOZJS0j
+6,Process,Flowchart Shapes/Containers,2,,,,,,,,Project vector on target's line-of-sight,,,bGaOQI5sZ-lq
+7,Process,Flowchart Shapes/Containers,2,,,,,,,,"Point gimbal to
+new target",,,bGaOJM901oLO
+8,Process,Flowchart Shapes/Containers,2,,,,,,,,"Target's distance is
+parallax corrected",,,zaeOgzxZ~~CS
+9,Line,,2,,,3,4,None,Arrow,,,,,fGaOrLSVI0iL
+10,Line,,2,,,4,5,None,Arrow,,,,,fGaO4e~~b5c3
+11,Line,,2,,,5,6,None,Arrow,,,,,fGaOE1mf3eYY
+12,Line,,2,,,8,7,None,Arrow,,,,,fGaOTPh3gAD_
+13,Line,,2,,,7,4,None,Arrow,,"Wait for
+new iteration",,,fGaOz8hr4VLn
+14,Line,,2,,,6,8,None,Arrow,,,,,ZaeOpMZyf0Ib

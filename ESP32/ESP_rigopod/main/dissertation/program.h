@@ -23,5 +23,6 @@
 #include "servo.h"
 #include "customserial.h"
 #include "randomness.h"
+#include "vectors.h"
 
 #endif /* __PROGRAM_H */

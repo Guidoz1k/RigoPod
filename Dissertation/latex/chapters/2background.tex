@@ -266,63 +266,86 @@ spatial transformation between the camera frame and the sensor frame. By knowing
 transformation, it becomes possible to compute the correct pointing direction for the
 gimbal-mounted sensor \cite{parallax3}.
 
-\subsection{Linear algebra of parallax}
+\subsection{Linear algebra and logic of parallax compensation}
 
 Even though more complex methods are possible, simple linear algebra is enough to compensate
-the offset between the camera and the \gls{lidar} \cite{parallax5}. With the offset being
+the offset between the camera and the \gls{tof} \cite{parallax5}. With the offset being
 known to the pod's computer, it is possible to reduce the error iteratively. A system without
-any form of parallax compensation would just aim the \gls{lidar} at the same direction as
-the direction reported by the camera. This mode of operation is not without its uses: It can
+any form of parallax compensation would just aim the \gls{tof} at the same direction as
+the direction reported by the camera. This mode of operation can
 be used to validate if the gimbal is properly aligned and calibrated with the camera.
 
-The first step to compensate the parallax-induced error is to do an initial measurement,
-without any form of compensation, parallel to the camera's pixel direction. This distance
-is used to make the first assumption of the real position of the target. The distance is
-applied to the camera's direction vector, and a 3D position is obtained. This is the first
-position estimated, without any error correction, and will be used to calculate the vector
-V1, with the origin on the camera's position. \cite{robotics3}. The first step can be seen
-in Figure~\ref{fig:2graph1}.
+The first step to compensate the parallax-induced error is to do a \gls{tof} measurement,
+with the current gimbal's direction. If the process just started, the direction is
+parallel to the camera's pixel direction. Otherwise the direction will be the last
+calculated direction in the parallax compensation loop.
+This distance is used to make the first assumption of the real position of the target.
+The first step can be seen in Figure~\ref{fig:2graph1}, with the camera tracking axis
+in green, the vector symbolizing the gimbal's position in grey and the \gls{tof} sensor's
+axis and distance measured in orange.
+The camera axis is a result of the computer vision algorithm localizing the center of
+the detected target, and converting the pixel position into gimbal directions.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.5\textwidth]{2/graph1}
-  \caption{First distance measurement with parallel LoS}
+  \includegraphics[width=0.7\textwidth]{2/graph1}
+  \caption{First distance measurement with no previous data}
   \label{fig:2graph1}
 \end{figure}
 
-Now the compensation loop starts. The second step is to use the position of the gimbal.
-The vector G is subtracted from the vector V1, G being the position of the gimbal
-relative to the camera. This new position is used to calculate the vector V2, which is the
-first position with any form of parallax compensation, simply removing the distance between
-the camera and the gimbal from the initial position and assuming a constant distance between
-the target and the drone. The second step with a large error can be seen in
-Figure~\ref{fig:2graph2}.
+
+The second step is to use the position of the gimbal. Adding the position of the gimbal's
+origin to the first measured distance, we have the measured range from camera to estimated
+target position. The second step with a large error can be seen in Figure~\ref{fig:2graph2}.
+It shows the resulting vector in purple.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.5\textwidth]{2/graph2}
-  \caption{First parallax compensation step}
+  \includegraphics[width=0.7\textwidth]{2/graph2}
+  \caption{Second parallax compensation step}
   \label{fig:2graph2}
 \end{figure}
 
-The third step is to verify if the correction estimated on step 2 was accurate. One way
-to do it is to calculate the distance vector between the vector V2 and the camera's target's
-direction vector. Assuming the direction in which the camera points the gimbal is accurate
-and precise, projecting the new measurement onto the target's direction is one way to
-iteratively reduce the parallax error. This method can be seen in Figure~\ref{fig:2graph3}.
+The third step is to project the measured range on the camera axis. As the camera is the true
+reference for directions, the target must be in it's informed axis. The projection forces the
+estimated target position to be aligned with what the camera detects \cite{robotics3}.
+The vector operation can be seen in Figure~\ref{fig:2graph3}, with the resulting vector in red.
+The magnitude of this new (red) vector is the output of the parallax compensation function, and
+the data that is sent by the pod system when requested for a target's distance.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.5\textwidth]{2/graph3}
-  \caption{Second parallax compensation step}
+  \includegraphics[width=0.7\textwidth]{2/graph3}
+  \caption{Third parallax compensation step}
   \label{fig:2graph3}
 \end{figure}
 
-Even with an example presenting a very exaggerated error, it is clear in
-Figure~\ref{fig:2graph3} that with a few iterations, the direction the gimbal is pointing,
-and subsequently its measurements, get more and more precise, using only linear algebra.
-If necessary, steps 2 and 3 can be repeated until the error goes below a certain
-threshold.
+With the estimated target position in the camera's axis,
+the fourth and final step, is to aim the gimbal at this new position.
+The new direction's vector is simply the subtraction of the gimbal's origin vector by
+the new estimated target vector. The polar coordinates of this vector will be the new
+gimbal's orientation, as it can be seen in Figure~\ref{fig:2graph4}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{2/graph4}
+  \caption{Fourth and final parallax compensation step}
+  \label{fig:2graph4}
+\end{figure}
+
+With the new direction, the loop is executed again, in the next iteration.
+A new measurement will be done with the \gls{tof} sensor, a new measured range
+will be calculated, it's projection will be calculated as well, and with this
+new position, the gimbal will reposition again.
+The process should converge within a few loop iterations.
+The basic algorithm of the parallax compensating loop can be seen in Figure~\ref{fig:2algo}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{2/parallax}
+  \caption{Parallax compensating loop}
+  \label{fig:2algo}
+\end{figure}
 
 \clearpage
 
@@ -334,17 +357,18 @@ In order to perform simple algebra corrections of the previous section, the Pod 
 
 \begin{itemize}
   \item Store multiple vector 3D positions.
-  \item Create vectors from 3D positions.
+  \item Create vectors from polar coordinates.
+  \item Convert between cartesian and polar.
   \item Vector addition and subtraction.
-  \item Calculate vector magnitudes.
+  \item Calculate vector magnitude, azimuth, and zenith.
   \item Calculate the scalar product of two vectors (AKA dot product).
   \item Calculate the vector product of two vectors (AKA cross product).
-  \item Calculate the angle between vectors.
   \item Calculate the projetion of a vector unto another.
 \end{itemize}
 
 Storing vector positions is a matter of creating a vector variable type.
-The variable can either store cardinal coordinates (i.e. x, y, and z) or
+The variable can either store cardinal coordinates (i.e. x, y, and z) and these
+can be converted back and forth between cardinal and
 one of the many polar coordinates formats (i.e. magnitude, azimuth, zenith).
 Vector addition, subtraction, magnitude calculation and scaling can all be simple
 to implement functions with simple mathematical functions included in any
@@ -376,19 +400,19 @@ relation~\ref{eq:dot_v}:
    $}
 \end{equation}
 
-To calculate the angle $\gamma$ between two vectors \emph{u} and \emph{v},
-first the scalar and vector products must be calculated. Then, the magnitude of the
-vector product is calculated. The magnitude vector product and scalar product are then
-both used in a two-argument arctangent as it can be seen in relation~\ref{eq:angle}:
+% To calculate the angle $\gamma$ between two vectors \emph{u} and \emph{v},
+% first the scalar and vector products must be calculated. Then, the magnitude of the
+% vector product is calculated. The magnitude vector product and scalar product are then
+% both used in a two-argument arctangent as it can be seen in relation~\ref{eq:angle}:
 
-\begin{equation}
-  \label{eq:angle}
-  \addequationtoentry{Angle between two vectors} % title for equation list
-  \scalebox{1.5}{$ \gamma = atan2(~ || u \times v || ~,~ u~\cdot~v ~) $}
-\end{equation}
+% \begin{equation}
+%   \label{eq:angle}
+%   \addequationtoentry{Angle between two vectors} % title for equation list
+%   \scalebox{1.5}{$ \gamma = atan2(~ || u \times v || ~,~ u~\cdot~v ~) $}
+% \end{equation}
 
-Vector magnitudes can be used to normalize a vector. Calculating the angle between vectors
-can be used to send direction commands to the drone's Pod system. The scalar product can be
+Vector magnitudes can be used to normalize a vector. 
+The scalar product can be
 used to calculate the projection of a vector on another vector. This projection can be used
 to calculate the distance vector between a 3D point and a direction vector. To obtain the
 projection of a vector "u" onto a vector "a", use the Relation~\ref{eq:projection}
@@ -408,24 +432,6 @@ where:
   \item $||a||$ is the norm (magnitude) of vector "a"
   \item $u~\cdot~a$ is the dot product of vectors "u" and "a" 
 \end{itemize}
-
-\clearpage
-
-With the projection of a vector onto another, it is quite simple to calculate the direction
-vector between a point in 3D space and a vector. The process can be better seen in
-Figure~\ref{fig:2graph4}.
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=0.5\textwidth]{2/graph4}
-  \caption{Using vector projection to calculate distance vector between point and vector}
-  \label{fig:2graph4}
-\end{figure}
-
-To calculate the distance vector between a 3D point and another vector, it is a simple
-problem of calculating the projection "$proj_a u$" of the vector "u" onto the vector "a",
-then subtracting the two vectors. Since this is a subtraction, the vector could be inverted
-without any changes.
 
 \subsection{Processing requirements}
 

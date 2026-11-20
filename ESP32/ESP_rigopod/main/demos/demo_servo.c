@@ -242,7 +242,7 @@ void setting_servo(){
             setting_function();
             break;
         case 'R':
-            servo = SERVO_ROLL;
+            servo = SERVO_YAW;
             printf( " Roll Servo selected" );
             setting_function();
             break;

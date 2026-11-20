@@ -8,7 +8,7 @@
 // ========== DEFINITIONS ==========
 
 #define PITCH_SERVO_CALIB_BIAS  -200
-#define ROLL_SERVO_CALIB_MIN    2100
+#define YAW_SERVO_CALIB_MIN    2100
 
 #define LED_MAX 20
 #define LED_MIN 10
@@ -36,8 +36,8 @@ extern uint32_t time_counter;           // global timer updated in core 2 every 
 
 const int16_t max_angle = 1500;         // [cents fixed point] servo does 0.13s per 60deg @5V → 15.38deg per cycle @30Hz
 int16_t distance_measured = 0;
-int16_t current_pitch = 0, current_roll = 0;    // [cents fixed point] gimbal control data for the FSM events
-int16_t command_pitch = 0, command_roll = 0;    // [cents fixed point] gimbal control data from UART input
+int16_t current_pitch = 0, current_yaw = 0;    // [cents fixed point] gimbal control data for the FSM events
+int16_t command_pitch = 0, command_yaw = 0;    // [cents fixed point] gimbal control data from UART input
 
 // ========== DATA-DRIVEN OUTPUT VARIABLES ==========
 
@@ -100,40 +100,47 @@ enum _tof_reading_t{
 // ============ PERIPHERAL FUNCTIONS ============
 
 // PERIPHERAL gimbal: translate coordinates to the gimbal standard zero and axis orientation
-void inverse_kinematics( int16_t pitch, int16_t roll ){
+void inverse_kinematics(){
     int16_t set_pitch = - current_pitch;
-    int16_t set_roll = - current_roll;
+    int16_t set_yaw = - current_yaw;
 
     servo_set_angle( set_pitch, SERVO_PITCH );
-    servo_set_angle( set_roll, SERVO_ROLL );
+    servo_set_angle( set_yaw, SERVO_YAW );
 }
 
 // compensate for 3D printing tolerances
 void servo_calib(){
     servo_move_pwm( PITCH_SERVO_CALIB_BIAS, SERVO_PITCH );
-    servo_set_pwm_min( ROLL_SERVO_CALIB_MIN, SERVO_ROLL );
+    servo_set_pwm_min( YAW_SERVO_CALIB_MIN, SERVO_YAW );
 }
 
 // checks for the gimbal's angular maximum traverse
+// works for gimbal or active mode, but ACTIVE MODE WILL OVERRIDE ITS DATA
 bool gimbal_range(){
-    float x_coord = command_roll - current_roll;          // x component of change vector
-    float y_coord = command_pitch - current_pitch;        // y component of change vector
-    float vector_mag = sqrtf( x_coord * x_coord + y_coord * y_coord ); // change vector magnitude
+    float x_coord = command_yaw - current_yaw;                          // x component of change vector
+    float y_coord = command_pitch - current_pitch;                      // y component of change vector
+    float vector_mag = sqrtf( x_coord * x_coord + y_coord * y_coord );  // change vector magnitude
     bool return_value = false;
 
     if( vector_mag < max_angle ){
         return_value = true;
         current_pitch = command_pitch;
-        current_roll = command_roll;
+        current_yaw = command_yaw;
     }
     else{
         // maximum magnitude multiplied by normalized vector gives you a max vector with the requested direction
         // this vector is added to the current coordinates, to respect the limit of the gimbal
-        current_roll += (int16_t)( max_angle * ( x_coord / vector_mag ) );
+        current_yaw += (int16_t)( max_angle * ( x_coord / vector_mag ) );
         current_pitch += (int16_t)( max_angle * ( y_coord / vector_mag ) );
+        uart_event = SERIAL_IN_GIMBAL_ERROR; // OVERRIDES UART EVENT
     }
 
     return return_value;
+}
+
+void write_uart_response( system_mode_t mode, uint16_t first_byte, uint16_t second_byte ){
+    uart_response[ mode ][ 1 ] = (uint8_t)first_byte;
+    uart_response[ mode ][ 2 ] = (uint8_t)second_byte;
 }
 
 // PERIPHERAL ToF sensor: report all erros as one, else reports distance value
@@ -150,47 +157,75 @@ void rangefinding(){
         tof_event = TOF_VALID;
 
     distance_measured = response;
-    uart_response[ MODE_ACTIVE ][ 1 ] = (uint8_t)(response >> 8);
-    uart_response[ MODE_ACTIVE ][ 2 ] = (uint8_t)(response & 0xFF);
-    uart_response[ MODE_TOF ][ 1 ] = (uint8_t)(response >> 8);
-    uart_response[ MODE_TOF ][ 2 ] = (uint8_t)(response & 0xFF);
+    // active mode distance is calculated via parallax correction
+    write_uart_response( MODE_TOF, response >> 8, response & 0xFF );
 }
 
 // PERIPHERAL UART: check for messages from drone system
 void uart_request(){
-    uint8_t value = SERIAL_IN_EMPTY;
-    uint8_t packet = 0;
+    uint8_t event_value = SERIAL_IN_EMPTY;
+    uint8_t packet_0 = 0;
     uint8_t value_byte[ 2 ] = { 0 };
 
     command_pitch = 0;
-    command_roll = 0;
+    command_yaw = 0;
 
     if( serial_read_size() != 0 ){          // byte available at UART
-        packet = serial_read_singlechar();
-        if( packet == SERIAL_IN_TOF )       // single 'R' in buffer
-            value = packet;
+        packet_0 = serial_read_singlechar();
+        if( packet_0 == SERIAL_IN_TOF )       // single 'R' in buffer
+            event_value = packet_0;
         else
-            if( ( packet == SERIAL_IN_GIMBAL ) || ( packet == SERIAL_IN_ACTIVE ) )
+            if( ( packet_0 == SERIAL_IN_GIMBAL ) || ( packet_0 == SERIAL_IN_ACTIVE ) )
                 if( serial_read_chars( (char*)value_byte, 2 ) == 2 ){
                     command_pitch = ( value_byte[ 0 ] << 8 ) + value_byte[ 1 ];
                     if( serial_read_chars( (char*)value_byte, 2 ) == 2 ){
-                        command_roll = ( value_byte[ 0 ] << 8 ) + value_byte[ 1 ];
+                        command_yaw = ( value_byte[ 0 ] << 8 ) + value_byte[ 1 ];
                         if( gimbal_range() == true )
-                            value = packet;
+                            event_value = packet_0;
                         else
-                            value = SERIAL_IN_GIMBAL_ERROR;
+                            event_value = SERIAL_IN_GIMBAL_ERROR;
                     }
                     else
-                        value = SERIAL_IN_ERROR; // couldn't read 2 bytes out of the buffer
+                        event_value = SERIAL_IN_ERROR; // couldn't read 2 bytes out of the buffer
                 }
                 else
-                    value = SERIAL_IN_ERROR; // couldn't read 2 bytes out of the buffer
+                    event_value = SERIAL_IN_ERROR; // couldn't read 2 bytes out of the buffer
             else
-                value = SERIAL_IN_ERROR; // Not 'R', 'G', or 'A'
+                event_value = SERIAL_IN_ERROR; // Not 'R', 'G', or 'A'
     }
 
     serial_flush();
-    uart_event = value;
+    uart_event = event_value;
+}
+
+// ============ PARALLAX FUNCTIONS ============
+
+void parallax_correction( bool reset ){
+    static int16_t gimbal_pitch = 0;
+    static int16_t gimbal_yaw = 0;
+    static vector_t gimbal_vector;
+    vector_t measured_range, estimate_range, camera_axis, tof_axis, new_gimbal_axis;
+    int16_t true_value = 0;
+
+    if( reset == true ){
+        gimbal_pitch = command_pitch;
+        gimbal_yaw = command_yaw;
+        gimbal_vector = vector_gimbal_origin();
+    }
+    else{ // overrides current_pitch and current_yaw
+        tof_axis = vector_new_pol( distance_measured, gimbal_yaw, gimbal_pitch );       // updates the tof's sight vector
+        camera_axis = vector_new_pol( distance_measured, command_yaw, command_pitch );  // updates the camera's sight vector
+        measured_range = vector_add( gimbal_vector, tof_axis );                         // calculates the vector formed by tof sensor and it's arm into a measured range
+        estimate_range = vector_projection( measured_range, camera_axis );              // projects measured range into the camera's sight vector to obtain an estimate range
+        true_value = vector_magni( estimate_range );                                    // calculates the magnitude of estimate range to obtain the true distance vector
+        write_uart_response( MODE_TOF, true_value >> 8, true_value & 0xFF );            // writes the calculated value into UART
+
+        new_gimbal_axis = vector_sub( camera_axis, gimbal_vector ); // calculates the vector that points from the gimbal's origin to the estimate range
+        gimbal_pitch = vector_pitch( new_gimbal_axis );             // calculate the vector's pitch
+        gimbal_yaw = vector_yawww ( new_gimbal_axis );              // calculate the vector's yaw
+        current_pitch = gimbal_pitch;                               // updates the gimbal's new direction
+        current_yaw = gimbal_yaw;                                   // updates the gimbal's new direction
+    }
 }
 
 // ============  FSM FUNCTIONS ============
@@ -212,19 +247,17 @@ bool timeout_check( bool reset ){
 
 // function to set the RGB led according to current mode
 void mode_transition( system_mode_t next_mode ){
+    bool mode_change = system_mode != next_mode;// resets in case of entering active mode for the first time
+
     led_color( rgb_pattern[ next_mode ].red, rgb_pattern[ next_mode ].green, rgb_pattern[ next_mode ].blue );
     serial_write_bytes( uart_response[ next_mode ], 3 );
-    inverse_kinematics( command_pitch, command_roll );
 
+    if( next_mode == MODE_ACTIVE )
+        parallax_correction( mode_change );
     if( next_mode == MODE_WAITING )
-        timeout_check( true );
+        timeout_check( mode_change );
 
-    if( system_mode != next_mode ){
-        printf("MODE: ");
-        printf( "%c\n", uart_response[ next_mode ][ 0 ] );
-        fflush(stdout);
-    }
-
+    inverse_kinematics(); // remember: active mode overrides gimbal range check
     system_mode = next_mode;
 }
 
@@ -232,6 +265,7 @@ void mode_transition( system_mode_t next_mode ){
 
 void main_task(){
     uart_request();
+    gimbal_range();
     rangefinding();
 
     switch( system_mode ){
@@ -315,14 +349,8 @@ void main_task(){
         }
         break;
     case MODE_SERVO_ERROR:  // ACTIVE or GIMBAL modes, SERVO_ERROR sends back to idle
-        mode_transition( MODE_IDLE ); // executes once and back to idle
-        break;
     case MODE_TOF_ERROR:    // ACTIVE or TOF modes, TOF_ERROR sends back to idle
-        mode_transition( MODE_IDLE ); // executes once and back to idle
-        break;
     case MODE_GIMBAL:
-        mode_transition( MODE_IDLE ); // executes once and back to idle
-        break;
     case MODE_TOF:
         mode_transition( MODE_IDLE ); // executes once and back to idle
         break;
