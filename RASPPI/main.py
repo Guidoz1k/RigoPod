@@ -21,6 +21,8 @@ import serial
 import threading
 # for variance and deviation
 import statistics
+# for shutting down
+import subprocess
 
 #################### global variables ####################
 
@@ -120,6 +122,11 @@ def screen( line1, line2 ):
 
 #################### opencv thread ####################
 
+def angle_conversion( cx,cy ): #convert pixel position to fov angle
+    center_x = int( np.interp( cx, [ 0, 2304 ], [ -32.685, +32.685 ] ) )
+    center_y = int( np.interp( cy, [ 0, 1296 ], [ +63.385, +26.615 ] ) )
+    print( "Center:", center_x, center_y )
+
 def picam():
     picam2 = Picamera2()
     config = picam2.create_preview_configuration(
@@ -157,9 +164,8 @@ def picam():
             cv2.rectangle( frame, ( x, y ), ( x + w, y + h ), ( 0, 255, 0 ), 2 )
             cv2.circle( frame, ( cx, cy ), 5, ( 0, 0, 255 ), -1 )
 
-            #print( "Center:", cx, cy )
-            center_x = cx
-            center_y = cy
+            # print( "Center:", cx, cy )
+            angle_conversion( cx, cy )
 
         cv2.imshow( "Camera", frame )
         cv2.imshow( "Mask", mask )
@@ -274,13 +280,14 @@ def gimbal_menu():
         time.sleep( 0.1 )
 
 def test_menu():
-    MENU_ITEMS = ["Gimbal Set", "ToF read", "Active Mode"]
+    MENU_ITEMS = [ "Gimbal  Set", "ToF  read", "Active  Mode", "SHUTDOWN" ]
     selected = 0
+    quit = False
 
     clear_UI_events()
-    while True:
-        selected = ( selected + encoder_turns ) % len(MENU_ITEMS)
-        screen( "Test Routines", MENU_ITEMS[selected] )
+    while quit != True:
+        selected = ( selected + encoder_turns ) % len( MENU_ITEMS )
+        screen( "Test Routines", MENU_ITEMS[ selected ] )
 
         if encoder_clicked == True:
             match selected:
@@ -290,16 +297,26 @@ def test_menu():
                     tof_menu()
                 case 2:
                     active_menu()
+                case 3:
+                    quit = True
+                    
 
         clear_UI_events()
         time.sleep( 0.1 )
-            
+
+def splash_screen():
+    screen( "RigoPOD", "-= test  program =-" )
+    time.sleep( 5 )
+    test_menu()
 
 def main():
-    while True:
-        screen( "RigoPOD", "test program" )
-        if encoder_clicked == True:
-            test_menu()
+    splash_screen()
+    screen( "RigoPOD", "SHUTDOWN" )
+    time.sleep( 1 )
+    screen( "", "" )
+    oled.hide()
+    # Safely halt and power off the Raspberry Pi immediately
+    subprocess.run( [ "sudo", "shutdown", "-h", "now" ], check = True )
 
 #################### tests thread management ####################
 
@@ -308,5 +325,5 @@ t1 = threading.Thread( target = picam )
 t2 = threading.Thread( target = main )
 
 # Start both threads at the same time
-#t1.start()
+t1.start()
 t2.start()
