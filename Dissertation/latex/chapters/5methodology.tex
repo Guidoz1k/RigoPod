@@ -30,7 +30,7 @@ is implemented on top of \gls{uart}, for a safe, reliable connection.
 The protocol used to set the servos in position is simple \gls{pwm}.
 The 5V rail from the Raspberry Pi is used to supply power to the ESP32-S3 and
 the XT-S1 sensor.
-A separate 5V \gls{psu} unit is used for the servos alone, as they draw high
+A separate 5V \gls{psu} is used for the servos alone, as they draw high
 currents during startup and when moving the main axis, which would not
 be supported by the 5V supply from the Raspberry Pi.
 
@@ -49,16 +49,16 @@ Without officially recommended peripherals, the \gls{sbc} showed problems with:
   \item Thermal management.
 \end{itemize}
 
-Without warning, the \gls{sbc} would stop properly working or even shut down.
+Without warning, the \gls{sbc} would stop working properly or even shut down.
 The Raspberry Pi operated reliably only when using the official
-heat sink and \gls{psu}. The prototype includes a fan powered by internal 5V
-\gls{psu} so there is always a constant air flow inside the 3D printed case.
+heat sink and \gls{psu}. The prototype includes a fan powered by an internal 5V
+\gls{psu} so there is always constant airflow inside the 3D-printed case.
 
 \subsection{Drone system}
 
 As shown in Figure~\ref{fig:5ckt}, the drone system's hardware consists of
 a Raspberry Pi 5, a 0.96-inch 128x64 display and a clickable rotary encoder.
-Both the encoder and the display will integrate the \gls{ui} and are
+Both the encoder and the display will form the \gls{ui} and are
 connected to the Raspberry Pi's \gls{gpio} header.
 A simple menu allows the user to select each test and see results and/or
 error messages.
@@ -71,28 +71,28 @@ The camera comes with a CSI 22-way FPC cable, which connects to the CSI
 connector on the Raspberry Pi. As mentioned in Chapter~\ref{cap:prop}, the
 camera's diagonal \gls{fov} is 75°, with a resolution of 2304\,$\times$\,1296
 pixels. That resolution has a standard ratio of 16:9. This means that the
-vertical \gls{fov} is of $\approx$ 36.77° and the horizontal \gls{fov} is of
+vertical \gls{fov} is $\approx$ 36.77° and the horizontal \gls{fov} is
 $\approx$ 65.37°.
 The vertical \gls{fov} of the
-prototype, on a 45° inclinated \gls{los}
+prototype, on a 45° inclined \gls{los}
 in reference to horizontal and vertical planes can be seen from the side in
-the Figure~\ref{fig:fov}.
+Figure~\ref{fig:fov}.
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.7\textwidth]{5/img6}
-  \caption{Prototype's vertical FOV}
+  \caption{Prototype's vertical FoV}
   \label{fig:fov}
 \end{figure}
 
 The chosen resolution of the camera is 2304\,$\times$\,1296 in order to
-make sure the system is running at constant 30Hz. Using the camera's full
-resolution of 4608\,$\times$\,2592 proved to be too processing intensive.
+make sure the system is running at a constant 30Hz. Using the camera's full
+resolution of 4608\,$\times$\,2592 proved to be too processing-intensive.
 
 As seen in Chapter~\ref{cap:prop}, the servo motor's maximum angular speed
-is $\approx$\,461.54\,°/s (from the 0.13\,sec/60° provided in the
-\gls{pn}'s datasheet). As the Drone system will run it's main loop at 30Hz,
-that's $\approx$\,15.38\,° for every system iteration
+is $\approx$\,461.54°/s (from the 0.13\,sec/60° provided in the
+\gls{pn}'s datasheet). As the Drone system will run its main loop at 30Hz,
+that's $\approx$\,15.38° for every system iteration
 ($^1/_{30}$\,s $\approx$ 33.3\,ms).
 A 15.38° radius circle over the camera's \gls{fov} can be
 seen in Figure~\ref{fig:fov2}.
@@ -100,7 +100,7 @@ seen in Figure~\ref{fig:fov2}.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.8\textwidth]{5/img7}
-  \caption{Prototype's FOV with gimbal maximum angular performance}
+  \caption{Prototype's FoV with gimbal maximum angular performance}
   \label{fig:fov2}
 \end{figure}
 
@@ -116,11 +116,11 @@ The drone system's algorithm is very simple. It shows the user three options:
 
 The three options can be used for the three test scenarios proposed in this
 work. The gimbal setup will request a gimbal position for the pod system.
-The second option will acquire a configurable amount of readings
-from \gls{tof} sensor, and calculate averages and deviations.
+The second option will acquire a configurable number of readings
+from the \gls{tof} sensor, and calculate averages and deviations.
 The third is the active tracking with parallax compensation. This is the
 only option that will not display all the results, but save the log
-of the test in a file to be analysed after the test.
+of the test in a file to be analyzed after the test.
 
 \subsubsection{Raspberry Pi's OpenCV algorithm}
 
@@ -132,8 +132,8 @@ The entire drone system relies on \gls{opencv}'s capabilities of identifying
 a designated \gls{poi}. The algorithm developed for the tests is the most
 basic logic for identifying a basic object on a contrasted landscape.
 
-The selected target is a green laser pointer, for its ease to set static
-and dynamic tests in very large surfaces without the need of motors or
+The selected target is a green laser pointer, because it makes it easy to set static
+and dynamic tests on very large surfaces without the need for motors or
 complex automation. To identify a simple green bright dot on a wall or ground,
 a Python algorithm executes these simple steps:
 
@@ -148,7 +148,7 @@ a Python algorithm executes these simple steps:
 With this algorithm, the drone system will search for a green dot of defined
 hue, saturation and brightness ranges, and point at the center of the biggest
 compatible shape. This basic algorithm will be used for all three tests
-described in the next section. This simple of a setup allows for precise
+described in the next section. Such a simple setup allows for precise
 static tests, with single or multiple points, and dynamic tests.
 All three different tests will point the \gls{poi}'s direction to the pod
 system, then log the distances informed, and calculate all the metrics.
@@ -156,46 +156,47 @@ system, then log the distances informed, and calculate all the metrics.
 \subsection{Pod system}
 
 As shown in Figure~\ref{fig:5ckt}, the pod system's hardware consists of an
-ESP32-S3 as a central \gls{mcu}, a XT-S1 \gls{tof} sensor, two servo motors,
-and their \gls{psu}s. Apart from the \gls{rgb} \gls{led} built in the ESP32's
+ESP32-S3 as a central \gls{mcu}, an XT-S1 \gls{tof} sensor, two servo motors,
+and their \gls{psu}s. Apart from the \gls{rgb} \gls{led} built into the ESP32's
 board, there is no test interface on the pod system. The \gls{led} will
 signal when messages are received, if the requested data is ready, and when
-the test starts and finishes. The gimbal is free to rotate each axis the
-servo's entire range, 180\,°, even though the drone system will not request
+the test starts and finishes. The gimbal is free to rotate each axis through the
+servo's entire range, 180°, even though the drone system will not request
 any direction outside the camera's \gls{fov}.
-Pod system will use fixed point arithmetic for the angles, as it is simple
-and easy to implement in 16 bit integer variables.
+The pod system will use fixed-point arithmetic for the angles, as it is simple
+and easy to implement in 16-bit integer variables.
 
 \subsubsection{Pod's general algorithm}
 
 Figure~\ref{fig:pod_fsm} shows the basic working of the pod system's \gls{fsm}.
-First, event producers check the the peripherals for different updates, from
+First, event producers check the peripherals for different updates, from
 \gls{uart} to the \gls{tof} sensor. The events produced are stored so the
-main \gls{fsm} core can decide what mode can better treat the events.
-A transition function is used to update the outputs, as \gls{uart} responses
+main \gls{fsm} core can decide which mode can better treat the events.
+A transition function is used to update the outputs, such as \gls{uart} responses
 and the gimbal's position, and to transition the \gls{fsm} to its next mode.
 The output data is data-driven, being set dynamically by the peripheral
 control functions.
 
-With the \gls{fsm} implemented, a resumed diagram of the basic modes of the
+With the \gls{fsm} implemented, a simplified diagram of the basic modes of the
 pod system can be seen in Figure~\ref{fig:pod_state}.
 The system starts in \emph{idle mode}. Both gimbal set request and \gls{tof}
-read request set the system in \emph{active mode}.
-In \emph{idle mode}, the gimbal is always centered at origin.
+read request set the system into \emph{active mode}.
+In \emph{idle mode}, the gimbal is always centered at the origin.
 If the requested gimbal angle exceeds the maximum angular rate of the servos,
 the system enters \emph{servo error mode}. This limits the gimbal's position
-to the maximum value allowed in the timeframe, and messages drone system back
+to the maximum value allowed in the timeframe, and messages the drone system back
 that the requested angle was not obtained.
-If the \gls{tof} sensor reports an error message, which can happen in non
-critical situations, the system enters \emph{tof error mode}. It reports
+If the \gls{tof} sensor reports an error message, which can happen in
+non-critical situations, the system enters \emph{ToF error mode}. It reports
 to the drone system that the sensor is unavailable and another reading
 should be requested.
 A third type of error is a non-valid message in the \gls{uart} connecting
 the drone system to the pod system. This error makes the \gls{fsm} enter
 \emph{comm error mode}. The pod system will then report that the request
 message received was invalid.
-\emph{Waiting mode} is for when the pod system gets requested continuous
-readings (for example, testing the tracking system in the dynamic test).
+\emph{Waiting mode} is for when the pod system receives
+requests for continuous readings (for example, testing the tracking system
+in the dynamic test).
 The system will enter \emph{waiting mode} after every single individual
 request.
 
@@ -217,36 +218,39 @@ request.
 
 \subsubsection{Parallax compensation algorithm}
 
-W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The parallax compensation algorithm was already explained in
+Chapter~\ref{cap:back},
+where the necessary algebra concepts were explained as well.
+A basic vector algebra library was written to do all the vector operations,
+using Cartesian coordinates. For some operations, they were converted to
+spherical coordinates. Spherical coordinates are a type of 3D polar
+coordinates that use magnitude for the scalar value of the vector,
+azimuth for the 360° orientation, and tilt (or pitch or elevation)
+for the inclination in reference to the horizontal plane.
+All the distances are measured in millimeters.
 
-cordenadas polares em graus, distancias em mm
-tudo em float, float eh HW e double eh emulado
-variaveis sao cartesianas
-o modelo polar eh magnitude, yaw, pitch
-
-ESQUECI DE DETALHAR COMO O PROTOCOLE DE COMM ESPECIFICA ANGULO
-os angulos ja chegam assim, mudar no pi.
-
-W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+All numerical variables were \emph{float}-typed, which in the ESP chips
+is implemented in hardware. The \emph{double} type is currently emulated, which
+would make the mathematical calculations too processing-intensive.
 
 \subsection{Intermodule communication}
 
-Figure~\ref{fig:pod_fsm} shows a sequence diagram with the expected
-behaviour of the three main test functions. On the left, the three
+Figure~\ref{fig:pod_flow} shows a sequence diagram with the expected
+behavior of the three main test functions. On the left, the three
 request messages were received and answered. On the right, an error
 occurred.
-Last interaction on the left sequence diagram shows a continuous
+The last interaction on the left sequence diagram shows a continuous
 readings request being active. The drone system will continuously
-request for \gls{tof} readings, and the pod system will use this
+request \gls{tof} readings, and the pod system will use this
 stream of data to also filter the values to suppress noise.
 The sequence diagram on the right shows the three different errors
 that can occur in the \gls{uart} communication channel  between
 the two modules in the prototype.
-The first is a communication channel error. The message either was
+The first is a communication channel error. The message was either
 invalid, corrupted or unanswered.
 The second error occurs when the \gls{tof} sensor is unavailable at
 the time of the reading.
-The third error is when the requested gimbal movement is wider than
+The third error is when the requested gimbal movement is outside
 the range of motion of the gimbal.
 
 \begin{figure}[ht]
@@ -271,7 +275,7 @@ further back. Figure~\ref{fig:pic2} shows the back of the prototype. From
 this angle it is possible to also see the power connector for the servo
 motors, the small opening in the front for the Raspberry Pi's \gls{psu} and
 the fan used to cool the \gls{sbc}. On the \gls{tof} sensor's support, there
-is a rail used to attach a laser pointer for some testings.
+is a rail used to attach a laser pointer for some tests.
 
 \begin{figure}[ht]
   \centering
@@ -307,6 +311,7 @@ W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 2.alguma coisa tem processing requirements
 medir o tempo pra fazer todo o calhamaço de calculo vetorial nao otimizado
+comparar com nao fazendo calculo vetorial
 
 W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -321,10 +326,10 @@ The following sections will explain in detail the three tests:
 \end{itemize}
 
 To test a device that calculates distances based on a laser rangefinder
-mounted on a gimbal, first
+mounted on a gimbal, first,
 it is important to assess how accurate the laser rangefinder is. For
 that, a static single-point test can be executed, measuring the distance to a
-known, easy to acquire target.
+known, easy-to-acquire target.
 After the rangefinder is tested, the gimbal
 must be tested as well. A static multi-point test can check if the angles
 requested by the drone system are being correctly set by the motors.
@@ -363,7 +368,7 @@ $N$ consecutive measurements $\hat{d}_{i}$ are
 acquired, with
 ambient illumination, target reflectance, and temperature recorded throughout.
 Trueness (B, for sample bias) is a simple difference between the
-arithmetic mean value and the accepted reference value:
+arithmetic mean value and the accepted reference value (Equation~\ref{eq:true}).
 
 \begin{equation}
   % title for equation list
@@ -379,7 +384,7 @@ Variance is used in analyses that have multiple sources of
 error, allowing for the multiple errors to be added together to compound
 the total error of the system. As this project focuses on the distance
 range-finder, standard deviation is more appropriate.
-Both are defined as:
+Both are defined in Equation~\ref{eq:precise}.
 
 \begin{equation}
   % title for equation list
@@ -391,19 +396,35 @@ Both are defined as:
 
 \subsubsection{Sources of inaccuracy}
 
-W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The first source of inaccuracy is, of course, the distance sensor.
+As explained before, the sensor data will contain some uncertainty in the
+shape of noise. The value put out by the sensor will fluctuate a little
+when measuring the exact same target, with the exact same parameters.
 
-conversao int16 fixed point centesimal para float e double
-servos, flutuacao do tof
-calibracao dos servos, impressao 3D, folgas do mecanismo
+The second major source of inaccuracy is the gimbal. The 3D parts were
+designed by an engineer lacking fundamental mechanical concepts.
+Their fitting to the servo parts is not ideal, and will introduce
+some bias to the position of the sensor, part of which is reduced
+by the calibration process that runs before the start-up of the
+test program.
+The servos themselves have some inaccuracy, including some backlash,
+but it is insignificant
+when compared with the gimbal inaccuracies themselves.
 
-
-W I P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The third source of inaccuracy is the whole data conversion that the
+measurements go through when processed by the pod system's algorithm.
+The \gls{tof} sensor's data is read via \gls{uart} as a 16-bit signed
+integer. To better preserve the data, the vector calculations are all
+done using floating-point variables. The conversion to and from float
+variables introduces some sampling errors, although not significant ones.
+These errors could be minimized by using double-precision floating-point
+variables, but that would increase the processing time significantly.
 
 \subsection{Reference instrument}
 
-The reference instrument for the tests is a Stanley Stht77802-la \cite{stanlaser}.
-It is a industrial laser distance measuring device with a minimum measuring
+The reference instrument for the tests is a Stanley Stht77802-la
+\cite{stanlaser}.
+It is an industrial laser distance meter with a minimum measuring
 distance of 5\,cm and a maximum range of
 60\,m. The device has a specified measurement accuracy of ±1.5 mm at 10 m.
 
@@ -443,8 +464,7 @@ The standard deviation of the measured distances will mainly depend on
 the chosen sensor, the luminous noise at the target, and the distance,
 since the sensor has an optimal measuring range and becomes less accurate
 at very close distances.
-So in the end, the overall error can be minimized by compensating any
-error in the trueness of the measurements.
+So in the end, the overall error can be minimized by compensating for any bias.
 
 The test is repeated for several
 distances and target tilt angles to assess the dependence of the error on
@@ -466,16 +486,16 @@ The multipoint test evaluates the three-dimensional performance of the module
 over its \gls{fov}. A planar target of known flatness, larger than
 the footprint of the FoV at the test distance, is the ideal target.
 First, the parallax-compensating algorithm is disabled, and a parallax-induced
-error is expected. Different points are designated as targets in the wall, and
-with a laser pointer coupled in the gimbal, the distance between the designated
+error is expected. Different points are designated as targets on a wall, and
+with a laser pointer coupled to the gimbal, the distance between the designated
 target and the new point on the wall can be measured, to make sure that only
 the parallax is affecting the pointing system.
 The laser unit (red laser) attached to the gimbal is of a completely different
-frequency from both the target designator (green laser) and the \gls{tof}
+wavelength from both the target designator (green laser) and the \gls{tof}
 sensor (\gls{ir} laser), to avoid interference.
 After that, the test is repeated, but with the parallax-compensating algorithm
-enabled. Now, there should be no parallax observed between both red and green
-laser points in the wall. Each point will have its performance analyzed
+enabled. Now, there should be no parallax observed between both the red and green
+laser points on the wall. Each point will have its performance analyzed
 multiple times, so enough data can be logged to analyze the gimbal's accuracy.
 
 \subsection{Dynamic test}
@@ -497,7 +517,7 @@ and range samples are misaligned in time, the apparent edge position shifts with
 speed, and flips sign when the direction is reversed. The size of the shift
 divided by the speed equals the latency, which can be corrected in software.
 
-To test the impact of the target-tracking loop's latency over the measurements,
+To test the impact of the target-tracking loop's latency on the measurements,
 different scans can be executed over a simple wall. The system can scan the same
 wall at commanded rates from about 10\% to 200\% of the servo's maximum, in steps.
 For each run, the system records the cloud of points and then calculates
@@ -512,4 +532,4 @@ log the response and later analyze the settling time, overshoot, and ringing.
 For more information about the response of the system, a target moving on a
 sinusoidal pattern can shed more light on the dynamic characteristics of the
 system. Amplitude and frequency of the sinusoid can be changed, and multiple
-combinations can be executed to map the system's behaviour.
+combinations can be executed to map the system's behavior.

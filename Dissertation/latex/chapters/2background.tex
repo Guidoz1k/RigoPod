@@ -6,9 +6,9 @@
 
 This chapter presents the theoretical concepts that support the development of the proposed
 system. The system consists of a drone payload, or pod. The test prototype will consist of
-two systems and a communication channel: The drone payload and a drone system, that will serve
+two systems and a communication channel: the drone payload and a drone system, which will serve
 to test the payload's performance. The drone itself will consist of a small embedded computer
-that will use a computer vision subsystem to identify a ground target. Then, the drone
+that will use a Computer Vision subsystem to identify a ground target. Then, the drone
 system will send the direction angles to the drone payload for it to execute the measurement
 and error correction routines. The resulting values are then sent back to the drone system
 for logging.
@@ -22,7 +22,7 @@ parallax into account.
 
 The drone system is responsible for perception, processing, and identification of the initial
 payload orientation. In this work, the drone platform incorporates an onboard computing system
-capable of running computer vision algorithms. The purpose of this subsystem is to identify
+capable of running Computer Vision algorithms. The purpose of this subsystem is to identify
 objects of interest in the environment and determine the appropriate pointing direction for
 the distance measurement sensor.
 
@@ -39,11 +39,11 @@ The drone subsystem therefore performs three primary functions:
   \item Target localization and gimbal pointing control.
 \end{itemize}
 
-\subsection{Computer vision}
+\subsection{Computer Vision}
 
-Computer vision is a field of study that enables machines to interpret and understand visual
+Computer Vision is a field of study that enables machines to interpret and understand visual
 information from the environment. It involves acquiring images, processing them, extracting
-meaningful features, and making decisions based on those features. A typical computer vision
+meaningful features, and making decisions based on those features. A typical Computer Vision
 pipeline consists of several stages \cite{cv1}:
 
 \begin{enumerate}
@@ -70,7 +70,7 @@ of the scene, while a narrower \gls{fov} focuses on a smaller area with greater 
 Resolution refers to the number of pixels in an image. Higher resolution provides more
 detail but increases data size and processing requirements. \gls{fps}, or frame rate,
 indicates how many images are captured per second. Higher frame rates produce smoother
-motion, while lower frame rates reduce data and processing demands, a simple example can
+motion, while lower frame rates reduce data and processing demands. A simple example can
 be seen in Figure~\ref{fig:2img1}.
 
 \begin{figure}[ht]
@@ -84,7 +84,7 @@ be seen in Figure~\ref{fig:2img1}.
 
 Image pre-processing may involve operations such as filtering, noise reduction, and contrast
 enhancement. Feature extraction methods detect relevant structures in the image, such as
-edges, corners, shapes, or textures. This step usually involves a mask, that is used to
+edges, corners, shapes, or textures. This step usually involves a mask, which is used to
 identify objects or track their movement within the camera frame \cite{cv2}.
 
 \subsubsection{Object detection and decision making}
@@ -92,13 +92,13 @@ identify objects or track their movement within the camera frame \cite{cv2}.
 Once a target is detected, its position in the image coordinates can be calculated. This
 position can then be transformed into a direction relative to the camera frame. For this,
 the inclination of the camera and camera lens angles are taken into account. The direction
-information can be sent to the pod, that will point the gimbal-mounted sensor, allowing
+information can be sent to the pod, which will point the gimbal-mounted sensor, allowing
 the sensor to align with the target detected by the vision system \cite{cv3}.
 
 \subsubsection{OpenCV}
 
 \gls{opencv} (logo in Figure~\ref{fig:2opencv}) is an open-source software library widely
-used for computer vision and image processing applications\cite{opencv}. It provides a
+used for Computer Vision and image processing applications \cite{opencv}. It provides a
 comprehensive set of algorithms optimized for real-time performance. The library supports
 a wide range of functionalities, including:
 
@@ -205,7 +205,7 @@ maintain a stable flight attitude while directing the sensor toward different ta
 
 A typical gimbal used in robotic applications provides two or three degrees of freedom. A
 two-axis gimbal allows rotation in pitch and yaw, enabling the sensor to point in any
-direction within a hemispherical field of view. A three-degrees gimbal include roll control
+direction within a hemispherical field of view. A three-degree gimbal includes roll control
 for full stabilization and orientation control. Ideally, when mounting a sensor on a gimbal,
 it is desirable to mount the sensor in the gimbal in a way that its position does not vary
 with any change in its angle. This ensures the sensor's position remains constant throughout
@@ -217,7 +217,7 @@ orientation of the sensor accordingly \cite{servos}.
 
 The relationship between the target position detected by the camera and the gimbal angles
 must be carefully calibrated. This calibration ensures that the direction indicated by
-the computer vision system corresponds to the physical direction in which the sensor must
+the Computer Vision system corresponds to the physical direction in which the sensor must
 point.
 
 \section{Line-of-sight and parallax}
@@ -269,7 +269,7 @@ gimbal-mounted sensor \cite{parallax3}.
 \subsection{Linear algebra and logic of parallax compensation}
 
 Even though more complex methods are possible, simple linear algebra is enough to compensate
-the offset between the camera and the \gls{tof} \cite{parallax5}. With the offset being
+for the offset between the camera and the \gls{tof} \cite{parallax5}. With the offset being
 known to the pod's computer, it is possible to reduce the error iteratively. A system without
 any form of parallax compensation would just aim the \gls{tof} at the same direction as
 the direction reported by the camera. This mode of operation can
@@ -283,7 +283,7 @@ This distance is used to make the first assumption of the real position of the t
 The first step can be seen in Figure~\ref{fig:2graph1}, with the camera tracking axis
 in green, the vector symbolizing the gimbal's position in grey and the \gls{tof} sensor's
 axis and distance measured in orange.
-The camera axis is a result of the computer vision algorithm localizing the center of
+The camera axis is a result of the Computer Vision algorithm localizing the center of
 the detected target, and converting the pixel position into gimbal directions.
 
 \begin{figure}[h]
@@ -307,7 +307,7 @@ It shows the resulting vector in purple.
 \end{figure}
 
 The third step is to project the measured range on the camera axis. As the camera is the true
-reference for directions, the target must be in it's informed axis. The projection forces the
+reference for directions, the target must be in its informed axis. The projection forces the
 estimated target position to be aligned with what the camera detects \cite{robotics3}.
 The vector operation can be seen in Figure~\ref{fig:2graph3}, with the resulting vector in red.
 The magnitude of this new (red) vector is the output of the parallax compensation function, and
@@ -321,9 +321,10 @@ the data that is sent by the pod system when requested for a target's distance.
 \end{figure}
 
 With the estimated target position in the camera's axis,
-the fourth and final step, is to aim the gimbal at this new position.
-The new direction's vector is simply the subtraction of the gimbal's origin vector by
-the new estimated target vector. The polar coordinates of this vector will be the new
+the fourth and final step is to aim the gimbal at this new position.
+The new direction's vector is simply the subtraction of the gimbal's
+origin vector from the new estimated target vector.
+The polar coordinates of this vector will be the new
 gimbal's orientation, as it can be seen in Figure~\ref{fig:2graph4}.
 
 \begin{figure}[ht]
@@ -335,10 +336,10 @@ gimbal's orientation, as it can be seen in Figure~\ref{fig:2graph4}.
 
 With the new direction, the loop is executed again, in the next iteration.
 A new measurement will be done with the \gls{tof} sensor, a new measured range
-will be calculated, it's projection will be calculated as well, and with this
+will be calculated, its projection will be calculated as well, and with this
 new position, the gimbal will reposition again.
 The process should converge within a few loop iterations.
-The basic algorithm of the parallax compensating loop can be seen in Figure~\ref{fig:2algo}
+The basic algorithm of the parallax compensating loop can be seen in Figure~\ref{fig:2algo}.
 
 \begin{figure}[ht]
   \centering
@@ -351,9 +352,9 @@ The basic algorithm of the parallax compensating loop can be seen in Figure~\ref
 
 \subsubsection{Linear algebra concepts required for the parallax compensation}
 
-In order to perform simple algebra corrections of the previous section, the Pod systems'
- processor will need to simulate 3D space operations in its firmware (assuming the
- camera is the origin of the simulated 3D space) \cite{algebra}:
+In order to perform simple algebraic corrections from the previous section, the Pod system's
+processor will need to simulate 3D space operations in its firmware (assuming the
+camera is the origin of the simulated 3D space) \cite{algebra}:
 
 \begin{itemize}
   \item Store multiple vector 3D positions.
@@ -363,16 +364,16 @@ In order to perform simple algebra corrections of the previous section, the Pod 
   \item Calculate vector magnitude, azimuth, and zenith.
   \item Calculate the scalar product of two vectors (AKA dot product).
   \item Calculate the vector product of two vectors (AKA cross product).
-  \item Calculate the projetion of a vector unto another.
+  \item Calculate the projection of a vector onto another.
 \end{itemize}
 
 Storing vector positions is a matter of creating a vector variable type.
-The variable can either store cardinal coordinates (i.e. x, y, and z) and these
-can be converted back and forth between cardinal and
-one of the many polar coordinates formats (i.e. magnitude, azimuth, zenith).
+The variable can store Cartesian coordinates (i.e. x, y, and z) and these
+can be converted back and forth between Cartesian and
+one of the many polar coordinate formats (e.g. magnitude, azimuth, zenith).
 Vector addition, subtraction, magnitude calculation and scaling can all be simple
 to implement functions with simple mathematical functions included in any
-programming language (including it's standard mathematical libraries).
+programming language (including its standard mathematical libraries).
 
 The scalar product between two vectors \emph{u} and \emph{v} consists of simple
 addition and subtraction. It can be seen in relation~\ref{eq:dot_p}:
@@ -391,11 +392,11 @@ relation~\ref{eq:dot_v}:
   \label{eq:dot_v}
   \addequationtoentry{The vector product between two vectors} % title for equation list
   \scalebox{1.5}{$
+    \mathbf{ C = u \times v }, \qquad
     \begin{gathered}
-      \mathbf{ C = u \times v } \\
       C_x = y1z2 - z1y2 \\
       C_y = z1x2 - x1z2 \\
-      C_z = x1y2 - y1z2
+      C_z = x1y2 - y1x2
     \end{gathered}
    $}
 \end{equation}
@@ -446,14 +447,14 @@ The Pod system shall execute the following within certain time constraints:
 \end{itemize}
 
 The Drone subsystem will detect a ground target and find its angles every frame of the video
-stream, as every new frame presents new visual information for the computer vision algorithm.
+stream, as every new frame presents new visual information for the Computer Vision algorithm.
 Every time \gls{opencv} finishes processing a new frame, fresh direction data is available
 to be sent to the Pod subsystem. In order to make the system as agile as possible, one key
 requirement of the Pod subsystem is to be able to respond to every distance request from the
-Drone subsystem. The higher the refresh rate of the computer vision algorithm in the Drone
+Drone subsystem. The higher the refresh rate of the Computer Vision algorithm in the Drone
 subsystem (higher \gls{fps}) is, the lower the period between calls will be. As it is
 desirable that the Pod subsystem respond to every call for new data, the \gls{fps} of the
-camera and the computer vision algorithm drastically impacts how fast the Pod subsystem
+camera and the Computer Vision algorithm drastically impacts how fast the Pod subsystem
 will need to be.
 
 Some vector operations could be done via matrices or other optimized mathematical processes.
@@ -466,8 +467,8 @@ being at 120\,m under ideal conditions, when it is directly below the sensor.
 As the target moves away from the point directly below the drone on the ground,
 the distance increases. This relationship between the position of the ground target and the
 distance to the drone can be better understood via Figure~\ref{fig:2img3}. The final
-distance can be expressed either by Equation~\ref{eq:dist_to_gnd1} or by
-Equation~\ref{eq:dist_to_gnd2}, which are equivalent when $h > 0$:
+distance can be expressed by either one of the equations in Equation~\ref{eq:dist_to_gnd},
+which are equivalent when $h > 0$:
 
 \begin{figure}[ht]
   \centering
@@ -477,14 +478,9 @@ Equation~\ref{eq:dist_to_gnd2}, which are equivalent when $h > 0$:
 \end{figure}
 
 \begin{equation}
-  \label{eq:dist_to_gnd1}
-  \addequationtoentry{Pythagorean Theorem applied to distance} % title for equation list
-  \scalebox{1.5}{$ d = \sqrt{ x^2 + h^2 } $}
-\end{equation}
-
-\begin{equation}
-  \label{eq:dist_to_gnd2}
-  \addequationtoentry{Alternative trigonometric equation definition of distance} % title for equation list
+  \label{eq:dist_to_gnd}
+  \addequationtoentry{Pythagorean Theorem and alternative trigonometric equation for distance calculation} % title for equation list
+  \scalebox{1.5}{$ d = \sqrt{ x^2 + h^2 } $} \qquad
   \scalebox{1.5}{$ d = h \cdot \sec\bigg( ~ \tan^{-1}\Big( ~ \frac{x}{h} ~ \Big) ~ \bigg) $}
 \end{equation}
 
@@ -514,12 +510,12 @@ measurement.
 With the sensor defined, the only factor to be taken into account is the angle.
 Different angles between the target vector and sun vector will result in different
 sunlight intensities hitting the sensor. Sunlight should never exceed the sensor
-rating for environment light, otherwise the measurements will be compromised.
+rating for environmental light. Otherwise the measurements will be compromised.
 
 Both the maximum distance measurable and maximum angle for correct operation are
 material dependent. Different target materials have different reflectivity indexes.
 The closer the material is to an ideal reflective mirror, the more reflected light
-and the less diffuse light will be present as result. The opposite is true for very
+and the less diffuse light will be present as a result. The opposite is true for very
 diffuse (Lambertian) surfaces \cite{otica}. Figure~\ref{fig:2img4} shows a diagram
 with both diffuse and reflected light being generated after an incident beam of
 light hits a partially reflective surface. The amount of both diffuse and reflected
@@ -539,13 +535,13 @@ regardless of the angle of incidence, guaranteeing correct measurements.
 
 \subsubsection{Angular inaccuracy impact on measurement}
 
-The Figure~\ref{fig:2img3} and Equation~\ref{eq:dist_to_gnd1} and
-Equation~\ref{eq:dist_to_gnd2} in this section shows the relationship
+Figure~\ref{fig:2img3} and Equations \ref{eq:dist_to_gnd}
+in this section show the relationship
 between the position of a ground \gls{poi} relative to a drone's nadir,
 the drone's height and the resulting distance from the drone to the \gls{poi}.
 The relationship between the drone's height, angle to the \gls{poi}, and
-the distance to the \gls{poi}, is shown in Figure~\ref{fig:2img7}, can be
-described by Equation~\ref{eq:dist_to_gnd3} and has a curve like
+the distance to the \gls{poi}, which is shown in Figure~\ref{fig:2img7}, can be
+described by Equation~\ref{eq:dist_to_gnd3} and has a curve like the one in
 Figure~\ref{fig:2img8}.
 
 \begin{figure}[ht]
@@ -581,13 +577,13 @@ To simulate the impact of an error of 1° (which is very inaccurate for image
 stabilizing gimbals, even being less than 0.3\% of a full rotation),
 we can calculate the absolute
 value of the original distance subtracted from the distance with said error,
-with height equals to 100\,m,
-like in Equation~\ref{eq:asb_error}, with a curve like Figure~\ref{fig:2img9}
+with the height equal to 100\,m,
+like in Equation~\ref{eq:asb_error}, with a curve like the one in Figure~\ref{fig:2img9}.
 
 \begin{equation}
   \label{eq:asb_error}
   \addequationtoentry{Impact of error on distance estimation} % title for equation list
-  \scalebox{1.5}{$ e = | ~ 100 \cdot \sec( ~ \alpha ~ ) - 100 \cdot \sec( ~ \alpha + 1^\circ ~ ) ~ | $}
+  \scalebox{1.3}{$ e = | ~ 100 \cdot \sec( ~ \alpha ~ ) - 100 \cdot \sec( ~ \alpha + 1^\circ ~ ) ~ | $}
 \end{equation}
 
 \begin{figure}[ht]
@@ -605,8 +601,8 @@ and for an error of 10\% (10\,m), the maximum angle would be approximately 66°.
 This, nonetheless, does not describe the error in the \gls{poi}'s position,
 only the error in the measured distance.
 
-As the system is designed to help the drone system measure distance of \gls{poi}
-close to the drone's nadir (usually the focus of drone's gimbals),
+As the system is designed to help the drone system measure the distance to \gls{poi}s
+close to the drone's nadir (usually the focus of drones' gimbals),
 the pod system will be able to deliver
 reliable measurements even with an inaccurate and uncalibrated gimbal.
 More accurate gimbals could be investigated in future works in order to design
@@ -614,10 +610,9 @@ a more reliable system even for critical and unusual angles.
 
 \subsection{Dynamic measurement}
 
-All critical parameters found when executing static measurements also apply for dynamic
+All critical parameters found when executing static measurements also apply to dynamic
 measurements. As seen previously in this section, the distance measurement is affected
-by both height to ground and angle to target, described by both
-Equation~\ref{eq:dist_to_gnd1} and Equation~\ref{eq:dist_to_gnd2}. 
+by both height to ground and angle to target, described by Equation~\ref{eq:dist_to_gnd}. 
 The curve of measured distance as a function of measurement angle for a drone measuring
 a small target over a flat surface with the drone at a height of 1\,m can be seen
 in Figure~\ref{fig:2img6}, with the
@@ -656,7 +651,7 @@ where:
 \end{itemize}
 
 Now, the sensor's gimbal needs to track the target, with angles provided by the drone's
-computer vision system. With varying angles, the distance-measuring pod needs
+Computer Vision system. With varying angles, the distance-measuring pod needs
 to deal with the angular speed of the gimbal, as well as with the time it takes for the
 distance sensor to finish one measurement.
 
@@ -666,12 +661,12 @@ change during one single measurement. Either the sensor must be fast enough for 
 to remain in front of the beam, or the distance between the target and the ground must be
 negligible compared to the height at which the drone is hovering.
 
-As the distance sensor has limited range of operation, so does the gimbal. Regardless
+As the distance sensor has a limited a range of operation, so does the gimbal. Regardless
 of the type of motors used, the gimbal will have a maximum angular speed. The pod system
 then needs to guarantee that the gimbal is fast enough, or, if it cannot keep the target
 in the \gls{tof} sensor's beam, inform the drone system that
 the pod now needs more time to process the measurement. The maximum angular speed is
 directly
 tied to the motor used. With bigger reduction gears on the servo motor, for example,
-the servo gets stronger but slower. Servos are also open loop from the pods perspective,
+the servo gets stronger but slower. Servos are also open-loop from the pod's perspective,
  which needs to be taken into account when making a gimbal using this type of motor.

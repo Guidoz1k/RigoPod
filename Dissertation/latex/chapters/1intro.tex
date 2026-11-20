@@ -9,7 +9,7 @@
 In order to navigate the real world, autonomous drones (also referred to as \gls{uav}s)
 need to estimate their position
 with reference to the world, with a certain precision \cite{introLivro1}. When used in
-rural areas, drones are often used to disperse seeds, pesticides, or survey the field.
+rural areas, drones are often employed to disperse seeds and pesticides, or survey the field.
 Field surveillance and inspection can now be done remotely, without the need for the
 farmer to traverse the entire plantation, which could be thousands of acres of land
  \cite{introArtigo1}. Urban environments also benefit from drone services, from preventive
@@ -17,9 +17,9 @@ farmer to traverse the entire plantation, which could be thousands of acres of l
 \cite{droneurban3}.
 
 \gls{gnss} is the main positioning system used for drones \cite{introLivro2}. Although GNSS
-systems allow for more precise flight procedures, they come with a drawback: More precise and
+systems allow for more precise flight procedures, they come with a drawback: more precise and
 robust systems usually involve heavier and bulkier hardware. Absolute positioning may not be
-necessary in most cases though: Sometimes, the position of the drone is not as critical as its
+necessary in most cases though: sometimes, the position of the drone is not as critical as its
 position relative to a ground target, sometimes called \gls{poi}. While the accuracy of
 the absolute position of the drone can be increased over time through the use of filtering,
 quick and precise relative positioning between the drone and the ground target is critical so
@@ -31,16 +31,16 @@ to the drone as payload. The drone system itself is outside of the scope of this
 
 \section{Mission scope}
 
-As mentioned before, the drone absolute position acquisition system is not part of the scope of this
-work. This dissertation will focus on the payload (also referred as pod) of the drone, to be connected
+As mentioned before, the drone's absolute position acquisition system is not part of the scope of this
+work. This dissertation will focus on the payload (also referred to as the pod) of the drone, to be connected
 to the drone in order to measure distances. A first system will be developed to behave as a drone, and
-through the use of computer vision will identify a test target and calculate its direction relative
+through the use of Computer Vision will identify a test target and calculate its direction relative
 to the drone. This direction information will be transmitted to the pod, as a set of angles, and the
 pod will then measure the distance between the pod and target. It will also compensate for parallax, 
 as the pod could be positioned anywhere on the drone, and then estimate the distance between the
 camera and the object, as if the camera itself had measured it instead of an external module \cite{robotics}.
 An example of the scenario can be seen in Figure~\ref{fig:1img1}. Concepts like what distance sensor
-to use or \gls{fov} will be explained further on Chapter~\ref{cap:back}.
+to use or \gls{fov} will be explained later in Chapter~\ref{cap:back}.
 
 \begin{figure}[h]
   \centering
@@ -51,7 +51,7 @@ to use or \gls{fov} will be explained further on Chapter~\ref{cap:back}.
 
 Different sensors have different specifications. In order to investigate the many devices available for
 designing a precise drone location system, well-defined requirements are of the utmost importance. As this
-survey was carried out in Brazil, all system specifications will be defined by
+dissertation was carried out in Brazil, all system specifications will be defined by
 Brazilian regulations and plantation standards.
 
 The first parameter to define is the altitude range in which the drone will fly. Brazil's Ministry of
@@ -64,11 +64,11 @@ operating altitude, and not necessarily the altitude at which the drone will, in
 The second important parameter is the range of angles expected for the measurements.
 In unmanned aerial systems (UAS) payload design, the primary operational axis for
 imaging and sensing equipment is predominantly oriented near the drone's nadir
-(The point immediately below the drone relative to the center of Earth).
+(directly below the drone, along the line to the center of Earth).
 Maintaining a stable, downward-looking perspective minimizes geometric distortion
 and ensures consistent spatial resolution across photogrammetry, aerial mapping,
 and environmental monitoring tasks. Consequently, stabilization gimbals are
-architected to deliver highest precision and disturbance rejection primarily
+designed to deliver the highest precision and disturbance rejection primarily
 within a narrow angular envelope centered around the nadir vector, effectively
 isolating the sensor payload from high-frequency platform attitude dynamics while
 keeping the optical boresight closely aligned with the local vertical.
@@ -76,8 +76,8 @@ keeping the optical boresight closely aligned with the local vertical.
 \section{System architecture}
 
 This target location system will consist of a target-to-drone distance measuring system.
-The pod should first receive orientation from the drone system. Then measure the
-distance to the target on ground. To obtain the correct distance of the target to
+The pod should first receive orientation from the drone system, then measure the
+distance to the target on the ground. To obtain the correct distance of the target to
 the drone, the pod system should make some corrections necessary for the difference in point-of-view.
 
 \section{Different technologies for target location}
@@ -88,7 +88,7 @@ Many different technologies can be used to detect the distance between a sensor 
 \subsection{Ultrasonic sensors}
 
 Ultrasonic sensors consist of a sensor that emits ultrasonic pulses (above 20 kHz)
-and measures the time between the emission and the receiving of an echo \cite{ultrasound1}.
+and measures the time between the emission and the reception of an echo \cite{ultrasound1}.
 Ultrasonic sensors are commonly used in robotics, automotive parking systems, and level detection
 because of their ability to detect objects without requiring physical contact. They are inexpensive,
 work well under various lighting conditions, and are effective in detecting both solid and liquid
@@ -98,20 +98,20 @@ greater than 10 meters \cite{ultrasound2}.
 
 \subsection{Light-based sensors}
 
-Similarly to radio waves systems, there are equivalent sensors that utilize electromagnetic radiation
+Similar to radio wave systems, there are equivalent sensors that utilize electromagnetic radiation
 in the visible spectrum. The main types of light-based sensors are the following
  \cite{infrared}\cite{laserrangefinder}:
 
 \begin{itemize}
-  \item \gls{tof} : These sensors emit light (typically laser or \gls{ir}) and measure
+  \item \gls{tof}: These sensors emit light (typically laser or \gls{ir}) and measure
   the time it takes for the reflected light to return to the sensor. They are widely used in
   smartphones, robotics, and drones because of their precision and ability to operate over a range
-  of distances. These modules detect a single-point of measurement.
+  of distances. These modules detect a single point of measurement.
   \item \gls{lidar}: These use laser beams to measure distance by timing the
   reflected light. \gls{lidar} systems are commonly used in autonomous vehicles, mapping, and industrial
-  applications due to their high accuracy and ability to create 3D maps. They usually consist of a light
-  transmitter and receiver module rotating, in order to get wide angles of measurements, or \gls{tof}
-  sensor that detect a grid or matrix of light beams, and not just a single point.
+  applications due to their high accuracy and ability to create 3D maps. They usually consist of a rotating
+  light transmitter and receiver module, in order to get wide measurement angles, or a \gls{tof}
+  sensor that detects a grid or matrix of light beams, and not just a single point.
   \item Structured Light Sensors: These sensors project a known light pattern (for example, a grid)
   onto an object and analyze the deformation of the pattern to calculate distance. They are used in
   depth-sensing cameras like Microsoft Kinect for 3D scanning and motion tracking.
@@ -119,7 +119,7 @@ in the visible spectrum. The main types of light-based sensors are the following
   By analyzing the disparity between images captured by each camera, it calculates the depth and distance.
   Stereo vision is used in robotics, AR/VR, and object recognition systems.
   \item RGB-D/Depth Camera: Depth cameras are a combination of \gls{tof} sensors and standard cameras.
-  The combination allows for the distance information to be obtained together with the image but it also
+  The combination allows for the distance information to be obtained together with the image, but it also
   combines the drawbacks of matrix \gls{tof} sensors, with added cost and processing complexity.
 \end{itemize}
 
@@ -144,7 +144,7 @@ distances from multiple points in a 3D space.
 
 While \gls{lidar} sensors can be very practical, they are bulkier and consume more power for the rotating
 motor when compared to single-point or matrix \gls{tof} sensors. Matrix \gls{tof} sensors are lighter and have
-no moving parts but the range of \gls{cots} modules is more limited (usually less than 10m) when compared to
+no moving parts, but the range of \gls{cots} modules is more limited (usually less than 10m) when compared to
 single-point \gls{tof} sensors \cite{dronelidar} due to power and safety constraints.
 
 A hybrid between a \gls{tof} sensor and a \gls{lidar} sensor can be achieved by mounting one \gls{tof} sensor on
@@ -158,7 +158,7 @@ collision avoidance, and terrain mapping \cite{radaraltimetro2}. By emitting rad
 analyzing the reflected signals, radar sensors provide precise distance and velocity measurements,
 even in low visibility conditions such as fog, rain, or darkness, where optical sensors may
 struggle \cite{introtoradar}. The ability of radars to detect objects over longer distances and through
-cluttered environments makes it ideal for autonomous navigation and enhancing flight safety.
+cluttered environments makes radar ideal for autonomous navigation and flight safety enhancement.
 In addition, advanced radar systems, such as millimeter-wave radars, are used for altimetry and
 precise positioning during landings, particularly in drones operating in challenging outdoor environments. 
 
@@ -166,7 +166,7 @@ Although radar modules offer many advantages for drones, they also have notable 
 One key limitation is their high power consumption, which can reduce the drone's battery life,
 particularly in smaller systems. Additionally, radar systems can struggle with resolution limitations,
 especially for small or closely spaced objects, making them less effective for detecting fine details
-compared to optical sensors like LIDAR or cameras. Environmental factors, such as electromagnetic
+compared to optical sensors like \gls{lidar} or cameras. Environmental factors, such as electromagnetic
 interference, can also affect performance and introduce noise into the radar signal. Furthermore,
 cost can be a barrier, as advanced radar systems, such as millimeter-wave radars, tend to be more
 expensive than simpler alternatives like ultrasonic or \gls{ir} sensors. Lastly, the complexity of
@@ -184,7 +184,7 @@ As the angle of the target relative to the drone module is known via the camera,
 measurement required would be the distance from the target to the module. The rangefinder measures
 this distance from above, and the geometry errors get corrected in firmware.
 
-In order to keep costs low, use \gls{cots} components and maintain the flexibility of the module within
-the constraints of the flight level specified by \gls{anac}, a hybrid \gls{tof} using a gimbal will be
-tested alongside a system that simulates a drone using computer vision to test the feasibility
-and accuracy of such a system.
+A hybrid ToF sensor mounted on a gimbal, built from \gls{cots} components to keep costs low
+and flexible within the constraints of the flight level specified by \gls{anac}, will be
+tested alongside a Computer Vision system that simulates a drone,
+in order to assess the feasibility and accuracy of the approach.

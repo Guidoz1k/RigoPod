@@ -10,7 +10,7 @@ methodologies, and technologies, highlighting their contributions, limitations, 
 areas of application. By analyzing prior work, it is possible to identify current
 challenges, research gaps, and opportunities that motivate the development of the
 proposed solution. This review also establishes the theoretical and technical foundation
-upon which the present work is built. Each of the 20 analyzed papers work will be
+upon which the present work is built. Each of the 20 analyzed papers will be
 numbered so referencing their contents will be easier.
 
 \section{Vision-based tracking and precision landing}
@@ -23,35 +23,35 @@ estimation accuracy compared to passive mounts. This focus on visual stability i
 in work \#8 "Robust Image-Based Visual Servo Target Tracking of UAV with Depth Camera"
 \cite{rel8}, which utilizes image-based visual
 servoing (IBVS) to minimize tracking deviations caused by attitude perturbations.
-In the context of autonomous landing, gimbals address field-of-view (FOV) limitations.
+In the context of autonomous landing, gimbals address \gls{fov} limitations.
 Work \#5 "Landing Control algorithm for gimbal-serviced UAVs based on field-of-view
 constraints" \cite{rel5} proposes a visual servoing method that leverages gimbal agility
 to ensure target features
-remain within the pixel-level FOV during descent. Similarly, work \#7 "Autonomous UAV
+remain within the pixel-level \gls{fov} during descent. Similarly, work \#7 "Autonomous UAV
 Landing and Collision Avoidance System for Unknown Terrain Utilizing Depth Camera with
 Actively Actuated Gimbal" \cite{rel7} uses an actively actuated gimbal to counteract the
-narrow FOV of an
+narrow \gls{fov} of an
 RGB-D camera, allowing the UAV to search for safe landing spots and detect obstacles
 simultaneously.
 
 \section{LiDAR integration and 3D mapping}
 
-The integration of LiDAR sensors on gimbals enhances mapping and inspection capabilities.
+The integration of \gls{lidar} sensors on gimbals enhances mapping and inspection capabilities.
 Work \#4 "Autonomous Structural Inspection with an Octocopter UAV: Integration
-of 3D LiDAR and Gimbal-Mounted Camera" \cite{rel4} combines a rotating 3D LiDAR for
+of 3D LiDAR and Gimbal-Mounted Camera" \cite{rel4} combines a rotating 3D \gls{lidar} for
 environmental mapping with a gimballed camera for
 high-resolution structural assessment. For cost-sensitive applications, Work \#20
 "Designing a Compact Hexacopter with Gimballed Lidar
 and Powerful Onboard Linux Computer" \cite{rel20} details a custom-built 3D-printed
 gimbal designed
-to stabilize a 2D LiDAR, ensuring it scans horizontally regardless of the UAV's tilt.
-Several studies explore novel methods to reshape LiDAR FOV. Work \#15 "Affordable Robotic
+to stabilize a 2D \gls{lidar}, ensuring it scans horizontally regardless of the UAV's tilt.
+Several studies explore novel methods to reshape \gls{lidar} \gls{fov}. Work \#15 "Affordable Robotic
 Mobile Mapping System Based on Lidar with Additional Rotating Planar Reflector"
 \cite{rel15} uses a custom
-rotating mirror to extend a conic-FOV solid-state LiDAR into a 360-degree scanner.
+rotating mirror to extend a conic-\gls{fov} solid-state \gls{lidar} into a 360-degree scanner.
 Similarly, work \#11 "Autonomous 3D LiDAR Mapping: Transforming 1D
 LiDAR to 3D LiDAR for Building Scanning with a
-Mobile Robot" \cite{rel11} converts a 1D LiDAR into a 3D scanner using
+Mobile Robot" \cite{rel11} converts a 1D \gls{lidar} into a 3D scanner using
 an orthogonal mirror system, providing a low-cost alternative to expensive multi-beam
 units. A broader overview of these technologies is provided in work \#13 "Point cloud
 acquisition techniques by using scanning lidar for 3d modelling and mobile measurement"
@@ -96,7 +96,7 @@ and work \#10 "Scanning LiDAR for Telescope-based UAV Localization" \cite{rel10}
 optimize scanning patterns and optical architectures, such as using telescopes with laser
 diodes, to achieve target localization at ranges up to one kilometer.
 Work \#6 "UAV low-altitude obstacle detection based on the fusion of LiDAR and camera"
-\cite{rel6} complements these by using an IMM-UKF algorithm to fuse LiDAR distance and
+\cite{rel6} complements these by using an IMM-UKF algorithm to fuse \gls{lidar} distance and
 camera angle data for accurate dynamic obstacle tracking.
 
 \section{Related works summary}

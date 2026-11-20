@@ -37,3 +37,5 @@ After compiling once, run in the terminal: makeglossaries main
 Then compile again
 that should solve the glossary in a more elegant way, always in alphabetical order
 
+
+to find in the tex file where the mistake in the pdf is, ctrl+click should do :)
