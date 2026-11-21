@@ -225,8 +225,38 @@ def clear_UI_events():
     encoder_turns = 0
 
 def active_menu():
+    frames = 0         # frames handled by active mode
+    skipped = 0        # frames the camera made that we never saw
 
+    screen( "Active Mode", "starting" )
+    with target_cond:
+        last_seq = target[ "seq" ]      # start from the current frame, not from 0
 
+    clear_UI_events()
+    while encoder_clicked == False:
+
+        # wait for a new frame (or give up after 0.2 s)
+        with target_cond:
+            new_frame = target_cond.wait_for( lambda: target[ "seq" ] != last_seq, timeout = 0.2 )
+            snapshot = dict( target )   # copy while locked
+
+        if new_frame == False:
+            screen( "Active Mode", "NO CAMERA" )
+            continue
+
+        skipped += snapshot[ "seq" ] - last_seq - 1
+        last_seq = snapshot[ "seq" ]
+        frames += 1
+
+        # OLED is slow: update it only every 6th frame (5 Hz)
+        if frames % 6 == 0:
+            if snapshot[ "valid" ]:
+                screen( f"X {snapshot[ 'x' ]}", f"Y {snapshot[ 'y' ]}" )
+            else:
+                screen( "Active Mode", "NO TARGET" )
+
+    screen( f"frames  {frames}", f"skipped {skipped}" )
+    time.sleep( 3 )
     clear_UI_events()
 
 def tof_routine( iterations ):
