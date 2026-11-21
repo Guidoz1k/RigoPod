@@ -159,8 +159,8 @@ def picam():
         cv2.namedWindow( "Mask", cv2.WINDOW_NORMAL )
         cv2.resizeWindow( "Mask", 800, 450 )
 
-    lower = np.array( [ 0, 0, 0 ] )
-    upper = np.array( [ 0, 0, 0 ] )
+    lower = np.array( [ 40, 120, 120 ] )
+    upper = np.array( [ 80, 255, 255 ] )
 
     frame_count = 0
     while True:
@@ -172,8 +172,6 @@ def picam():
 
         # detect green object
         hsv = cv2.cvtColor( frame, cv2.COLOR_BGR2HSV )
-        lower = np.array( [ 40, 120, 120 ] )
-        upper = np.array( [ 80, 255, 255 ] )
         mask = cv2.inRange( hsv, lower, upper )
         contours, _ = cv2.findContours( mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE )
 
@@ -186,24 +184,26 @@ def picam():
             cx = x + w // 2
             cy = y + h // 2
 
-            # draw detection
-            #cv2.rectangle( frame, ( x, y ), ( x + w, y + h ), ( 0, 255, 0 ), 2 )
-            #cv2.circle( frame, ( cx, cy ), 5, ( 0, 0, 255 ), -1 )
+            if SHOW_WINDOWS:
+                # draw detection
+                cv2.rectangle( frame, ( x, y ), ( x + w, y + h ), ( 0, 255, 0 ), 2 )
+                cv2.circle( frame, ( cx, cy ), 5, ( 0, 0, 255 ), -1 )
 
             #print( "Center:", cx - RES_H_2, RES_V_2 - cy)
             ax, ay = angle_conversion( cx, cy )
+            found = True
 
-            # publish this frame's result to the active mode
-            with target_cond:
-                target[ "seq" ]   += 1
-                target[ "valid" ] = found
-                target[ "x" ]     = ax
-                target[ "y" ]     = ay
-                target[ "t_ns" ]  = time.monotonic_ns()
-                target_cond.notify_all()      # wake up anyone waiting for a new frame
+        # publish this frame's result to the active mode
+        with target_cond:
+            target[ "seq" ]   += 1
+            target[ "valid" ] = found
+            target[ "x" ]     = ax
+            target[ "y" ]     = ay
+            target[ "t_ns" ]  = time.monotonic_ns()
+            target_cond.notify_all()      # wake up anyone waiting for a new frame
 
-            if frame_count % 30 == 0:
-                print( target )
+        if frame_count % 30 == 0:
+            print( target )
 
         if SHOW_WINDOWS and frame_count % 3 == 0:
             small_frame = cv2.resize( frame, ( 800, 450 ) )
