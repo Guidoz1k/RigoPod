@@ -8,11 +8,10 @@ import numpy as np
 import time
 # oled display
 from luma.core.interface.serial import i2c
-from luma.core.render import canvas
+#from luma.core.render import canvas
 from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw
 # gpios
-import time
 from signal import pause
 from gpiozero import RotaryEncoder, Button
 # serial
@@ -28,8 +27,15 @@ import math
 
 #################### global variables ####################
 
-center_x = 0
-center_y = 0
+# shared between the camera thread (writes) and the active mode (reads)
+target_cond = threading.Condition()
+target = {
+    "seq":   0,        # frame counter, +1 on every frame (new data indicator)
+    "valid": False,    # True if the green dot was found in this frame
+    "x":     0,        # horizontal angle, hundredths of a degree
+    "y":     0,        # vertical angle, hundredths of a degree
+    "t_ns":  0,        # time the frame was processed, ns
+}
 
 #################### hardware ####################
 
@@ -125,22 +131,19 @@ def screen( line1, line2 ):
 #################### opencv thread ####################
 
 # from the datasheet
-F_PX = 1693         # focal point of the camera
+F_PX = 1693         # focal length of the camera
 RES_V_2 = 1296 / 2  # half the vertical resolution
 RES_H_2 = 2304 / 2  # half the horizontal resolution
 SHOW_WINDOWS = True    # False for real measurements
 
 def angle_conversion( cx, cy ): #convert pixel position to fov angle using the arctan and the focal distance
-    global center_x
-    global center_y
+    x = int( 100 * math.degrees( math.atan( ( cx - RES_H_2 ) / F_PX ) ) )
+    y = int( 100 * math.degrees( math.atan( ( RES_V_2 - cy ) / F_PX ) ) )
 
-    center_x = int( 100 * math.degrees( math.atan( ( cx - RES_H_2 ) / F_PX ) ) )
-    center_y = int( 100 * math.degrees( math.atan( ( RES_V_2 - cy ) / F_PX ) ) )
-    #print( "Center:", center_x, center_y )
+    return x, y
+    
 
 def picam():
-    global center_x, center_y
-
     picam2 = Picamera2()
     config = picam2.create_preview_configuration(
         main = { "size": ( 2304, 1296 ), "format": "RGB888" }, # 16:9 with full 75 degrees, sensor is 4608 × 2592, and format ready for opencv
@@ -155,6 +158,9 @@ def picam():
         cv2.resizeWindow( "Camera", 800, 450 )
         cv2.namedWindow( "Mask", cv2.WINDOW_NORMAL )
         cv2.resizeWindow( "Mask", 800, 450 )
+
+    lower = np.array( [ 0, 0, 0 ] )
+    upper = np.array( [ 0, 0, 0 ] )
 
     frame_count = 0
     while True:
@@ -171,6 +177,9 @@ def picam():
         mask = cv2.inRange( hsv, lower, upper )
         contours, _ = cv2.findContours( mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE )
 
+        found = False
+        ax, ay = 0, 0
+
         if contours:
             c = max( contours, key = cv2.contourArea )
             x, y, w, h = cv2.boundingRect( c )
@@ -182,7 +191,19 @@ def picam():
             #cv2.circle( frame, ( cx, cy ), 5, ( 0, 0, 255 ), -1 )
 
             #print( "Center:", cx - RES_H_2, RES_V_2 - cy)
-            angle_conversion( cx, cy )
+            ax, ay = angle_conversion( cx, cy )
+
+            # publish this frame's result to the active mode
+            with target_cond:
+                target[ "seq" ]   += 1
+                target[ "valid" ] = found
+                target[ "x" ]     = ax
+                target[ "y" ]     = ay
+                target[ "t_ns" ]  = time.monotonic_ns()
+                target_cond.notify_all()      # wake up anyone waiting for a new frame
+
+            if frame_count % 30 == 0:
+                print( target )
 
         if SHOW_WINDOWS and frame_count % 3 == 0:
             small_frame = cv2.resize( frame, ( 800, 450 ) )
@@ -309,7 +330,6 @@ def test_menu():
     while quit != True:
         selected = ( selected + encoder_turns ) % len( MENU_ITEMS )
         screen( "Test Routines", MENU_ITEMS[ selected ] )
-        screen( center_x, center_y )
 
         if encoder_clicked == True:
             match selected:
