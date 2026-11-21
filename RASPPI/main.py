@@ -101,8 +101,8 @@ def uart_message( mode, pitch = 0, roll = 0 ):
 
     ch = chr( first[ 0 ] )
 
-    if ch in ERROR_CODES:
-        return ( ch, None )
+    if ch != mode:                       # reply must echo the request letter
+        return ( "BAD " + ch, None )
 
     # G mode: reply is just 'G'
     if mode == "G":
@@ -202,8 +202,8 @@ def picam():
             target[ "t_ns" ]  = time.monotonic_ns()
             target_cond.notify_all()      # wake up anyone waiting for a new frame
 
-        if frame_count % 30 == 0:
-            print( target )
+        # if frame_count % 30 == 0: only for debug
+        #    print( target )
 
         if SHOW_WINDOWS and frame_count % 3 == 0:
             small_frame = cv2.resize( frame, ( 800, 450 ) )
@@ -228,6 +228,10 @@ def active_menu():
     frames = 0         # frames handled by active mode
     skipped = 0        # frames the camera made that we never saw
 
+    counts = {}        # how many times each UART status happened
+    tof = 0
+    status = "-"
+
     screen( "Active Mode", "starting" )
     with target_cond:
         last_seq = target[ "seq" ]      # start from the current frame, not from 0
@@ -248,12 +252,21 @@ def active_menu():
         last_seq = snapshot[ "seq" ]
         frames += 1
 
+        # one UART exchange per camera frame
+        if snapshot[ "valid" ]:
+            # camera y -> gimbal pitch, camera x -> gimbal yaw (both in cents of degree)
+            status, reply = uart_message( 'A', snapshot[ "y" ], snapshot[ "x" ] )
+            if status == "OK":
+                tof = reply
+        else:
+            status = "NO TARGET"
+        counts[ status ] = counts.get( status, 0 ) + 1
+
         # OLED is slow: update it only every 6th frame (5 Hz)
         if frames % 6 == 0:
-            if snapshot[ "valid" ]:
-                screen( f"X {snapshot[ 'x' ]}", f"Y {snapshot[ 'y' ]}" )
-            else:
-                screen( "Active Mode", "NO TARGET" )
+            screen( f"ToF {tof}", f"{status}" )
+
+        print( "frames", frames, "skipped", skipped, "status counts:", counts )
 
     screen( f"frames  {frames}", f"skipped {skipped}" )
     time.sleep( 3 )
