@@ -23,6 +23,8 @@ import threading
 import statistics
 # for shutting down
 import subprocess
+# for angle conversion
+import math
 
 #################### global variables ####################
 
@@ -122,30 +124,45 @@ def screen( line1, line2 ):
 
 #################### opencv thread ####################
 
-def angle_conversion( cx,cy ): #convert pixel position to fov angle
-    center_x = int( np.interp( cx, [ 0, 2304 ], [ -32.685, +32.685 ] ) )
-    center_y = int( np.interp( cy, [ 0, 1296 ], [ +63.385, +26.615 ] ) )
-    print( "Center:", center_x, center_y )
+# from the datasheet
+F_PX = 1693         # focal point of the camera
+RES_V_2 = 1296 / 2  # half the vertical resolution
+RES_H_2 = 2304 / 2  # half the horizontal resolution
+SHOW_WINDOWS = True    # False for real measurements
+
+def angle_conversion( cx, cy ): #convert pixel position to fov angle using the arctan and the focal distance
+    global center_x
+    global center_y
+
+    center_x = int( 100 * math.degrees( math.atan( ( cx - RES_H_2 ) / F_PX ) ) )
+    center_y = int( 100 * math.degrees( math.atan( ( RES_V_2 - cy ) / F_PX ) ) )
+    #print( "Center:", center_x, center_y )
 
 def picam():
+    global center_x, center_y
+
     picam2 = Picamera2()
     config = picam2.create_preview_configuration(
-        main = { "size": ( 2304, 1296 ) }, # 16:9 with full 75 degrees, sensor is 4608 × 2592
-        controls = { "FrameRate": 30 }
+        main = { "size": ( 2304, 1296 ), "format": "RGB888" }, # 16:9 with full 75 degrees, sensor is 4608 × 2592, and format ready for opencv
+        controls = { "FrameDurationLimits": ( 33333, 33333 ) } # { "FrameRate": 30 } would sometimes slow down in low light conditions
     )
     picam2.configure( config )
     picam2.start()
 
     # limits the size of the UI
-    cv2.namedWindow( "Camera", cv2.WINDOW_NORMAL )
-    cv2.resizeWindow( "Camera", 800, 450 )
-    cv2.namedWindow( "Mask", cv2.WINDOW_NORMAL )
-    cv2.resizeWindow( "Mask", 800, 450 )
+    if SHOW_WINDOWS:
+        cv2.namedWindow( "Camera", cv2.WINDOW_NORMAL )
+        cv2.resizeWindow( "Camera", 800, 450 )
+        cv2.namedWindow( "Mask", cv2.WINDOW_NORMAL )
+        cv2.resizeWindow( "Mask", 800, 450 )
 
+    frame_count = 0
     while True:
+        frame_count += 1
+    
         frame = picam2.capture_array()
-        # change color format for opencv
-        frame = cv2.cvtColor( frame, cv2.COLOR_RGB2BGR )
+        # change color format for opencv NOT NEEDED ANYMORE
+        # frame = cv2.cvtColor( frame, cv2.COLOR_RGB2BGR )
 
         # detect green object
         hsv = cv2.cvtColor( frame, cv2.COLOR_BGR2HSV )
@@ -161,16 +178,19 @@ def picam():
             cy = y + h // 2
 
             # draw detection
-            cv2.rectangle( frame, ( x, y ), ( x + w, y + h ), ( 0, 255, 0 ), 2 )
-            cv2.circle( frame, ( cx, cy ), 5, ( 0, 0, 255 ), -1 )
+            #cv2.rectangle( frame, ( x, y ), ( x + w, y + h ), ( 0, 255, 0 ), 2 )
+            #cv2.circle( frame, ( cx, cy ), 5, ( 0, 0, 255 ), -1 )
 
-            # print( "Center:", cx, cy )
+            #print( "Center:", cx - RES_H_2, RES_V_2 - cy)
             angle_conversion( cx, cy )
 
-        cv2.imshow( "Camera", frame )
-        cv2.imshow( "Mask", mask )
-        if cv2.waitKey( 1 ) == ord( 'q' ):
-            break
+        if SHOW_WINDOWS and frame_count % 3 == 0:
+            small_frame = cv2.resize( frame, ( 800, 450 ) )
+            small_mask  = cv2.resize( mask,  ( 800, 450 ), interpolation = cv2.INTER_NEAREST )
+            cv2.imshow( "Camera", small_frame )
+            cv2.imshow( "Mask", small_mask )
+            if cv2.waitKey( 1 ) == ord( 'q' ):
+                break
 
     cv2.destroyAllWindows()
     picam2.stop()
@@ -197,25 +217,26 @@ def tof_routine( iterations ):
         if status == 'OK':
             measurements.append( tof )
 
-    dataset = len(measurements)
-    minimum = min(measurements)
-    maximum = max(measurements)
-    mean = statistics.mean(measurements)
-    variance = statistics.variance(measurements)
-    std_dev = statistics.stdev(measurements)
+    if( len(measurements) >= 2 ): # protects from variance crashing for undersampling
+        dataset = len(measurements)
+        minimum = min(measurements)
+        maximum = max(measurements)
+        mean = statistics.mean(measurements)
+        variance = statistics.variance(measurements)
+        std_dev = statistics.stdev(measurements)
 
-    screen( "Dataset", f"{dataset:3d}" )            
-    time.sleep( 3 )
-    screen( "Maximum", f"{maximum:5d}" )            
-    time.sleep( 3 )
-    screen( "Minimum", f"{minimum:5d}" )            
-    time.sleep( 3 )
-    screen( "Mean", f"{mean:3f}" )            
-    time.sleep( 3 )
-    screen( "Variance", f"{variance:3f}" )            
-    time.sleep( 3 )
-    screen( "Standard Deviation", f"{std_dev:3f}" )            
-    time.sleep( 3 )
+        screen( "Dataset", f"{dataset:3d}" )            
+        time.sleep( 3 )
+        screen( "Maximum", f"{maximum:5d}" )            
+        time.sleep( 3 )
+        screen( "Minimum", f"{minimum:5d}" )            
+        time.sleep( 3 )
+        screen( "Mean", f"{mean:.3f}" )            
+        time.sleep( 3 )
+        screen( "Variance", f"{variance:.3f}" )            
+        time.sleep( 3 )
+        screen( "Standard Deviation", f"{std_dev:.3f}" )            
+        time.sleep( 3 )
 
 def tof_menu():
     samples = 2 # minimum amount of samples for statistics
@@ -288,6 +309,7 @@ def test_menu():
     while quit != True:
         selected = ( selected + encoder_turns ) % len( MENU_ITEMS )
         screen( "Test Routines", MENU_ITEMS[ selected ] )
+        screen( center_x, center_y )
 
         if encoder_clicked == True:
             match selected:
@@ -299,7 +321,6 @@ def test_menu():
                     active_menu()
                 case 3:
                     quit = True
-                    
 
         clear_UI_events()
         time.sleep( 0.1 )
