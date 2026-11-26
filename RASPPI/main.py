@@ -8,11 +8,10 @@ import numpy as np
 import time
 # oled display
 from luma.core.interface.serial import i2c
-from luma.core.render import canvas
+#from luma.core.render import canvas
 from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw
 # gpios
-import time
 from signal import pause
 from gpiozero import RotaryEncoder, Button
 # serial
@@ -23,11 +22,20 @@ import threading
 import statistics
 # for shutting down
 import subprocess
+# for angle conversion
+import math
 
 #################### global variables ####################
 
-center_x = 0
-center_y = 0
+# shared between the camera thread (writes) and the active mode (reads)
+target_cond = threading.Condition()
+target = {
+    "seq":   0,        # frame counter, +1 on every frame (new data indicator)
+    "valid": False,    # True if the green dot was found in this frame
+    "x":     0,        # horizontal angle, hundredths of a degree
+    "y":     0,        # vertical angle, hundredths of a degree
+    "t_ns":  0,        # time the frame was processed, ns
+}
 
 #################### hardware ####################
 
@@ -93,8 +101,8 @@ def uart_message( mode, pitch = 0, roll = 0 ):
 
     ch = chr( first[ 0 ] )
 
-    if ch in ERROR_CODES:
-        return ( ch, None )
+    if ch != mode:                       # reply must echo the request letter
+        return ( "BAD " + ch, None )
 
     # G mode: reply is just 'G'
     if mode == "G":
@@ -122,37 +130,53 @@ def screen( line1, line2 ):
 
 #################### opencv thread ####################
 
-def angle_conversion( cx,cy ): #convert pixel position to fov angle
-    center_x = int( np.interp( cx, [ 0, 2304 ], [ -32.685, +32.685 ] ) )
-    center_y = int( np.interp( cy, [ 0, 1296 ], [ +63.385, +26.615 ] ) )
-    print( "Center:", center_x, center_y )
+# from the datasheet
+F_PX = 1693         # focal length of the camera
+RES_V_2 = 1296 / 2  # half the vertical resolution
+RES_H_2 = 2304 / 2  # half the horizontal resolution
+SHOW_WINDOWS = True    # False for real measurements
+
+def angle_conversion( cx, cy ): #convert pixel position to fov angle using the arctan and the focal distance
+    x = int( 100 * math.degrees( math.atan( ( cx - RES_H_2 ) / F_PX ) ) )
+    y = int( 100 * math.degrees( math.atan( ( RES_V_2 - cy ) / F_PX ) ) )
+
+    return x, y
+    
 
 def picam():
     picam2 = Picamera2()
     config = picam2.create_preview_configuration(
-        main = { "size": ( 2304, 1296 ) }, # 16:9 with full 75 degrees, sensor is 4608 × 2592
-        controls = { "FrameRate": 30 }
+        main = { "size": ( 2304, 1296 ), "format": "RGB888" }, # 16:9 with full 75 degrees, sensor is 4608 × 2592, and format ready for opencv
+        controls = { "FrameDurationLimits": ( 33333, 33333 ) } # { "FrameRate": 30 } would sometimes slow down in low light conditions
     )
     picam2.configure( config )
     picam2.start()
 
     # limits the size of the UI
-    cv2.namedWindow( "Camera", cv2.WINDOW_NORMAL )
-    cv2.resizeWindow( "Camera", 800, 450 )
-    cv2.namedWindow( "Mask", cv2.WINDOW_NORMAL )
-    cv2.resizeWindow( "Mask", 800, 450 )
+    if SHOW_WINDOWS:
+        cv2.namedWindow( "Camera", cv2.WINDOW_NORMAL )
+        cv2.resizeWindow( "Camera", 800, 450 )
+        cv2.namedWindow( "Mask", cv2.WINDOW_NORMAL )
+        cv2.resizeWindow( "Mask", 800, 450 )
 
+    lower = np.array( [ 40, 120, 120 ] )
+    upper = np.array( [ 80, 255, 255 ] )
+
+    frame_count = 0
     while True:
+        frame_count += 1
+    
         frame = picam2.capture_array()
-        # change color format for opencv
-        frame = cv2.cvtColor( frame, cv2.COLOR_RGB2BGR )
+        # change color format for opencv NOT NEEDED ANYMORE
+        # frame = cv2.cvtColor( frame, cv2.COLOR_RGB2BGR )
 
         # detect green object
         hsv = cv2.cvtColor( frame, cv2.COLOR_BGR2HSV )
-        lower = np.array( [ 40, 120, 120 ] )
-        upper = np.array( [ 80, 255, 255 ] )
         mask = cv2.inRange( hsv, lower, upper )
         contours, _ = cv2.findContours( mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE )
+
+        found = False
+        ax, ay = 0, 0
 
         if contours:
             c = max( contours, key = cv2.contourArea )
@@ -160,17 +184,34 @@ def picam():
             cx = x + w // 2
             cy = y + h // 2
 
-            # draw detection
-            cv2.rectangle( frame, ( x, y ), ( x + w, y + h ), ( 0, 255, 0 ), 2 )
-            cv2.circle( frame, ( cx, cy ), 5, ( 0, 0, 255 ), -1 )
+            if SHOW_WINDOWS:
+                # draw detection
+                cv2.rectangle( frame, ( x, y ), ( x + w, y + h ), ( 0, 255, 0 ), 2 )
+                cv2.circle( frame, ( cx, cy ), 5, ( 0, 0, 255 ), -1 )
 
-            # print( "Center:", cx, cy )
-            angle_conversion( cx, cy )
+            #print( "Center:", cx - RES_H_2, RES_V_2 - cy)
+            ax, ay = angle_conversion( cx, cy )
+            found = True
 
-        cv2.imshow( "Camera", frame )
-        cv2.imshow( "Mask", mask )
-        if cv2.waitKey( 1 ) == ord( 'q' ):
-            break
+        # publish this frame's result to the active mode
+        with target_cond:
+            target[ "seq" ]   += 1
+            target[ "valid" ] = found
+            target[ "x" ]     = ax
+            target[ "y" ]     = ay
+            target[ "t_ns" ]  = time.monotonic_ns()
+            target_cond.notify_all()      # wake up anyone waiting for a new frame
+
+        # if frame_count % 30 == 0: only for debug
+        #    print( target )
+
+        if SHOW_WINDOWS and frame_count % 3 == 0:
+            small_frame = cv2.resize( frame, ( 800, 450 ) )
+            small_mask  = cv2.resize( mask,  ( 800, 450 ), interpolation = cv2.INTER_NEAREST )
+            cv2.imshow( "Camera", small_frame )
+            cv2.imshow( "Mask", small_mask )
+            if cv2.waitKey( 1 ) == ord( 'q' ):
+                break
 
     cv2.destroyAllWindows()
     picam2.stop()
@@ -184,8 +225,51 @@ def clear_UI_events():
     encoder_turns = 0
 
 def active_menu():
+    frames = 0         # frames handled by active mode
+    skipped = 0        # frames the camera made that we never saw
 
+    counts = {}        # how many times each UART status happened
+    tof = 0
+    status = "-"
 
+    screen( "Active Mode", "starting" )
+    with target_cond:
+        last_seq = target[ "seq" ]      # start from the current frame, not from 0
+
+    clear_UI_events()
+    while encoder_clicked == False:
+
+        # wait for a new frame (or give up after 0.2 s)
+        with target_cond:
+            new_frame = target_cond.wait_for( lambda: target[ "seq" ] != last_seq, timeout = 0.2 )
+            snapshot = dict( target )   # copy while locked
+
+        if new_frame == False:
+            screen( "Active Mode", "NO CAMERA" )
+            continue
+
+        skipped += snapshot[ "seq" ] - last_seq - 1
+        last_seq = snapshot[ "seq" ]
+        frames += 1
+
+        # one UART exchange per camera frame
+        if snapshot[ "valid" ]:
+            # camera y -> gimbal pitch, camera x -> gimbal yaw (both in cents of degree)
+            status, reply = uart_message( 'A', snapshot[ "y" ], snapshot[ "x" ] )
+            if status == "OK":
+                tof = reply
+        else:
+            status = "NO TARGET"
+        counts[ status ] = counts.get( status, 0 ) + 1
+
+        # OLED is slow: update it only every 6th frame (5 Hz)
+        if frames % 6 == 0:
+            screen( f"ToF {tof}", f"{status}" )
+
+        print( "frames", frames, "skipped", skipped, "status counts:", counts )
+
+    screen( f"frames  {frames}", f"skipped {skipped}" )
+    time.sleep( 3 )
     clear_UI_events()
 
 def tof_routine( iterations ):
@@ -197,25 +281,26 @@ def tof_routine( iterations ):
         if status == 'OK':
             measurements.append( tof )
 
-    dataset = len(measurements)
-    minimum = min(measurements)
-    maximum = max(measurements)
-    mean = statistics.mean(measurements)
-    variance = statistics.variance(measurements)
-    std_dev = statistics.stdev(measurements)
+    if( len(measurements) >= 2 ): # protects from variance crashing for undersampling
+        dataset = len(measurements)
+        minimum = min(measurements)
+        maximum = max(measurements)
+        mean = statistics.mean(measurements)
+        variance = statistics.variance(measurements)
+        std_dev = statistics.stdev(measurements)
 
-    screen( "Dataset", f"{dataset:3d}" )            
-    time.sleep( 3 )
-    screen( "Maximum", f"{maximum:5d}" )            
-    time.sleep( 3 )
-    screen( "Minimum", f"{minimum:5d}" )            
-    time.sleep( 3 )
-    screen( "Mean", f"{mean:3f}" )            
-    time.sleep( 3 )
-    screen( "Variance", f"{variance:3f}" )            
-    time.sleep( 3 )
-    screen( "Standard Deviation", f"{std_dev:3f}" )            
-    time.sleep( 3 )
+        screen( "Dataset", f"{dataset:3d}" )            
+        time.sleep( 3 )
+        screen( "Maximum", f"{maximum:5d}" )            
+        time.sleep( 3 )
+        screen( "Minimum", f"{minimum:5d}" )            
+        time.sleep( 3 )
+        screen( "Mean", f"{mean:.3f}" )            
+        time.sleep( 3 )
+        screen( "Variance", f"{variance:.3f}" )            
+        time.sleep( 3 )
+        screen( "Standard Deviation", f"{std_dev:.3f}" )            
+        time.sleep( 3 )
 
 def tof_menu():
     samples = 2 # minimum amount of samples for statistics
@@ -299,7 +384,6 @@ def test_menu():
                     active_menu()
                 case 3:
                     quit = True
-                    
 
         clear_UI_events()
         time.sleep( 0.1 )
