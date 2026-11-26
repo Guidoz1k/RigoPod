@@ -356,9 +356,17 @@ def gimbal_menu():
                 screen( "ROLL:", f"{roll}")
 
                 if encoder_clicked == True:
-                    while status != 'OK':
+                    tries = 0
+                    while status != 'OK' and tries < 5:
                         status, tof = uart_message( 'G', pitch * 100, roll * 100 )
+                        tries += 1
                         time.sleep( 0.2 )
+
+                    if status == 'OK':
+                        screen( "Gimbal setup", "COMPLETE" )
+                    else:
+                        screen( "Gimbal setup", f"FAILED {status}" )
+                    time.sleep( 3 )
 
                     screen( "Gimbal setup", "COMPLETE")
                     time.sleep( 3 )
