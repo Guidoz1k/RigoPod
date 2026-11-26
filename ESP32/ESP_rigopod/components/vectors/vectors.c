@@ -119,12 +119,12 @@ float vector_magni( vector_t vector ){
 
 // calculates vector's pitch
 float vector_pitch( vector_t vector ){
-    return atan2( vector.y, sqrt( ( vector.x * vector.x ) + ( vector.z * vector.z ) ) );
+    return vector_rad_to_deg( atan2( vector.y, sqrt( ( vector.x * vector.x ) + ( vector.z * vector.z ) ) ) );
 }
 
 // calculates vector's yaw
 float vector_yawww( vector_t vector ){
-    return atan2( vector.x, vector.z );
+    return vector_rad_to_deg( atan2( vector.x, vector.z ) );
 }
 
 /* turns out this was not necessary

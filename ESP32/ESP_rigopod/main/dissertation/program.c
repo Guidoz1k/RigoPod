@@ -214,18 +214,20 @@ void parallax_correction( bool reset ){
         gimbal_vector = vector_gimbal_origin();
     }
     else{ // overrides current_pitch and current_yaw
-        tof_axis = vector_new_pol( distance_measured, gimbal_yaw, gimbal_pitch );       // updates the tof's sight vector
-        camera_axis = vector_new_pol( distance_measured, command_yaw, command_pitch );  // updates the camera's sight vector
-        measured_range = vector_add( gimbal_vector, tof_axis );                         // calculates the vector formed by tof sensor and it's arm into a measured range
-        estimate_range = vector_projection( measured_range, camera_axis );              // projects measured range into the camera's sight vector to obtain an estimate range
-        true_value = vector_magni( estimate_range );                                    // calculates the magnitude of estimate range to obtain the true distance vector
-        write_uart_response( MODE_ACTIVE, true_value >> 8, true_value & 0xFF );            // writes the calculated value into UART
+        if( tof_event == TOF_VALID ){
+            tof_axis = vector_new_pol( distance_measured, gimbal_yaw, gimbal_pitch );       // updates the tof's sight vector
+            camera_axis = vector_new_pol( distance_measured, command_yaw, command_pitch );  // updates the camera's sight vector
+            measured_range = vector_add( gimbal_vector, tof_axis );                         // calculates the vector formed by tof sensor and it's arm into a measured range
+            estimate_range = vector_projection( measured_range, camera_axis );              // projects measured range into the camera's sight vector to obtain an estimate range
+            true_value = vector_magni( estimate_range );                                    // calculates the magnitude of estimate range to obtain the true distance vector
+            write_uart_response( MODE_ACTIVE, true_value >> 8, true_value & 0xFF );            // writes the calculated value into UART
 
-        new_gimbal_axis = vector_sub( camera_axis, gimbal_vector ); // calculates the vector that points from the gimbal's origin to the estimate range
-        gimbal_pitch = vector_pitch( new_gimbal_axis );             // calculate the vector's pitch
-        gimbal_yaw = vector_yawww ( new_gimbal_axis );              // calculate the vector's yaw
-        current_pitch = gimbal_pitch;                               // updates the gimbal's new direction
-        current_yaw = gimbal_yaw;                                   // updates the gimbal's new direction
+            new_gimbal_axis = vector_sub( estimate_range, gimbal_vector );  // calculates the vector that points from the gimbal's origin to the estimate range
+            gimbal_pitch = vector_pitch( new_gimbal_axis );                 // calculate the vector's pitch
+            gimbal_yaw = vector_yawww ( new_gimbal_axis );                  // calculate the vector's yaw
+            current_pitch = gimbal_pitch;                                   // updates the gimbal's new direction
+            current_yaw = gimbal_yaw;                                       // updates the gimbal's new direction
+        }
     }
 }
 
@@ -252,7 +254,6 @@ void mode_transition( system_mode_t next_mode ){
     led_color( rgb_pattern[ next_mode ].red, rgb_pattern[ next_mode ].green, rgb_pattern[ next_mode ].blue );
 
     if( next_mode == MODE_ACTIVE ){
-        active_state_flag = true;
         parallax_correction( active_state_flag == false ); // reset only when coming from IDLE
         active_state_flag = true;
     }
@@ -375,7 +376,7 @@ void test_routine(){
     servo_calib();
 
     led_color( 0, 0, LED_MAX );
-    inverse_kinematics( 0, 0 );
+    inverse_kinematics();
 
     while( 1 ){
         main_task();
