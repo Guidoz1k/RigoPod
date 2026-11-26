@@ -358,7 +358,7 @@ void main_task(){
     case MODE_SERVO_ERROR:  // ACTIVE or GIMBAL modes
     case MODE_TOF_ERROR:    // ACTIVE or TOF modes
         if( active_state_flag == true )     // won't disengage active mode
-            mode_transition(MODE_ACTIVE );
+            mode_transition( MODE_WAITING );
         else
             mode_transition( MODE_IDLE );
         break;
