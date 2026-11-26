@@ -274,7 +274,6 @@ void mode_transition( system_mode_t next_mode ){
 
 void main_task(){
     uart_request();
-    gimbal_range();
     rangefinding();
 
     switch( system_mode ){
