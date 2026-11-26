@@ -13,7 +13,7 @@
 #define LED_MAX 20
 #define LED_MIN 10
 
-#define WAIT_TIME 1000000 // 3s in µs for the wait
+#define WAIT_TIME 1000 // 1s in µs for the wait
 
 // ========== GLOBAL TYPES ==========
 
@@ -33,7 +33,7 @@ typedef enum _mode_t{
 
 bool active_state_flag = false;         // FSM accessory flag
 system_mode_t system_mode = MODE_IDLE;  // current FSM state
-extern uint32_t time_counter;           // global timer updated in core 2 every 1µs (main.c)
+extern uint32_t time_counter;           // global timer updated in core 2 every 1ms (main.c)
 
 const int16_t max_angle = 1500;         // [cents fixed point] servo does 0.13s per 60deg @5V → 15.38deg per cycle @30Hz
 int16_t distance_measured = 0;
@@ -150,7 +150,7 @@ void rangefinding(){
 
     //    if( xts1_measure_distance( &response ) < 0 ){
     response = xts1_measure_distance_V2();
-    if( response < 0 ){
+    if( response <= 0 ){
         response = 0;
         tof_event = TOF_INVALID;
     }
@@ -379,7 +379,6 @@ void test_routine(){
 
     while( 1 ){
         main_task();
-        delay_milli( 10 );
         //delay_tick();
     }
 }
