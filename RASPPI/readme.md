@@ -3,6 +3,10 @@ The raspberry pi 5 only runs a simple python script and is accessed via VNC (VNC
 for this project to run properly it needs the VCN, I²C and Serial Port enabled in the Interfaces UI
 
 
+timing_test.py was used to evaluate if the 30Hz cycle was stables
+
+
+
 the python code runs as soon as the rasp boots, and for that:
 my user is rigo, and I clone the repo to the desktop...
 

@@ -101,6 +101,9 @@ def uart_message( mode, pitch = 0, roll = 0 ):
 
     ch = chr( first[ 0 ] )
 
+    if ch in ERROR_CODES:                # 'E', 'S' or 'T' from the ESP
+        return ( ch, None )
+
     if ch != mode:                       # reply must echo the request letter
         return ( "BAD " + ch, None )
 
@@ -229,6 +232,7 @@ def active_menu():
     skipped = 0        # frames the camera made that we never saw
 
     counts = {}        # how many times each UART status happened
+    first_reply = True     # ESP's first 'A' is the parallax reset: distance is old
     tof = 0
     status = "-"
 
@@ -257,16 +261,21 @@ def active_menu():
             # camera y -> gimbal pitch, camera x -> gimbal yaw (both in cents of degree)
             status, reply = uart_message( 'A', snapshot[ "y" ], snapshot[ "x" ] )
             if status == "OK":
-                tof = reply
+                if first_reply:
+                    first_reply = False
+                    status = "FIRST"         # counted, but value not used
+                else:
+                    tof = reply
         else:
             status = "NO TARGET"
+            first_reply = True               # ESP may time out to IDLE and reset again
         counts[ status ] = counts.get( status, 0 ) + 1
 
         # OLED is slow: update it only every 6th frame (5 Hz)
         if frames % 6 == 0:
             screen( f"ToF {tof}", f"{status}" )
 
-        print( "frames", frames, "skipped", skipped, "status counts:", counts )
+    print( "frames", frames, "skipped", skipped, "status counts:", counts )
 
     screen( f"frames  {frames}", f"skipped {skipped}" )
     time.sleep( 3 )
