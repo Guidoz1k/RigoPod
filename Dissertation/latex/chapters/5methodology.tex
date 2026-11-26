@@ -77,6 +77,9 @@ The vertical \gls{fov} of the
 prototype, on a 45° inclined \gls{los}
 in reference to horizontal and vertical planes can be seen from the side in
 Figure~\ref{fig:fov}.
+This makes the range of angles which the gimbal will receive as requests as
+from -32.685° to +32.685° for the horizontal axis (azimuth) and from
++63.385° to +26.615° for the vertical axis.
 
 \begin{figure}[ht]
   \centering
@@ -143,6 +146,7 @@ a Python algorithm executes these simple steps:
   \item Use the filtered image to generate a mask.
   \item Use the generated mask to search for the biggest shape.
   \item Find the center of the biggest shape.
+  \item Convert pixel coordinates into angle coordinates.
 \end{enumerate}
 
 With this algorithm, the drone system will search for a green dot of defined

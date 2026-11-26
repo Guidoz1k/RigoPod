@@ -31,6 +31,7 @@ typedef enum _mode_t{
 
 // ========== GLOBAL VARIABLES ==========
 
+bool active_state_flag = false;         // FSM accessory flag
 system_mode_t system_mode = MODE_IDLE;  // current FSM state
 extern uint32_t time_counter;           // global timer updated in core 2 every 1µs (main.c)
 
@@ -218,7 +219,7 @@ void parallax_correction( bool reset ){
         measured_range = vector_add( gimbal_vector, tof_axis );                         // calculates the vector formed by tof sensor and it's arm into a measured range
         estimate_range = vector_projection( measured_range, camera_axis );              // projects measured range into the camera's sight vector to obtain an estimate range
         true_value = vector_magni( estimate_range );                                    // calculates the magnitude of estimate range to obtain the true distance vector
-        write_uart_response( MODE_TOF, true_value >> 8, true_value & 0xFF );            // writes the calculated value into UART
+        write_uart_response( MODE_ACTIVE, true_value >> 8, true_value & 0xFF );            // writes the calculated value into UART
 
         new_gimbal_axis = vector_sub( camera_axis, gimbal_vector ); // calculates the vector that points from the gimbal's origin to the estimate range
         gimbal_pitch = vector_pitch( new_gimbal_axis );             // calculate the vector's pitch
@@ -248,15 +249,16 @@ bool timeout_check( bool reset ){
 // function to set the RGB led according to current mode
 void mode_transition( system_mode_t next_mode ){
     bool mode_change = system_mode != next_mode;// resets in case of entering active mode for the first time
-
     led_color( rgb_pattern[ next_mode ].red, rgb_pattern[ next_mode ].green, rgb_pattern[ next_mode ].blue );
-    serial_write_bytes( uart_response[ next_mode ], 3 );
 
-    if( next_mode == MODE_ACTIVE )
+    if( next_mode == MODE_ACTIVE ){
+        active_state_flag = true;
         parallax_correction( mode_change );
+    }
     if( next_mode == MODE_WAITING )
         timeout_check( mode_change );
 
+    serial_write_bytes( uart_response[ next_mode ], 3 );
     inverse_kinematics(); // remember: active mode overrides gimbal range check
     system_mode = next_mode;
 }
@@ -322,9 +324,6 @@ void main_task(){
             break;
         }
         break;
-    case MODE_COMM_ERROR:   // invalid command
-        mode_transition( MODE_IDLE ); // executes once and back to idle
-        break;
     case MODE_ACTIVE: // chained measurements
         switch(uart_event){
         case SERIAL_IN_GIMBAL:
@@ -348,8 +347,13 @@ void main_task(){
             break;
         }
         break;
-    case MODE_SERVO_ERROR:  // ACTIVE or GIMBAL modes, SERVO_ERROR sends back to idle
-    case MODE_TOF_ERROR:    // ACTIVE or TOF modes, TOF_ERROR sends back to idle
+    case MODE_COMM_ERROR:   // invalid command
+    case MODE_SERVO_ERROR:  // ACTIVE or GIMBAL modes
+    case MODE_TOF_ERROR:    // ACTIVE or TOF modes
+        if( active_state_flag == true )     // won't disengage active mode
+            mode_transition(MODE_ACTIVE );
+        else
+            mode_transition( MODE_IDLE );
     case MODE_GIMBAL:
     case MODE_TOF:
         mode_transition( MODE_IDLE ); // executes once and back to idle
