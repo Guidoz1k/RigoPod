@@ -253,10 +253,16 @@ void mode_transition( system_mode_t next_mode ){
 
     if( next_mode == MODE_ACTIVE ){
         active_state_flag = true;
-        parallax_correction( mode_change );
+        parallax_correction( active_state_flag == false ); // reset only when coming from IDLE
+        active_state_flag = true;
     }
     if( next_mode == MODE_WAITING )
         timeout_check( mode_change );
+
+    if( next_mode == MODE_IDLE ){
+        active_state_flag = false;
+        parallax_correction( true );
+    }
 
     serial_write_bytes( uart_response[ next_mode ], 3 );
     inverse_kinematics(); // remember: active mode overrides gimbal range check
@@ -318,8 +324,9 @@ void main_task(){
             mode_transition( MODE_SERVO_ERROR );
             break;
         case SERIAL_IN_EMPTY:
-            if( timeout_check( false ) == true ) // timeout occurred
+            if( timeout_check( false ) == true ){ // timeout occurred
                 mode_transition( MODE_IDLE );
+            }
             // else, just keeps waiting
             break;
         }
@@ -354,6 +361,7 @@ void main_task(){
             mode_transition(MODE_ACTIVE );
         else
             mode_transition( MODE_IDLE );
+        break;
     case MODE_GIMBAL:
     case MODE_TOF:
         mode_transition( MODE_IDLE ); // executes once and back to idle
@@ -371,7 +379,7 @@ void test_routine(){
 
     while( 1 ){
         main_task();
-        delay_milli( 30 );
+        delay_milli( 10 );
         //delay_tick();
     }
 }
